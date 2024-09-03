@@ -6,7 +6,7 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 )
 
-func signin(w http.ResponseWriter, r *http.Request) {
+func (app *App) signin(w http.ResponseWriter, r *http.Request) {
 
 	if r.Method == http.MethodPost {
 		err := r.ParseForm()
