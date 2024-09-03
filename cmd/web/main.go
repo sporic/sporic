@@ -9,28 +9,18 @@ import (
 	"os"
 	"time"
 
-	"github.com/alexedwards/scs/v2"
+	_ "github.com/alexedwards/scs/v2"
 	_ "github.com/go-sql-driver/mysql"
 )
 
 // var templates = template.Must(template.ParseGlob("template/*.html"))
-var session = scs.New()
+// var session = scs.New()
 
 type App struct {
 	infoLog       *log.Logger
 	erroLog       *log.Logger
 	Db            *sql.DB
 	templateCache map[string]*template.Template
-}
-
-func init() {
-	db, err := sql.Open("mysql", "newuser:newpassword@/sporic")
-	if err != nil {
-		panic(err)
-	}
-	db.SetConnMaxLifetime(time.Minute * 3)
-	db.SetMaxOpenConns(10)
-	db.SetMaxIdleConns(10)
 }
 
 func main() {
@@ -45,11 +35,10 @@ func main() {
 		errorLog.Fatal(err)
 	}
 
-	app := App{infoLog: infoLog, erroLog: errorLog, templateCache: templateCache}
+	db := loadDatabase()
+	app := App{infoLog: infoLog, erroLog: errorLog, templateCache: templateCache, Db: db}
 
-	mux := http.NewServeMux()
-
-	mux.HandleFunc("/", app.signin)
+	mux := app.routes()
 
 	srv := &http.Server{
 		Addr:     *addr,
@@ -60,4 +49,22 @@ func main() {
 	infoLog.Printf("Starting server on %s", *addr)
 	err = srv.ListenAndServe()
 	errorLog.Fatal(err)
+}
+
+func loadDatabase() *sql.DB {
+	db, err := sql.Open("mysql", "newuser:newpassword@/sporic")
+	if err != nil {
+		panic(err)
+	}
+	db.SetConnMaxLifetime(time.Minute * 3)
+	db.SetMaxOpenConns(10)
+	db.SetMaxIdleConns(10)
+
+	return db
+}
+
+func (app App) routes() *http.ServeMux {
+	mux := http.NewServeMux()
+	mux.HandleFunc("/", app.signin)
+	return mux
 }
