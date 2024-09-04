@@ -12,6 +12,7 @@ import (
 	_ "github.com/alexedwards/scs/v2"
 	"github.com/go-playground/form/v4"
 	_ "github.com/go-sql-driver/mysql"
+	"github.com/julienschmidt/httprouter"
 )
 
 // var templates = template.Must(template.ParseGlob("template/*.html"))
@@ -74,8 +75,11 @@ func loadDatabase() *sql.DB {
 	return db
 }
 
-func (app App) routes() *http.ServeMux {
-	mux := http.NewServeMux()
-	mux.HandleFunc("/", app.signin)
-	return mux
+func (app App) routes() http.Handler {
+	router := httprouter.New()
+
+	router.HandlerFunc(http.MethodGet, "/login", app.login)
+	router.HandlerFunc(http.MethodPost, "/login", app.loginPost)
+
+	return router
 }

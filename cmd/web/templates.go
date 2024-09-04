@@ -7,7 +7,9 @@ import (
 	"path/filepath"
 )
 
-type templateData struct{}
+type templateData struct {
+	Form any
+}
 
 func newTemplateCache() (map[string]*template.Template, error) {
 	cache := map[string]*template.Template{}
@@ -18,9 +20,10 @@ func newTemplateCache() (map[string]*template.Template, error) {
 	}
 
 	for _, page := range pages {
+		fmt.Println(page)
 		name := filepath.Base(page)
 		files := []string{
-			"./ui/html/base.tmpl", "./ui/html/partials/nav.tmpl", page,
+			"./ui/html/base.tmpl", page,
 		}
 		ts, err := template.ParseFiles(files...)
 		if err != nil {
@@ -29,6 +32,10 @@ func newTemplateCache() (map[string]*template.Template, error) {
 		cache[name] = ts
 	}
 	return cache, nil
+}
+
+func (app *App) newTemplateData(r *http.Request) *templateData {
+	return &templateData{}
 }
 
 func (app *App) render(w http.ResponseWriter, status int, page string, data *templateData) {
