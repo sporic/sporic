@@ -38,9 +38,7 @@ func (app *App) render(w http.ResponseWriter, status int, page string, data *tem
 		app.serverError(w, err)
 		return
 	}
-	// Write out the provided HTTP status code ('200 OK', '400 Bad Request' // etc).
 	w.WriteHeader(status)
-	// Execute the template set and write the response body. Again, if there // is any error we call the the serverError() helper.
 	err := ts.ExecuteTemplate(w, "base", data)
 	if err != nil {
 		app.serverError(w, err)

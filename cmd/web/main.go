@@ -10,6 +10,7 @@ import (
 	"time"
 
 	_ "github.com/alexedwards/scs/v2"
+	"github.com/go-playground/form/v4"
 	_ "github.com/go-sql-driver/mysql"
 )
 
@@ -21,6 +22,7 @@ type App struct {
 	errorLog      *log.Logger
 	db            *sql.DB
 	templateCache map[string]*template.Template
+	formDecoder   *form.Decoder
 }
 
 func main() {
@@ -36,7 +38,16 @@ func main() {
 	}
 
 	db := loadDatabase()
-	app := App{infoLog: infoLog, errorLog: errorLog, templateCache: templateCache, db: db}
+
+	formDecoder := form.NewDecoder()
+
+	app := App{
+		infoLog:       infoLog,
+		errorLog:      errorLog,
+		templateCache: templateCache,
+		db:            db,
+		formDecoder:   formDecoder,
+	}
 
 	mux := app.routes()
 
