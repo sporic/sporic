@@ -16,6 +16,7 @@ func signin(w http.ResponseWriter, r *http.Request) {
 		}
 		email := r.Form.Get("email")
 		password := r.Form.Get("password")
+		
 		if email == "" || password == "" {
 			http.Error(w, "Email and password are required", http.StatusBadRequest)
 			return
