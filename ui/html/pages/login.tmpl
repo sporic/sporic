@@ -1,0 +1,43 @@
+{{define "title"}}Login{{ end }}
+
+{{define "main"}}
+<div class="container mt-5">
+  <div class="row justify-content-center">
+    <div class="col-md-4">
+      <h2 class="text-center mb-4">Admin Login</h2>
+      <form class="p-4 border rounded bg-light" action="/login" method="post">
+        <div class="mb-3">
+          <label for="username" class="form-label">Username</label>
+          {{with .Form.FieldErrors.username}}
+          <br>
+          <span class="text-danger"> {{.}}</label>
+          {{ end }}
+          <input
+            type="text"
+            class="form-control{{if .Form.FieldErrors.username}} is-invalid{{end}}"
+            id="username"
+            name="username"
+            placeholder="Enter username"
+            value="{{.Form.Username}}"
+          />
+        </div>
+        <div class="mb-3">
+          <label for="password" class="form-label">Password</label>
+          {{with .Form.FieldErrors.password}}
+          <br>
+          <span class="text-danger"> {{.}}</label>
+          {{ end }}
+          <input
+            type="password"
+            class="form-control{{if .Form.FieldErrors.password}} is-invalid{{end}}"
+            id="password"
+            name="password"
+            placeholder="Password"
+          />
+        </div>
+        <button class="btn btn-primary w-100">Login</button>
+      </form>
+    </div>
+  </div>
+</div>
+{{ end }}
