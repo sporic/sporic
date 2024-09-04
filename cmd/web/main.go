@@ -18,8 +18,8 @@ import (
 
 type App struct {
 	infoLog       *log.Logger
-	erroLog       *log.Logger
-	Db            *sql.DB
+	errorLog      *log.Logger
+	db            *sql.DB
 	templateCache map[string]*template.Template
 }
 
@@ -36,7 +36,7 @@ func main() {
 	}
 
 	db := loadDatabase()
-	app := App{infoLog: infoLog, erroLog: errorLog, templateCache: templateCache, Db: db}
+	app := App{infoLog: infoLog, errorLog: errorLog, templateCache: templateCache, db: db}
 
 	mux := app.routes()
 
