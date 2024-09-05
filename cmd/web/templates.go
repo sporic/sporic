@@ -34,7 +34,7 @@ func newTemplateCache() (map[string]*template.Template, error) {
 	return cache, nil
 }
 
-func (app *App) newTemplateData(r *http.Request) *templateData {
+func (app *App) newTemplateData(r *http.Request) *templateData {      
 	return &templateData{}
 }
 

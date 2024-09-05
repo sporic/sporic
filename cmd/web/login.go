@@ -40,7 +40,7 @@ func (app *App) loginPost(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	_, err = app.users.Authenticate(form.Username, form.Password)
+	id, err := app.users.Authenticate(form.Username, form.Password)
 	if err != models.ErrInvalidCredentials {
 		form.AddNonFieldError("Invalid username/password")
 		data := app.newTemplateData(r)
@@ -51,6 +51,15 @@ func (app *App) loginPost(w http.ResponseWriter, r *http.Request) {
 		app.serverError(w, err)
 		return
 	}
+
+	err = app.sessionManager.RenewToken(r.Context())
+    if err != nil {
+        app.serverError(w, err)
+        return
+    }
+    
+
+    app.sessionManager.Put(r.Context(), "authenticatedUserID", id)
 
 	data := app.newTemplateData(r)
 	data.Form = form

@@ -2,35 +2,41 @@ package main
 
 import (
 	"database/sql"
-	"flag"
 	"html/template"
 	"log"
 	"net/http"
 	"os"
 	"time"
 
+	"github.com/joho/godotenv"
 	"github.com/sporic/sporic/internal/models"
 
-	_ "github.com/alexedwards/scs/v2"
+	"github.com/alexedwards/scs/mysqlstore"
+	"github.com/alexedwards/scs/v2"
 	"github.com/go-playground/form/v4"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/julienschmidt/httprouter"
+	"github.com/justinas/alice"
 )
 
-// var templates = template.Must(template.ParseGlob("template/*.html"))
-// var session = scs.New()
-
 type App struct {
-	infoLog       *log.Logger
-	errorLog      *log.Logger
-	templateCache map[string]*template.Template
-	formDecoder   *form.Decoder
-	users         *models.UserModel
+	infoLog        *log.Logger
+	errorLog       *log.Logger
+	templateCache  map[string]*template.Template
+	formDecoder    *form.Decoder
+	sessionManager *scs.SessionManager
+	users          *models.UserModel
 }
 
 func main() {
-	addr := flag.String("addr", ":8080", "address to host the site")
-	flag.Parse()
+
+	err := godotenv.Load()
+	if err != nil {
+		log.Fatal("Error loading .env file")
+	}
+
+	dsn := os.Getenv("DSN")
+	addr := os.Getenv("ADDR")
 
 	infoLog := log.New(os.Stdout, "INFO\t", log.Ldate|log.Ltime)
 	errorLog := log.New(os.Stderr, "ERROR\t", log.Ldate|log.Ltime|log.Lshortfile)
@@ -40,33 +46,38 @@ func main() {
 		errorLog.Fatal(err)
 	}
 
-	db := loadDatabase()
+	db := loadDatabase(dsn)
 
 	formDecoder := form.NewDecoder()
 
+	sessionManager := scs.New()
+	sessionManager.Store = mysqlstore.New(db)
+	sessionManager.Lifetime = 12 * time.Hour
+
 	app := App{
-		infoLog:       infoLog,
-		errorLog:      errorLog,
-		templateCache: templateCache,
-		users:         &models.UserModel{Db: db},
-		formDecoder:   formDecoder,
+		infoLog:        infoLog,
+		errorLog:       errorLog,
+		templateCache:  templateCache,
+		users:          &models.UserModel{Db: db},
+		sessionManager: sessionManager,
+		formDecoder:    formDecoder,
 	}
 
 	mux := app.routes()
 
 	srv := &http.Server{
-		Addr:     *addr,
+		Addr:     addr,
 		ErrorLog: errorLog,
 		Handler:  mux,
 	}
 
-	infoLog.Printf("Starting server on %s", *addr)
+	infoLog.Printf("Starting server on %s", addr)
 	err = srv.ListenAndServe()
 	errorLog.Fatal(err)
 }
 
-func loadDatabase() *sql.DB {
-	db, err := sql.Open("mysql", "newuser:newpassword@/sporic")
+func loadDatabase(dsn string) *sql.DB {
+	db, err := sql.Open("mysql", dsn)
 	if err != nil {
 		panic(err)
 	}
@@ -78,10 +89,12 @@ func loadDatabase() *sql.DB {
 }
 
 func (app App) routes() http.Handler {
+
+	dynamic := alice.New(app.sessionManager.LoadAndSave)
 	router := httprouter.New()
 
-	router.HandlerFunc(http.MethodGet, "/login", app.login)
-	router.HandlerFunc(http.MethodPost, "/login", app.loginPost)
+	router.Handler(http.MethodGet, "/login", dynamic.ThenFunc(app.login))
+	router.Handler(http.MethodPost, "/login", dynamic.ThenFunc(app.loginPost))
 
 	return router
 }
