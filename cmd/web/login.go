@@ -3,6 +3,7 @@ package main
 import (
 	"net/http"
 
+	"github.com/sporic/sporic/internal/models"
 	"github.com/sporic/sporic/internal/validator"
 
 	_ "github.com/go-sql-driver/mysql"
@@ -40,11 +41,14 @@ func (app *App) loginPost(w http.ResponseWriter, r *http.Request) {
 	}
 
 	_, err = app.users.Authenticate(form.Username, form.Password)
-	if err != nil {
+	if err != models.ErrInvalidCredentials {
 		form.AddNonFieldError("Invalid username/password")
 		data := app.newTemplateData(r)
 		data.Form = form
 		app.render(w, http.StatusUnauthorized, "login.tmpl", data)
+		return
+	} else if err != nil {
+		app.serverError(w, err)
 		return
 	}
 
