@@ -38,4 +38,17 @@ func (app *App) loginPost(w http.ResponseWriter, r *http.Request) {
 		app.render(w, http.StatusUnprocessableEntity, "login.tmpl", data)
 		return
 	}
+
+	_, err = app.users.Authenticate(form.Username, form.Password)
+	if err != nil {
+		form.AddNonFieldError("Invalid username/password")
+		data := app.newTemplateData(r)
+		data.Form = form
+		app.render(w, http.StatusUnauthorized, "login.tmpl", data)
+		return
+	}
+
+	data := app.newTemplateData(r)
+	data.Form = form
+	app.render(w, http.StatusOK, "login.tmpl", data)
 }

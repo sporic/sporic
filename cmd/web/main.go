@@ -9,6 +9,8 @@ import (
 	"os"
 	"time"
 
+	"github.com/sporic/sporic/internal/models"
+
 	_ "github.com/alexedwards/scs/v2"
 	"github.com/go-playground/form/v4"
 	_ "github.com/go-sql-driver/mysql"
@@ -21,9 +23,9 @@ import (
 type App struct {
 	infoLog       *log.Logger
 	errorLog      *log.Logger
-	db            *sql.DB
 	templateCache map[string]*template.Template
 	formDecoder   *form.Decoder
+	users         *models.UserModel
 }
 
 func main() {
@@ -46,7 +48,7 @@ func main() {
 		infoLog:       infoLog,
 		errorLog:      errorLog,
 		templateCache: templateCache,
-		db:            db,
+		users:         &models.UserModel{Db: db},
 		formDecoder:   formDecoder,
 	}
 
