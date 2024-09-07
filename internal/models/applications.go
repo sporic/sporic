@@ -34,8 +34,10 @@ func (m *ApplicationModel) Fetch_applications(sporic_ref_no string, leader strin
 	var err error
 	if sporic_ref_no == "" {
 		rows, err = m.Db.Query("SELECT * FROM applications WHERE leader = ?", leader)
-	} else {
+	} else if leader == "" {
 		rows, err = m.Db.Query("SELECT * FROM applications WHERE sporic_ref_no = ?", sporic_ref_no)
+	} else {
+		rows, err = m.Db.Query("SELECT * FROM applications")
 	}
 
 	if err != nil {
