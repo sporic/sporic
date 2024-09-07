@@ -53,13 +53,12 @@ func (app *App) loginPost(w http.ResponseWriter, r *http.Request) {
 	}
 
 	err = app.sessionManager.RenewToken(r.Context())
-    if err != nil {
-        app.serverError(w, err)
-        return
-    }
-    
+	if err != nil {
+		app.serverError(w, err)
+		return
+	}
 
-    app.sessionManager.Put(r.Context(), "authenticatedUserID", id)
+	app.sessionManager.Put(r.Context(), "authenticatedUserID", id)
 
 	data := app.newTemplateData(r)
 	data.Form = form

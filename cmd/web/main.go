@@ -26,6 +26,7 @@ type App struct {
 	formDecoder    *form.Decoder
 	sessionManager *scs.SessionManager
 	users          *models.UserModel
+	applications   *models.ApplicationModel
 }
 
 func main() {
@@ -59,6 +60,7 @@ func main() {
 		errorLog:       errorLog,
 		templateCache:  templateCache,
 		users:          &models.UserModel{Db: db},
+		applications:   &models.ApplicationModel{Db: db},
 		sessionManager: sessionManager,
 		formDecoder:    formDecoder,
 	}
@@ -96,6 +98,7 @@ func (app App) routes() http.Handler {
 	router.Handler(http.MethodGet, "/login", dynamic.ThenFunc(app.login))
 	router.Handler(http.MethodPost, "/login", dynamic.ThenFunc(app.loginPost))
 	router.Handler(http.MethodPost, "/logout", dynamic.ThenFunc(app.logout))
+	router.Handler(http.MethodGet, "/get_applications", dynamic.ThenFunc(app.get_applications))
 
 	return router
 }
