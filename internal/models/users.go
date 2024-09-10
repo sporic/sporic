@@ -7,12 +7,26 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
+var AnonymousUser = &User{}
+
+type UserRole = int
+
+const (
+	AdminUser UserRole = iota
+	FacultyUser
+)
+
 type User struct {
 	Id             int
 	Username       string
 	Email          string
 	HashedPassword []byte
 	CreatedAt      time.Time
+	Role           UserRole
+}
+
+func (u *User) IsAnonymous() bool {
+	return u == AnonymousUser
 }
 
 type UserModel struct {
@@ -35,4 +49,15 @@ func (m *UserModel) Authenticate(username string, password string) (int, error) 
 		return 0, ErrInvalidCredentials
 	}
 	return id, nil
+}
+
+func (m *UserModel) Get(id int) (*User, error) {
+	u := &User{}
+	err := m.Db.QueryRow("select id, username, email, hashed_password, created_at, user_role from users where id = ?", id).Scan(&u.Id, &u.Username, &u.Email, &u.HashedPassword, &u.CreatedAt, &u.Role)
+	if err == sql.ErrNoRows {
+		return nil, ErrRecordNotFound
+	} else if err != nil {
+		return nil, err
+	}
+	return u, nil
 }

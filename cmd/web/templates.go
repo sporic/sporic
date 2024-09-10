@@ -5,10 +5,13 @@ import (
 	"html/template"
 	"net/http"
 	"path/filepath"
+
+	"github.com/sporic/sporic/internal/models"
 )
 
 type templateData struct {
 	Form any
+	User *models.User
 }
 
 func newTemplateCache() (map[string]*template.Template, error) {
@@ -34,8 +37,14 @@ func newTemplateCache() (map[string]*template.Template, error) {
 	return cache, nil
 }
 
-func (app *App) newTemplateData(r *http.Request) *templateData {      
-	return &templateData{}
+func (app *App) newTemplateData(r *http.Request) *templateData {
+	user, ok := r.Context().Value(userContextKey).(*models.User)
+	if !ok {
+		user = nil
+	}
+	return &templateData{
+		User: user,
+	}
 }
 
 func (app *App) render(w http.ResponseWriter, status int, page string, data *templateData) {
