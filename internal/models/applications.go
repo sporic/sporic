@@ -26,7 +26,7 @@ type ApplicationModel struct {
 	Db *sql.DB
 }
 
-func (m *ApplicationModel) Fetch_applications(sporic_ref_no string, leader string) []Application {
+func (m *ApplicationModel) FetchApplications(sporic_ref_no string, leader string) []Application {
 
 	var applications []Application
 

@@ -98,6 +98,7 @@ func (app App) routes() http.Handler {
 	router.Handler(http.MethodGet, "/login", dynamic.ThenFunc(app.login))
 	router.Handler(http.MethodPost, "/login", dynamic.ThenFunc(app.loginPost))
 	router.Handler(http.MethodPost, "/logout", dynamic.ThenFunc(app.logout))
+	router.Handler(http.MethodPost, "/add_application", dynamic.ThenFunc(app.add_application))
 	router.Handler(http.MethodGet, "/get_applications", dynamic.ThenFunc(app.get_applications))
 
 	return router
