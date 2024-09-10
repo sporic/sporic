@@ -58,9 +58,7 @@ func (app *App) loginPost(w http.ResponseWriter, r *http.Request) {
 
 	app.sessionManager.Put(r.Context(), "authenticatedUserID", id)
 
-	data := app.newTemplateData(r)
-	data.Form = form
-	app.render(w, http.StatusOK, "login.tmpl", data)
+	http.Redirect(w, r, "/home", http.StatusSeeOther)
 }
 
 func (app *App) logout(w http.ResponseWriter, r *http.Request) {
