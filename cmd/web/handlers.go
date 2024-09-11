@@ -117,3 +117,17 @@ func (app *App) faculty_home(w http.ResponseWriter, r *http.Request) {
 	data := app.newTemplateData(r)
 	app.render(w, http.StatusOK, "faculty_home.tmpl", data)
 }
+
+func (app *App) new_project(w http.ResponseWriter, r *http.Request) {
+	user := app.contextGetUser(r)
+	if user.IsAnonymous() {
+		http.Redirect(w, r, "/login", http.StatusSeeOther)
+		return
+	}
+	if user.Role != models.FacultyUser {
+		app.notFound(w)
+		return
+	}
+	data := app.newTemplateData(r)
+	app.render(w, http.StatusOK, "new_project.tmpl", data)
+}

@@ -9,6 +9,7 @@ import (
 )
 
 type Application struct {
+<<<<<<< HEAD
 	SporicRefNo    string `form:"sporic_ref_no"`
 	FinancialYear  string `form:"financial_year"`
 	ActivityType   string `form:"activity_type"`
@@ -20,6 +21,18 @@ type Application struct {
 	MailID         string `form:"mail_id"`
 	Mobile         string `form:"mobile"`
 	Status         int    `form:"status"`
+=======
+	SporicRefNo    string
+	FinancialYear  string
+	ActivityType   string
+	EstimatedAmt   int
+	CompanyName    string
+	CompanyAddress string
+	ContactPerson  string
+	MailID         string
+	Mobile         string
+	Status         int
+>>>>>>> 9ebace6 (jasd)
 }
 
 type ProjectStatus = int
@@ -57,7 +70,11 @@ func (m *ApplicationModel) Fetch(sporic_ref_no string, leader string) []Applicat
 	for rows.Next() {
 		var application Application
 		err := rows.Scan(
+<<<<<<< HEAD
 			&application.SporicRefNo, &application.FinancialYear, &application.ActivityType, &application.Leader,
+=======
+			&application.SporicRefNo, &application.FinancialYear, &application.ActivityType,
+>>>>>>> 9ebace6 (jasd)
 			&application.EstimatedAmt, &application.CompanyName, &application.CompanyAddress, &application.ContactPerson,
 			&application.MailID, &application.Mobile, &application.Status,
 		)
