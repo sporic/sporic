@@ -37,8 +37,14 @@
 </nav>
 
 <div class="container mt-4">
-  <h2 class="mb-4">Welcome, [Faculty Name]</h2>
+  <h2 class="mb-4">Welcome, {{.User.Username}}</h2>
   <!-- Project Summary -->
+  <div class="row mb-4">
+    <h4>Actions</h4>
+    <div class="col-md-6">
+      <a class="btn btn-warning" href="/new_project"> New Project </a>
+    </div>
+  </div>
   <div class="row mt-4">
     <div class="col-md-12">
       <h4>Active Projects</h4>

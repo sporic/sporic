@@ -108,6 +108,7 @@ func (app App) routes() http.Handler {
 	router.Handler(http.MethodGet, "/get_applications", dynamic.ThenFunc(app.get_applications))
 	router.Handler(http.MethodGet, "/home", dynamic.ThenFunc(app.home))
 	router.Handler(http.MethodGet, "/admin_home", dynamic.ThenFunc(app.admin_home))
+	router.Handler(http.MethodGet, "/faculty_home", dynamic.ThenFunc(app.faculty_home))
 
 	return router
 }
