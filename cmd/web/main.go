@@ -2,6 +2,7 @@ package main
 
 import (
 	"database/sql"
+	"fmt"
 	"html/template"
 	"log"
 	"net/http"
@@ -37,6 +38,7 @@ func main() {
 	}
 
 	dsn := os.Getenv("DSN")
+	fmt.Println(dsn)
 	addr := os.Getenv("ADDR")
 
 	infoLog := log.New(os.Stdout, "INFO\t", log.Ldate|log.Ltime)
@@ -86,6 +88,9 @@ func loadDatabase(dsn string) *sql.DB {
 	db.SetConnMaxLifetime(time.Minute * 3)
 	db.SetMaxOpenConns(10)
 	db.SetMaxIdleConns(10)
+	if err := db.Ping(); err != nil {
+		log.Fatalln(err)
+	}
 
 	return db
 }

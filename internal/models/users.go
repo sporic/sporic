@@ -2,6 +2,7 @@ package models
 
 import (
 	"database/sql"
+	"errors"
 	"time"
 
 	"golang.org/x/crypto/bcrypt"
@@ -37,12 +38,16 @@ func (m *UserModel) Authenticate(username string, password string) (int, error) 
 
 	var id int
 	var hashedPassword []byte
-	err := m.Db.QueryRow("select id, hashed_password from users where username = ?", username).Scan(&id, &hashedPassword)
-	if err == sql.ErrNoRows {
-		return 0, ErrInvalidCredentials
-	} else if err != nil {
-		return 0, err
+	err := m.Db.QueryRow("select user_id, hashed_password from user where username = ?", username).Scan(&id, &hashedPassword)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return 0, ErrInvalidCredentials
+		} else {
+			return 0, err
+		}
 	}
+
+	return id, nil
 
 	err = bcrypt.CompareHashAndPassword(hashedPassword, []byte(password))
 	if err != nil {
@@ -53,7 +58,7 @@ func (m *UserModel) Authenticate(username string, password string) (int, error) 
 
 func (m *UserModel) Get(id int) (*User, error) {
 	u := &User{}
-	err := m.Db.QueryRow("select id, username, email, hashed_password, created_at, user_role from users where id = ?", id).Scan(&u.Id, &u.Username, &u.Email, &u.HashedPassword, &u.CreatedAt, &u.Role)
+	err := m.Db.QueryRow("select user_id, username, email, hashed_password, created_at, user_role from user where user_id = ?", id).Scan(&u.Id, &u.Username, &u.Email, &u.HashedPassword, &u.CreatedAt, &u.Role)
 	if err == sql.ErrNoRows {
 		return nil, ErrRecordNotFound
 	} else if err != nil {

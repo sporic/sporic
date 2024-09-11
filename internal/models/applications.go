@@ -7,26 +7,26 @@ import (
 )
 
 type Application struct {
-	SporicRefNo    string `json:"sporic_ref_no"`
-	FinancialYear  string `json:"financial_year"`
-	ActivityType   string `json:"activity_type"`
-	Lead           string `json:"lead"`
-	EstimatedAmt   int    `json:"estimated_amt"`
-	CompanyName    string `json:"company_name"`
-	CompanyAddress string `json:"company_address"`
-	ContactPerson  string `json:"contact_person"`
-	MailID         string `json:"mail_id"`
-	Mobile         string `json:"mobile"`
-	GST            string `json:"gst"`
-	PanNumber      string `json:"pan_number"`
-	Status         int    `json:"status"`
+	SporicRefNo    string `form:"sporic_ref_no"`
+	FinancialYear  string `form:"financial_year"`
+	ActivityType   string `form:"activity_type"`
+	Lead           string `form:"lead"`
+	EstimatedAmt   int    `form:"estimated_amt"`
+	CompanyName    string `form:"company_name"`
+	CompanyAddress string `form:"company_address"`
+	ContactPerson  string `form:"contact_person"`
+	MailID         string `form:"mail_id"`
+	Mobile         string `form:"mobile"`
+	GST            string `form:"gst"`
+	PanNumber      string `form:"pan_number"`
+	Status         int    `form:"status"`
 }
 
 type ApplicationModel struct {
 	Db *sql.DB
 }
 
-func (m *ApplicationModel) FetchApplications(sporic_ref_no string, leader string) []Application {
+func (m *ApplicationModel) Fetch(sporic_ref_no string, leader string) []Application {
 
 	var applications []Application
 
@@ -61,4 +61,8 @@ func (m *ApplicationModel) FetchApplications(sporic_ref_no string, leader string
 	fmt.Println(applications)
 
 	return applications
+}
+
+func (m *ApplicationModel) Insert(form Application) {
+
 }

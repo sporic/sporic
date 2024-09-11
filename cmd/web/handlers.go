@@ -39,7 +39,7 @@ func (app *App) loginPost(w http.ResponseWriter, r *http.Request) {
 	}
 
 	id, err := app.users.Authenticate(form.Username, form.Password)
-	if err != models.ErrInvalidCredentials {
+	if err == models.ErrInvalidCredentials {
 		form.AddNonFieldError("Invalid username/password")
 		data := app.newTemplateData(r)
 		data.Form = form
@@ -57,7 +57,6 @@ func (app *App) loginPost(w http.ResponseWriter, r *http.Request) {
 	}
 
 	app.sessionManager.Put(r.Context(), "authenticatedUserID", id)
-
 	http.Redirect(w, r, "/home", http.StatusSeeOther)
 }
 
@@ -89,4 +88,8 @@ func (app *App) home(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	app.notFound(w)
+}
+
+func (app *App) faculty_home() {
+	
 }
