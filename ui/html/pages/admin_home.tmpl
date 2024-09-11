@@ -1,4 +1,4 @@
-{{define "title"}}Login{{ end }}
+{{define "title"}}Admin Home{{ end }}
 
 {{define "main"}}
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
@@ -27,7 +27,9 @@
           <a class="nav-link" href="admin-profile.html">Profile</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="admin-login.html">Logout</a>
+          <form action="/logout" method="post">
+            <input class="nav-link" type="submit" value="Logout" />
+          </form>
         </li>
       </ul>
     </div>
@@ -35,7 +37,7 @@
 </nav>
 
 <div class="container mt-4">
-  <h2 class="mb-4">Admin Dashboard</h2>
+  <h2 class="mb-4">Admin Home</h2>
 
   <!-- Filters Section -->
   <div class="row mb-3">
@@ -71,11 +73,6 @@
   <div class="row mb-4">
     <h4>Actions</h4>
     <div class="col-md-6">
-      <a href="generate-record.html" class="btn btn-success"
-        >Generate New Record</a
-      >
-    </div>
-    <div class="col-md-6 text-end">
       <button class="btn btn-warning" onclick="downloadAllRecords()">
         Download All Records as Excel
       </button>
@@ -111,7 +108,6 @@
               >
             </td>
           </tr>
-          <!-- Repeat similar rows for other records -->
         </tbody>
       </table>
     </div>
