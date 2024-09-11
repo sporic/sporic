@@ -7,7 +7,6 @@ import (
 )
 
 type ApplcationForm struct {
-	SporicRefNo    string `form:"sporic_ref_no"`
 	FinancialYear  string `form:"financial_year"`
 	ActivityType   string `form:"activity_type"`
 	Lead           string `form:"lead"`
@@ -22,6 +21,13 @@ type ApplcationForm struct {
 	Status         int    `form:"status"`
 }
 
+type ProjectType = int 
+
+const (
+	ConsultancyProject ProjectType = iota
+	IndustrialTraining
+)
+
 func (app *App) add_application(w http.ResponseWriter, r *http.Request) {
 	var form ApplcationForm
 
@@ -32,7 +38,6 @@ func (app *App) add_application(w http.ResponseWriter, r *http.Request) {
 	}
 
 	application := models.Application{
-		SporicRefNo:    form.SporicRefNo,
 		FinancialYear:  form.FinancialYear,
 		ActivityType:   form.ActivityType,
 		Lead:           form.Lead,
