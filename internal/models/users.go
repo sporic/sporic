@@ -17,13 +17,7 @@ const (
 	FacultyUser
 )
 
-type ProjectStatus = int 
 
-const(
-	ProjectPendingApproval ProjectStatus = iota
-	ProjectPending
-	ProjectCompleted
-)
 
 type User struct {
 	Id             int

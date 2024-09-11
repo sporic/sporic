@@ -12,17 +12,24 @@ type Application struct {
 	SporicRefNo    string `form:"sporic_ref_no"`
 	FinancialYear  string `form:"financial_year"`
 	ActivityType   string `form:"activity_type"`
-	Lead           string `form:"lead"`
+	Leader           string `form:"leader"`
 	EstimatedAmt   int    `form:"estimated_amt"`
 	CompanyName    string `form:"company_name"`
 	CompanyAddress string `form:"company_address"`
 	ContactPerson  string `form:"contact_person"`
 	MailID         string `form:"mail_id"`
 	Mobile         string `form:"mobile"`
-	GST            string `form:"gst"`
-	PanNumber      string `form:"pan_number"`
 	Status         int    `form:"status"`
 }
+
+type ProjectStatus = int
+
+const (
+	ProjectPendingApproval ProjectStatus = iota
+	ProjectApproved
+	ProjectCompleted
+	ProjectRejected
+)
 
 type ApplicationModel struct {
 	Db *sql.DB
@@ -50,9 +57,9 @@ func (m *ApplicationModel) Fetch(sporic_ref_no string, leader string) []Applicat
 	for rows.Next() {
 		var application Application
 		err := rows.Scan(
-			&application.SporicRefNo, &application.FinancialYear, &application.ActivityType, &application.Lead,
+			&application.SporicRefNo, &application.FinancialYear, &application.ActivityType, &application.Leader,
 			&application.EstimatedAmt, &application.CompanyName, &application.CompanyAddress, &application.ContactPerson,
-			&application.MailID, &application.Mobile, &application.GST, &application.PanNumber, &application.Status,
+			&application.MailID, &application.Mobile, &application.Status,
 		)
 		if err != nil {
 			log.Fatal(err)
@@ -80,9 +87,9 @@ func (m *ApplicationModel) Insert(form Application) {
 
 	sporic_ref_no := "cc" + strings.ToLower(form.ActivityType) + form.FinancialYear + strconv.Itoa(count)
 
-	_, err = m.Db.Exec("insert into applications (sporic_ref_no, financial_year, activity_type, leader, estimated_amt, company_name, company_adress, contact_person, mail_id, mobile, gst, pan_number, status) values (?,?,?,?,?,?,?,?,?,?,?,?,?)", sporic_ref_no, form.FinancialYear, form.FinancialYear, form.ActivityType, "dummy", form.EstimatedAmt, form.CompanyName, form.CompanyAddress, form.ContactPerson, form.MailID, form.Mobile, form.GST, form.PanNumber, "pending")
+	_, err = m.Db.Exec("insert into applications (sporic_ref_no, financial_year, activity_type, leader, estimated_amt, company_name, company_adress, contact_person_name, contact_person_email, contact_person_mobile, project_status) values (?,?,?,?,?,?,?,?,?,?,?,?,?)", sporic_ref_no, form.FinancialYear, form.ActivityType, form.Leader, form.EstimatedAmt, form.CompanyName, form.CompanyAddress, form.ContactPerson, form.MailID, form.Mobile, ProjectPendingApproval )
 
-	if err !=nil{
+	if err != nil {
 		log.Fatal(err)
 	}
 }
