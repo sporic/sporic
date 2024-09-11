@@ -2,6 +2,7 @@ package main
 
 import (
 	"net/http"
+	"strconv"
 
 	"github.com/sporic/sporic/internal/models"
 	"github.com/sporic/sporic/internal/validator"
@@ -118,6 +119,17 @@ func (app *App) faculty_home(w http.ResponseWriter, r *http.Request) {
 	app.render(w, http.StatusOK, "faculty_home.tmpl", data)
 }
 
+type newProjectForm struct {
+	ActivityType         string `form:"activity_type"`
+	FinancialYear        int    `form:"financial_year"`
+	EstimatedAmt         string `form:"estimated_amount"`
+	CompanyName          string `form:"company_name"`
+	CompanyAddress       string `form:"company_address"`
+	ContactPersonName    string `form:"contact_person_name"`
+	ConatactPersonMobile string `form:"contact_person_mobile"`
+	validator.Validator  `form:"-"`
+}
+
 func (app *App) new_project(w http.ResponseWriter, r *http.Request) {
 	user := app.contextGetUser(r)
 	if user.IsAnonymous() {
@@ -129,5 +141,43 @@ func (app *App) new_project(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	data := app.newTemplateData(r)
+	data.Form = newProjectForm{}
 	app.render(w, http.StatusOK, "new_project.tmpl", data)
+}
+
+func (app *App) new_project_post(w http.ResponseWriter, r *http.Request) {
+	user := app.contextGetUser(r)
+	if user.IsAnonymous() {
+		http.Redirect(w, r, "/login", http.StatusSeeOther)
+		return
+	}
+	if user.Role != models.FacultyUser {
+		app.notFound(w)
+		return
+	}
+
+	var form newProjectForm
+
+	err := app.decodePostForm(r, &form)
+	if err != nil {
+		app.clientError(w, http.StatusUnprocessableEntity)
+		return
+	}
+
+	estimated_amount, err := strconv.Atoi(form.EstimatedAmt)
+	form.CheckField(err == nil, "estimated_amount", "Amount must be a number")
+	form.CheckField(estimated_amount > 0, "estimated_amount", "This field must be greater than 0")
+
+	form.CheckField(validator.NotBlank(form.CompanyName), "company_name", "This field cannot be blank")
+	form.CheckField(validator.NotBlank(form.CompanyAddress), "company_address", "This field cannot be blank")
+	form.CheckField(validator.NotBlank(form.ContactPersonName), "contact_person_name", "This field cannot be blank")
+	form.CheckField(validator.NotBlank(form.ConatactPersonMobile), "contact_person_mobile", "This field cannot be blank")
+
+	if !form.Valid() {
+		data := app.newTemplateData(r)
+		data.Form = form
+		app.render(w, http.StatusUnprocessableEntity, "new_project.tmpl", data)
+		return
+	}
+
 }

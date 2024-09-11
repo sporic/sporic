@@ -1,0 +1,135 @@
+{{define "title"}}Faculty Home{{ end }}
+
+{{define "main"}}
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+  <div class="container-fluid">
+    <a class="navbar-brand" href="#">SpoRIC</a>
+    <button
+      class="navbar-toggler"
+      type="button"
+      data-bs-toggle="collapse"
+      data-bs-target="#navbarNav"
+      aria-controls="navbarNav"
+      aria-expanded="false"
+      aria-label="Toggle navigation"
+    >
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav ms-auto">
+        <li class="nav-item">
+          <a class="nav-link" href="faculty-dashboard.html">Dashboard</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="faculty-notifications.html"
+            >Notifications</a
+          >
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="faculty-profile.html">Profile</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="faculty-login.html">Logout</a>
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<div class="container mt-4">
+  <h2 class="mb-4">Fill Project Details</h2>
+
+  <form action="/new_project" action="post">
+    <h5>Project Details</h5>
+    <!-- Activity Type Dropdown -->
+    <div class="mb-3">
+      <label for="activityType" class="form-label">Activity Type</label>
+      <select class="form-select" name="activity_type">
+        <option value="consultancy">Consultancy</option>
+        <option value="training">Industrial Training</option>
+      </select>
+    </div>
+    <!-- Financial Year Dropdown -->
+    <div class="mb-3">
+      <label for="financialYear" class="form-label">Financial Year</label>
+      <select class="form-select" name="financial_year">
+        <option value="2021">2021-22</option>
+        <option value="2022">2022-23</option>
+        <option value="2023">2023-24</option>
+        <option value="2024" selected>2024-25</option>
+      </select>
+    </div>
+    <!-- Estimated Amount -->
+    <div class="mb-3">
+      <label for="estimatedAmount" class="form-label">Estimated Amount</label>
+      <input
+        type="text"
+        class="form-control"
+        id="estimatedAmount"
+        name="estimated_amount"
+        placeholder="Enter estimated amount"
+      />
+    </div>
+
+    <!-- Company Details -->
+    <h5>Company Details</h5>
+    <div class="mb-3">
+      <label for="companyName" class="form-label">Company Name</label>
+      <input
+        type="text"
+        class="form-control"
+        id="companyName"
+        name="company_name"
+        placeholder="Enter company name"
+      />
+    </div>
+    <div class="mb-3">
+      <label for="companyAddress" class="form-label">Company Address</label>
+      <input
+        type="text"
+        class="form-control"
+        id="companyAddress"
+        name="company_address"
+        placeholder="Enter company address"
+      />
+    </div>
+
+    <!-- Contact Person Details -->
+    <h5>Contact Person Details</h5>
+    <div class="mb-3">
+      <label for="contactPersonName" class="form-label">Name</label>
+      <input
+        type="text"
+        class="form-control"
+        id="contactPersonName"
+        name="contact_person"
+        placeholder="Enter contact person name"
+      />
+    </div>
+    <div class="mb-3">
+      <label for="contactPersonEmail" class="form-label">Email</label>
+      <input
+        type="email"
+        class="form-control"
+        id="contactPersonEmail"
+        name="mail_id"
+        placeholder="Enter email"
+      />
+    </div>
+    <div class="mb-3">
+      <label for="contactPersonMobile" class="form-label">Mobile</label>
+      <input
+        type="text"
+        class="form-control"
+        id="contactPersonMobile"
+        name="contact_person_mobile"
+        placeholder="Enter mobile number"
+      />
+    </div>
+
+    <!-- Submit Button with Additional Space -->
+    <button type="submit" class="btn btn-primary mb-5">Submit Details</button>
+  </form>
+</div>
+
+{{ end }}

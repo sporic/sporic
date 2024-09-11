@@ -17,8 +17,6 @@ const (
 	FacultyUser
 )
 
-
-
 type User struct {
 	Id             int
 	Username       string
@@ -48,8 +46,6 @@ func (m *UserModel) Authenticate(username string, password string) (int, error) 
 			return 0, err
 		}
 	}
-
-	return id, nil
 
 	err = bcrypt.CompareHashAndPassword(hashedPassword, []byte(password))
 	if err != nil {
