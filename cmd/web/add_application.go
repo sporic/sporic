@@ -32,7 +32,19 @@ func (app *App) add_application(w http.ResponseWriter, r *http.Request) {
 	}
 
 	application := models.Application{
-		SporicRefNo: form.SporicRefNo,
+		SporicRefNo:    form.SporicRefNo,
+		FinancialYear:  form.FinancialYear,
+		ActivityType:   form.ActivityType,
+		Lead:           form.Lead,
+		EstimatedAmt:   form.EstimatedAmt,
+		CompanyName:    form.CompanyName,
+		CompanyAddress: form.CompanyAddress,
+		ContactPerson:  form.ContactPerson,
+		MailID:         form.MailID,
+		Mobile:         form.Mobile,
+		GST:            form.GST,
+		PanNumber:      form.PanNumber,
+		Status:         form.Status,
 	}
 	app.applications.Insert(application)
 }

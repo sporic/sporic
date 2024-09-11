@@ -65,4 +65,6 @@ func (m *ApplicationModel) Fetch(sporic_ref_no string, leader string) []Applicat
 
 func (m *ApplicationModel) Insert(form Application) {
 
+	err:= m.Db.
+
 }
