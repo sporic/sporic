@@ -75,16 +75,11 @@ func (app *App) logout(w http.ResponseWriter, r *http.Request) {
 }
 
 func (app *App) home(w http.ResponseWriter, r *http.Request) {
-	authenticated, err := app.authenticateUser(r)
-	if err != nil {
-		app.serverError(w, err)
-		return
-	}
-	if !authenticated {
+	user := app.contextGetUser(r)
+	if user.IsAnonymous() {
 		http.Redirect(w, r, "/login", http.StatusSeeOther)
 		return
 	}
-	user := app.contextGetUser(r)
 	if user.Role == models.AdminUser {
 		http.Redirect(w, r, "/admin_home", http.StatusSeeOther)
 		return
@@ -93,6 +88,5 @@ func (app *App) home(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/faculty_home", http.StatusSeeOther)
 		return
 	}
-
 	app.notFound(w)
 }

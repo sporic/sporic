@@ -92,7 +92,7 @@ func loadDatabase(dsn string) *sql.DB {
 
 func (app App) routes() http.Handler {
 
-	dynamic := alice.New(app.sessionManager.LoadAndSave)
+	dynamic := alice.New(app.sessionManager.LoadAndSave, app.authenticateMiddleware)
 	router := httprouter.New()
 
 	router.Handler(http.MethodGet, "/login", dynamic.ThenFunc(app.login))
