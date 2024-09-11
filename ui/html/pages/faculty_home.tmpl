@@ -1,130 +1,128 @@
 {{define "title"}}Login{{ end }}
 
 {{define "main"}}
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-      <div class="container-fluid">
-        <a class="navbar-brand" href="#">SpoRIC</a>
-        <button
-          class="navbar-toggler"
-          type="button"
-          data-bs-toggle="collapse"
-          data-bs-target="#navbarNav"
-          aria-controls="navbarNav"
-          aria-expanded="false"
-          aria-label="Toggle navigation"
-        >
-          <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarNav">
-          <ul class="navbar-nav ms-auto">
-            <li class="nav-item">
-              <a class="nav-link active" href="faculty-dashboard.html"
-                >Dashboard</a
-              >
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="faculty-notifications.html"
-                >Notifications</a
-              >
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="faculty-profile.html">Profile</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="faculty-login.html">Logout</a>
-            </li>
-          </ul>
-        </div>
-      </div>
-    </nav>
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+  <div class="container-fluid">
+    <a class="navbar-brand" href="#">SpoRIC</a>
+    <button
+      class="navbar-toggler"
+      type="button"
+      data-bs-toggle="collapse"
+      data-bs-target="#navbarNav"
+      aria-controls="navbarNav"
+      aria-expanded="false"
+      aria-label="Toggle navigation"
+    >
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav ms-auto">
+        <li class="nav-item">
+          <a class="nav-link active" href="faculty-dashboard.html">Dashboard</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="faculty-notifications.html"
+            >Notifications</a
+          >
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="faculty-profile.html">Profile</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="faculty-login.html">Logout</a>
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>
 
-    <div class="container mt-4">
-      <h2 class="mb-4">Welcome, [Faculty Name]</h2>
-      <!-- Project Summary -->
-      <div class="row mt-4">
-        <div class="col-md-12">
-          <h4>Active Projects</h4>
-          <div class="table-responsive">
-            <table class="table table-bordered table-striped">
-              <thead>
-                <tr>
-                  <th>SpoRIC ID</th>
-                  <th>Company</th>
-                  <th>Status</th>
-                  <th>Start Date</th>
-                  <th>End Date</th>
-                  <th>Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td>SPORIC-2024-001</td>
-                  <td>XYZ Corporation</td>
-                  <td>Ongoing</td>
-                  <td>2024-07-01</td>
-                  <td>2024-12-31</td>
-                  <td>
-                    <a class="btn btn-sm btn-primary" href="/view-project.html"
-                      >View</a
-                    >
-                  </td>
-                </tr>
-                <tr>
-                  <td>SPORIC-2024-002</td>
-                  <td>ABC Pvt Ltd</td>
-                  <td>Ongoing</td>
-                  <td>2024-05-15</td>
-                  <td>2024-11-30</td>
-                  <td>
-                    <a class="btn btn-sm btn-primary" href="/view-project.html"
-                      >View</a
-                    >
-                  </td>
-                </tr>
-                <!-- More Active Projects can be added here -->
-              </tbody>
-            </table>
-          </div>
-        </div>
-
-        <div class="col-md-12 mt-4">
-          <h4>Completed Projects</h4>
-          <div class="table-responsive">
-            <table class="table table-bordered table-striped">
-              <thead>
-                <tr>
-                  <th>SpoRIC ID</th>
-                  <th>Company</th>
-                  <th>Completion Date</th>
-                  <th>Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td>SPORIC-2024-003</td>
-                  <td>LMN Industries</td>
-                  <td>2024-06-20</td>
-                  <td>
-                    <a class="btn btn-sm btn-primary" href="/view-project.html"
-                      >View</a
-                    >
-                  </td>
-                </tr>
-                <tr>
-                  <td>SPORIC-2024-004</td>
-                  <td>PQR Solutions</td>
-                  <td>2024-03-10</td>
-                  <td>
-                    <a class="btn btn-sm btn-primary" href="/view-project.html"
-                      >View</a
-                    >
-                  </td>
-                </tr>
-                <!-- More Completed Projects can be added here -->
-              </tbody>
-            </table>
-          </div>
-        </div>
+<div class="container mt-4">
+  <h2 class="mb-4">Welcome, [Faculty Name]</h2>
+  <!-- Project Summary -->
+  <div class="row mt-4">
+    <div class="col-md-12">
+      <h4>Active Projects</h4>
+      <div class="table-responsive">
+        <table class="table table-bordered table-striped">
+          <thead>
+            <tr>
+              <th>SpoRIC ID</th>
+              <th>Company</th>
+              <th>Status</th>
+              <th>Start Date</th>
+              <th>End Date</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>SPORIC-2024-001</td>
+              <td>XYZ Corporation</td>
+              <td>Ongoing</td>
+              <td>2024-07-01</td>
+              <td>2024-12-31</td>
+              <td>
+                <a class="btn btn-sm btn-primary" href="/view-project.html"
+                  >View</a
+                >
+              </td>
+            </tr>
+            <tr>
+              <td>SPORIC-2024-002</td>
+              <td>ABC Pvt Ltd</td>
+              <td>Ongoing</td>
+              <td>2024-05-15</td>
+              <td>2024-11-30</td>
+              <td>
+                <a class="btn btn-sm btn-primary" href="/view-project.html"
+                  >View</a
+                >
+              </td>
+            </tr>
+            <!-- More Active Projects can be added here -->
+          </tbody>
+        </table>
       </div>
     </div>
-{{end}}
+
+    <div class="col-md-12 mt-4">
+      <h4>Completed Projects</h4>
+      <div class="table-responsive">
+        <table class="table table-bordered table-striped">
+          <thead>
+            <tr>
+              <th>SpoRIC ID</th>
+              <th>Company</th>
+              <th>Completion Date</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>SPORIC-2024-003</td>
+              <td>LMN Industries</td>
+              <td>2024-06-20</td>
+              <td>
+                <a class="btn btn-sm btn-primary" href="/view-project.html"
+                  >View</a
+                >
+              </td>
+            </tr>
+            <tr>
+              <td>SPORIC-2024-004</td>
+              <td>PQR Solutions</td>
+              <td>2024-03-10</td>
+              <td>
+                <a class="btn btn-sm btn-primary" href="/view-project.html"
+                  >View</a
+                >
+              </td>
+            </tr>
+            <!-- More Completed Projects can be added here -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+{{ end }}

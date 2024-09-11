@@ -100,12 +100,14 @@ func (app App) routes() http.Handler {
 	dynamic := alice.New(app.sessionManager.LoadAndSave, app.authenticateMiddleware)
 	router := httprouter.New()
 
+	router.Handler(http.MethodGet, "/", dynamic.ThenFunc(app.home))
 	router.Handler(http.MethodGet, "/login", dynamic.ThenFunc(app.login))
 	router.Handler(http.MethodPost, "/login", dynamic.ThenFunc(app.loginPost))
 	router.Handler(http.MethodPost, "/logout", dynamic.ThenFunc(app.logout))
 	router.Handler(http.MethodPost, "/add_application", dynamic.ThenFunc(app.add_application))
 	router.Handler(http.MethodGet, "/get_applications", dynamic.ThenFunc(app.get_applications))
 	router.Handler(http.MethodGet, "/home", dynamic.ThenFunc(app.home))
+	router.Handler(http.MethodGet, "/admin_home", dynamic.ThenFunc(app.admin_home))
 
 	return router
 }

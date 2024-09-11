@@ -90,6 +90,16 @@ func (app *App) home(w http.ResponseWriter, r *http.Request) {
 	app.notFound(w)
 }
 
-func (app *App) faculty_home() {
-	
+func (app *App) admin_home(w http.ResponseWriter, r *http.Request) {
+	user := app.contextGetUser(r)
+	if user.IsAnonymous() {
+		http.Redirect(w, r, "/login", http.StatusSeeOther)
+		return
+	}
+	if user.Role != models.AdminUser {
+		app.notFound(w)
+		return
+	}
+	data := app.newTemplateData(r)
+	app.render(w, http.StatusOK, "admin_home.tmpl", data)
 }
