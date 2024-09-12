@@ -58,6 +58,19 @@ func (m *ApplicationModel) FetchAll() ([]Application, error) {
 		}
 		applications = append(applications, a)
 	}
+
+	var members []string
+	rows, err = m.Db.Query("Select member from team where sporic_ref_no= ?", applications.SporicRefNo)
+
+	for rows.Next() {
+		var member string
+		err := rows.Scan(&member)
+		if err != nil {
+			return nil, err
+		}
+		members = append(members)
+	}
+
 	if err = rows.Err(); err != nil {
 		return nil, err
 	}
