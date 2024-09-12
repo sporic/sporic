@@ -1,7 +1,9 @@
 package main
 
 import (
+	"fmt"
 	"net/http"
+	"regexp"
 	"strconv"
 
 	"github.com/sporic/sporic/internal/models"
@@ -115,22 +117,30 @@ func (app *App) faculty_home(w http.ResponseWriter, r *http.Request) {
 		app.notFound(w)
 		return
 	}
+	applications, err := app.applications.FetchByLeader(user.Id)
+	if err != nil {
+		app.serverError(w, err)
+		return
+	}
+
 	data := app.newTemplateData(r)
+	data.Applications = applications
 	app.render(w, http.StatusOK, "faculty_home.tmpl", data)
 }
 
-type newProjectForm struct {
+type newApplicationForm struct {
 	ActivityType         string `form:"activity_type"`
-	FinancialYear        int    `form:"financial_year"`
+	FinancialYear        string `form:"financial_year"`
 	EstimatedAmt         string `form:"estimated_amount"`
 	CompanyName          string `form:"company_name"`
 	CompanyAddress       string `form:"company_address"`
 	ContactPersonName    string `form:"contact_person_name"`
+	ContactPersonEmail   string `form:"contact_person_email"`
 	ConatactPersonMobile string `form:"contact_person_mobile"`
 	validator.Validator  `form:"-"`
 }
 
-func (app *App) new_project(w http.ResponseWriter, r *http.Request) {
+func (app *App) new_application(w http.ResponseWriter, r *http.Request) {
 	user := app.contextGetUser(r)
 	if user.IsAnonymous() {
 		http.Redirect(w, r, "/login", http.StatusSeeOther)
@@ -141,11 +151,11 @@ func (app *App) new_project(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	data := app.newTemplateData(r)
-	data.Form = newProjectForm{}
-	app.render(w, http.StatusOK, "new_project.tmpl", data)
+	data.Form = newApplicationForm{}
+	app.render(w, http.StatusOK, "new_application.tmpl", data)
 }
 
-func (app *App) new_project_post(w http.ResponseWriter, r *http.Request) {
+func (app *App) new_application_post(w http.ResponseWriter, r *http.Request) {
 	user := app.contextGetUser(r)
 	if user.IsAnonymous() {
 		http.Redirect(w, r, "/login", http.StatusSeeOther)
@@ -156,7 +166,7 @@ func (app *App) new_project_post(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var form newProjectForm
+	var form newApplicationForm
 
 	err := app.decodePostForm(r, &form)
 	if err != nil {
@@ -164,20 +174,50 @@ func (app *App) new_project_post(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	var application models.Application
+	application.Leader = user.Id
+
+	switch form.ActivityType {
+	case "consultancy":
+		application.ActivityType = models.ActivityTypeConsultancy
+	case "training":
+		application.ActivityType = models.ActivityTypeTraining
+	}
+
 	estimated_amount, err := strconv.Atoi(form.EstimatedAmt)
 	form.CheckField(err == nil, "estimated_amount", "Amount must be a number")
 	form.CheckField(estimated_amount > 0, "estimated_amount", "This field must be greater than 0")
+
+	form.CheckField(validator.NotBlank(form.FinancialYear), "financial_year", "This field cannot be blank")
+	form.CheckField(validator.Matches(form.FinancialYear, regexp.MustCompile(`^\d{4}$`)), "financial_year", "This field must be a 4 digit number")
+	fy_year, _ := strconv.Atoi(form.FinancialYear)
 
 	form.CheckField(validator.NotBlank(form.CompanyName), "company_name", "This field cannot be blank")
 	form.CheckField(validator.NotBlank(form.CompanyAddress), "company_address", "This field cannot be blank")
 	form.CheckField(validator.NotBlank(form.ContactPersonName), "contact_person_name", "This field cannot be blank")
 	form.CheckField(validator.NotBlank(form.ConatactPersonMobile), "contact_person_mobile", "This field cannot be blank")
+	form.CheckField(validator.NotBlank(form.ContactPersonEmail), "contact_person_email", "This field cannot be blank")
 
 	if !form.Valid() {
+		fmt.Println(form.FieldErrors)
 		data := app.newTemplateData(r)
 		data.Form = form
-		app.render(w, http.StatusUnprocessableEntity, "new_project.tmpl", data)
+		app.render(w, http.StatusUnprocessableEntity, "new_application.tmpl", data)
 		return
 	}
 
+	application.FinancialYear = fy_year
+	application.EstimatedAmt = estimated_amount
+	application.CompanyName = form.CompanyName
+	application.CompanyAddress = form.CompanyAddress
+	application.ContactPersonName = form.ContactPersonName
+	application.ContactPersonEmail = form.ContactPersonEmail
+	application.ContactPersonMobile = form.ConatactPersonMobile
+
+	err = app.applications.Insert(application)
+	if err != nil {
+		app.serverError(w, err)
+		return
+	}
+	http.Redirect(w, r, "/faculty_home", http.StatusSeeOther)
 }

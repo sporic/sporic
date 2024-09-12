@@ -104,12 +104,11 @@ func (app App) routes() http.Handler {
 	router.Handler(http.MethodGet, "/login", dynamic.ThenFunc(app.login))
 	router.Handler(http.MethodPost, "/login", dynamic.ThenFunc(app.loginPost))
 	router.Handler(http.MethodPost, "/logout", dynamic.ThenFunc(app.logout))
-	router.Handler(http.MethodPost, "/add_application", dynamic.ThenFunc(app.add_application))
-	router.Handler(http.MethodGet, "/get_applications", dynamic.ThenFunc(app.get_applications))
 	router.Handler(http.MethodGet, "/home", dynamic.ThenFunc(app.home))
 	router.Handler(http.MethodGet, "/admin_home", dynamic.ThenFunc(app.admin_home))
 	router.Handler(http.MethodGet, "/faculty_home", dynamic.ThenFunc(app.faculty_home))
-	router.Handler(http.MethodGet, "/new_project", dynamic.ThenFunc(app.new_project))
+	router.Handler(http.MethodGet, "/new_application", dynamic.ThenFunc(app.new_application))
+	router.Handler(http.MethodPost, "/new_application", dynamic.ThenFunc(app.new_application_post))
 
 	return router
 }

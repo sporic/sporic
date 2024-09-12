@@ -2,37 +2,22 @@ package models
 
 import (
 	"database/sql"
-	"fmt"
-	"log"
+	"errors"
 	"strconv"
-	"strings"
 )
 
 type Application struct {
-<<<<<<< HEAD
-	SporicRefNo    string `form:"sporic_ref_no"`
-	FinancialYear  string `form:"financial_year"`
-	ActivityType   string `form:"activity_type"`
-	Leader           string `form:"leader"`
-	EstimatedAmt   int    `form:"estimated_amt"`
-	CompanyName    string `form:"company_name"`
-	CompanyAddress string `form:"company_address"`
-	ContactPerson  string `form:"contact_person"`
-	MailID         string `form:"mail_id"`
-	Mobile         string `form:"mobile"`
-	Status         int    `form:"status"`
-=======
-	SporicRefNo    string
-	FinancialYear  string
-	ActivityType   string
-	EstimatedAmt   int
-	CompanyName    string
-	CompanyAddress string
-	ContactPerson  string
-	MailID         string
-	Mobile         string
-	Status         int
->>>>>>> 9ebace6 (jasd)
+	SporicRefNo         string
+	Leader              int
+	FinancialYear       int
+	ActivityType        ActivityType
+	EstimatedAmt        int
+	CompanyName         string
+	CompanyAddress      string
+	ContactPersonName   string
+	ContactPersonEmail  string
+	ContactPersonMobile string
+	Status              int
 }
 
 type ProjectStatus = int
@@ -44,69 +29,117 @@ const (
 	ProjectRejected
 )
 
+type ActivityType = int
+
+const (
+	ActivityTypeConsultancy ActivityType = iota
+	ActivityTypeTraining
+)
+
 type ApplicationModel struct {
 	Db *sql.DB
 }
 
-func (m *ApplicationModel) Fetch(sporic_ref_no string, leader string) []Application {
-
-	var applications []Application
-
-	var rows *sql.Rows
-	var err error
-	if sporic_ref_no == "" {
-		rows, err = m.Db.Query("SELECT * FROM applications WHERE leader = ?", leader)
-	} else if leader == "" {
-		rows, err = m.Db.Query("SELECT * FROM applications WHERE sporic_ref_no = ?", sporic_ref_no)
-	} else {
-		rows, err = m.Db.Query("SELECT * FROM applications")
-	}
-
+func (m *ApplicationModel) FetchAll() ([]Application, error) {
+	rows, err := m.Db.Query("select sporic_ref_no, leader, financial_year, activity_type, estimated_amt, company_name, company_adress, contact_person_name, contact_person_email, contact_person_mobile, project_status from applications")
 	if err != nil {
-		log.Fatal(err)
+		return nil, err
 	}
 	defer rows.Close()
 
+	var applications []Application
 	for rows.Next() {
-		var application Application
-		err := rows.Scan(
-<<<<<<< HEAD
-			&application.SporicRefNo, &application.FinancialYear, &application.ActivityType, &application.Leader,
-=======
-			&application.SporicRefNo, &application.FinancialYear, &application.ActivityType,
->>>>>>> 9ebace6 (jasd)
-			&application.EstimatedAmt, &application.CompanyName, &application.CompanyAddress, &application.ContactPerson,
-			&application.MailID, &application.Mobile, &application.Status,
-		)
+		var a Application
+		err := rows.Scan(&a.SporicRefNo, &a.Leader, &a.FinancialYear, &a.ActivityType, &a.EstimatedAmt, &a.CompanyName, &a.CompanyAddress, &a.ContactPersonName, &a.ContactPersonEmail, &a.ContactPersonMobile, &a.Status)
 		if err != nil {
-			log.Fatal(err)
+			return nil, err
 		}
-		applications = append(applications, application)
-
+		applications = append(applications, a)
 	}
-	fmt.Println(applications)
-
-	return applications
+	if err = rows.Err(); err != nil {
+		return nil, err
+	}
+	return applications, nil
 }
 
-func (m *ApplicationModel) Insert(form Application) {
+func (m *ApplicationModel) FetchByLeader(leader int) ([]Application, error) {
+	rows, err := m.Db.Query("select sporic_ref_no, leader, financial_year, activity_type, estimated_amt, company_name, company_adress, contact_person_name, contact_person_email, contact_person_mobile, project_status from applications where leader=?", leader)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var applications []Application
+	for rows.Next() {
+		var a Application
+		err := rows.Scan(&a.SporicRefNo, &a.Leader, &a.FinancialYear, &a.ActivityType, &a.EstimatedAmt, &a.CompanyName, &a.CompanyAddress, &a.ContactPersonName, &a.ContactPersonEmail, &a.ContactPersonMobile, &a.Status)
+		if err != nil {
+			return nil, err
+		}
+		applications = append(applications, a)
+	}
+	if err = rows.Err(); err != nil {
+		return nil, err
+	}
+	return applications, nil
+}
+
+func (m *ApplicationModel) FetchByRefNo(ref_no string) (*Application, error) {
+	row := m.Db.QueryRow("select sporic_ref_no, leader, financial_year, activity_type, estimated_amt, company_name, company_adress, contact_person_name, contact_person_email, contact_person_mobile, project_status from applications where sporic_ref_no=?", ref_no)
+	var a Application
+	err := row.Scan(&a.SporicRefNo, &a.Leader, &a.FinancialYear, &a.ActivityType, &a.EstimatedAmt, &a.CompanyName, &a.CompanyAddress, &a.ContactPersonName, &a.ContactPersonEmail, &a.ContactPersonMobile, &a.Status)
+	if err != nil {
+		return nil, err
+	}
+	return &a, nil
+}
+
+func (m *ApplicationModel) Insert(form Application) error {
 
 	var count int
 
-	row, err := m.Db.Query("select count(*) from applications where FinancialYear= ?", form.FinancialYear)
-	if err != nil {
-		log.Fatal(err)
-	}
-	err = row.Scan(&count)
-	if err != nil {
-		log.Fatal(err)
+	row := m.Db.QueryRow("select count(*) from applications where financial_year=?", form.FinancialYear)
+	err := row.Scan(&count)
+	if errors.Is(err, sql.ErrNoRows) {
+		count = 0
+	} else if err != nil {
+		return err
 	}
 
-	sporic_ref_no := "cc" + strings.ToLower(form.ActivityType) + form.FinancialYear + strconv.Itoa(count)
-
-	_, err = m.Db.Exec("insert into applications (sporic_ref_no, financial_year, activity_type, leader, estimated_amt, company_name, company_adress, contact_person_name, contact_person_email, contact_person_mobile, project_status) values (?,?,?,?,?,?,?,?,?,?,?,?,?)", sporic_ref_no, form.FinancialYear, form.ActivityType, form.Leader, form.EstimatedAmt, form.CompanyName, form.CompanyAddress, form.ContactPerson, form.MailID, form.Mobile, ProjectPendingApproval )
-
-	if err != nil {
-		log.Fatal(err)
+	type_code := ""
+	switch form.ActivityType {
+	case ActivityTypeConsultancy:
+		type_code = "CP"
+	case ActivityTypeTraining:
+		type_code = "IT"
 	}
+
+	sporic_ref_no := "CC" + type_code + strconv.Itoa(form.FinancialYear) + strconv.Itoa(count+1)
+
+	_, err = m.Db.Exec(`insert into applications 
+		(sporic_ref_no,
+		 leader, 
+		 financial_year, 
+		 activity_type, 
+		 estimated_amt, 
+		 company_name, 
+		 company_adress, 
+		 contact_person_name, 
+		 contact_person_email, 
+		 contact_person_mobile,
+		 project_status) 
+		 values (?,?,?,?,?,?,?,?,?,?,?)`,
+		sporic_ref_no,
+		form.Leader,
+		form.FinancialYear,
+		form.ActivityType,
+		form.EstimatedAmt,
+		form.CompanyName,
+		form.CompanyAddress,
+		form.ContactPersonName,
+		form.ContactPersonEmail,
+		form.ContactPersonMobile,
+		ProjectPendingApproval)
+
+	return err
 }

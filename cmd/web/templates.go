@@ -10,8 +10,9 @@ import (
 )
 
 type templateData struct {
-	Form any
-	User *models.User
+	Applications []models.Application
+	Form         any
+	User         *models.User
 }
 
 func newTemplateCache() (map[string]*template.Template, error) {

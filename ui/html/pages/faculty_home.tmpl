@@ -18,18 +18,16 @@
     <div class="collapse navbar-collapse" id="navbarNav">
       <ul class="navbar-nav ms-auto">
         <li class="nav-item">
-          <a class="nav-link active" href="faculty-dashboard.html">Dashboard</a>
+          <a class="nav-link active" href="/faculty-dashboard">Dashboard</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="faculty-notifications.html"
-            >Notifications</a
-          >
+          <a class="nav-link" href="/faculty-notifications">Notifications</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="faculty-profile.html">Profile</a>
+          <a class="nav-link" href="/faculty-profile">Profile</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="faculty-login.html">Logout</a>
+          <a class="nav-link" href="/faculty-logout">Logout</a>
         </li>
       </ul>
     </div>
@@ -38,13 +36,60 @@
 
 <div class="container mt-4">
   <h2 class="mb-4">Welcome, {{.User.Username}}</h2>
+
   <!-- Project Summary -->
   <div class="row mb-4">
     <h4>Actions</h4>
     <div class="col-md-6">
-      <a class="btn btn-warning" href="/new_project"> New Project </a>
+      <a class="btn btn-warning" href="/new_application">New Application</a>
     </div>
   </div>
+
+  <!-- Pending Approval Projects -->
+  <div class="row mt-4">
+    <div class="col-md-12">
+      <h4>Pending Approval Projects</h4>
+      <div class="table-responsive">
+        <table class="table table-bordered table-striped">
+          <thead>
+            <tr>
+              <th>SpoRIC ID</th>
+              <th>Company</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {{
+              range.Applications
+            }}
+            {{if eq .Status 0}}
+            <!-- Assuming Status 0 is Pending Approval -->
+            <tr>
+              <td>{{.SporicRefNo}}</td>
+              <td>{{.CompanyName}}</td>
+              <td>Pending Approval</td>
+              <td>
+                <a
+                  class="btn btn-sm btn-primary"
+                  href="/view-project/{{.SporicRefNo}}"
+                  >View</a
+                >
+              </td>
+            </tr>
+            {{
+              end
+            }}
+            {{
+              end
+            }}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Active Projects -->
   <div class="row mt-4">
     <div class="col-md-12">
       <h4>Active Projects</h4>
@@ -55,42 +100,39 @@
               <th>SpoRIC ID</th>
               <th>Company</th>
               <th>Status</th>
-              <th>Start Date</th>
-              <th>End Date</th>
               <th>Actions</th>
             </tr>
           </thead>
           <tbody>
+            {{
+              range.Applications
+            }}
+            {{if eq .Status 1}}
+            <!-- Assuming Status 1 is Ongoing -->
             <tr>
-              <td>SPORIC-2024-001</td>
-              <td>XYZ Corporation</td>
+              <td>{{.SporicRefNo}}</td>
+              <td>{{.CompanyName}}</td>
               <td>Ongoing</td>
-              <td>2024-07-01</td>
-              <td>2024-12-31</td>
               <td>
-                <a class="btn btn-sm btn-primary" href="/view-project.html"
+                <a
+                  class="btn btn-sm btn-primary"
+                  href="/view-project/{{.SporicRefNo}}"
                   >View</a
                 >
               </td>
             </tr>
-            <tr>
-              <td>SPORIC-2024-002</td>
-              <td>ABC Pvt Ltd</td>
-              <td>Ongoing</td>
-              <td>2024-05-15</td>
-              <td>2024-11-30</td>
-              <td>
-                <a class="btn btn-sm btn-primary" href="/view-project.html"
-                  >View</a
-                >
-              </td>
-            </tr>
-            <!-- More Active Projects can be added here -->
+            {{
+              end
+            }}
+            {{
+              end
+            }}
           </tbody>
         </table>
       </div>
     </div>
 
+    <!-- Completed Projects -->
     <div class="col-md-12 mt-4">
       <h4>Completed Projects</h4>
       <div class="table-responsive">
@@ -99,32 +141,34 @@
             <tr>
               <th>SpoRIC ID</th>
               <th>Company</th>
-              <th>Completion Date</th>
+              <th>Status</th>
               <th>Actions</th>
             </tr>
           </thead>
           <tbody>
+            {{
+              range.Applications
+            }}
+            {{if eq .Status 2}}
+            <!-- Assuming Status 2 is Completed -->
             <tr>
-              <td>SPORIC-2024-003</td>
-              <td>LMN Industries</td>
-              <td>2024-06-20</td>
+              <td>{{.SporicRefNo}}</td>
+              <td>{{.CompanyName}}</td>
+              <td>Completed</td>
               <td>
-                <a class="btn btn-sm btn-primary" href="/view-project.html"
+                <a
+                  class="btn btn-sm btn-primary"
+                  href="/view-project/{{.SporicRefNo}}"
                   >View</a
                 >
               </td>
             </tr>
-            <tr>
-              <td>SPORIC-2024-004</td>
-              <td>PQR Solutions</td>
-              <td>2024-03-10</td>
-              <td>
-                <a class="btn btn-sm btn-primary" href="/view-project.html"
-                  >View</a
-                >
-              </td>
-            </tr>
-            <!-- More Completed Projects can be added here -->
+            {{
+              end
+            }}
+            {{
+              end
+            }}
           </tbody>
         </table>
       </div>

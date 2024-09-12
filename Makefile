@@ -20,3 +20,9 @@ db/migrations/new:
 db/migrations/up: confirm
 	@echo 'Running up migrations...'
 	migrate -path ./migrations -database "mysql://"${DSN} up
+
+# db/migrations/drop: drop database
+.PHONY: db/migrations/drop
+db/migrations/drop: confirm
+	@echo 'Running up migrations...'
+	migrate -path ./migrations -database "mysql://"${DSN} drop
