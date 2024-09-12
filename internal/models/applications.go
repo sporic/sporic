@@ -56,19 +56,21 @@ func (m *ApplicationModel) FetchAll() ([]Application, error) {
 		if err != nil {
 			return nil, err
 		}
-		applications = append(applications, a)
-	}
+		rows, err = m.Db.Query("Select member from team where sporic_ref_no= ?", a.SporicRefNo)
 
-	var members []string
-	rows, err = m.Db.Query("Select member from team where sporic_ref_no= ?", applications.SporicRefNo)
-
-	for rows.Next() {
-		var member string
-		err := rows.Scan(&member)
 		if err != nil {
 			return nil, err
 		}
-		members = append(members)
+
+		for rows.Next() {
+			var member string
+			err := rows.Scan(&member)
+			if err != nil {
+				return nil, err
+			}
+			a.Members = append(a.Members, member)
+		}
+		applications = append(applications, a)
 	}
 
 	if err = rows.Err(); err != nil {
@@ -90,6 +92,20 @@ func (m *ApplicationModel) FetchByLeader(leader int) ([]Application, error) {
 		err := rows.Scan(&a.SporicRefNo, &a.Leader, &a.FinancialYear, &a.ActivityType, &a.EstimatedAmt, &a.CompanyName, &a.CompanyAddress, &a.ContactPersonName, &a.ContactPersonEmail, &a.ContactPersonMobile, &a.Status)
 		if err != nil {
 			return nil, err
+		}
+		rows, err = m.Db.Query("Select member from team where sporic_ref_no= ?", a.SporicRefNo)
+
+		if err != nil {
+			return nil, err
+		}
+
+		for rows.Next() {
+			var member string
+			err := rows.Scan(&member)
+			if err != nil {
+				return nil, err
+			}
+			a.Members = append(a.Members, member)
 		}
 		applications = append(applications, a)
 	}
