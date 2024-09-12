@@ -129,14 +129,15 @@ func (app *App) faculty_home(w http.ResponseWriter, r *http.Request) {
 }
 
 type newApplicationForm struct {
-	ActivityType         string `form:"activity_type"`
-	FinancialYear        string `form:"financial_year"`
-	EstimatedAmt         string `form:"estimated_amount"`
-	CompanyName          string `form:"company_name"`
-	CompanyAddress       string `form:"company_address"`
-	ContactPersonName    string `form:"contact_person_name"`
-	ContactPersonEmail   string `form:"contact_person_email"`
-	ConatactPersonMobile string `form:"contact_person_mobile"`
+	ActivityType         string   `form:"activity_type"`
+	FinancialYear        string   `form:"financial_year"`
+	EstimatedAmt         string   `form:"estimated_amount"`
+	CompanyName          string   `form:"company_name"`
+	CompanyAddress       string   `form:"company_address"`
+	ContactPersonName    string   `form:"contact_person_name"`
+	ContactPersonEmail   string   `form:"contact_person_email"`
+	ConatactPersonMobile string   `form:"contact_person_mobile"`
+	Members              []string `form:"members"`
 	validator.Validator  `form:"-"`
 }
 
@@ -213,6 +214,7 @@ func (app *App) new_application_post(w http.ResponseWriter, r *http.Request) {
 	application.ContactPersonName = form.ContactPersonName
 	application.ContactPersonEmail = form.ContactPersonEmail
 	application.ContactPersonMobile = form.ConatactPersonMobile
+	application.Members = form.Members
 
 	err = app.applications.Insert(application)
 	if err != nil {

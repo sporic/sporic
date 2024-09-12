@@ -3,6 +3,7 @@ package models
 import (
 	"database/sql"
 	"errors"
+	"log"
 	"strconv"
 )
 
@@ -18,6 +19,7 @@ type Application struct {
 	ContactPersonEmail  string
 	ContactPersonMobile string
 	Status              int
+	Members             []string
 }
 
 type ProjectStatus = int
@@ -140,6 +142,13 @@ func (m *ApplicationModel) Insert(form Application) error {
 		form.ContactPersonEmail,
 		form.ContactPersonMobile,
 		ProjectPendingApproval)
+
+	for _, member := range form.Members {
+		_, err := m.Db.Exec("insert into team (sporic_ref_no, member) values (? ?)", sporic_ref_no, member)
+		if err != nil {
+			log.Println(err)
+		}
+	}
 
 	return err
 }
