@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"regexp"
 	"strconv"
+	"time"
 
 	"github.com/sporic/sporic/internal/models"
 	"github.com/sporic/sporic/internal/validator"
@@ -222,4 +223,25 @@ func (app *App) new_application_post(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	http.Redirect(w, r, "/faculty_home", http.StatusSeeOther)
+}
+
+type NewPayment struct {
+	payment_id     int
+	sporic_ref_no  string
+	payment_amt    int
+	gst_number     string
+	pan_number     string
+	payment_date   time.Time
+	payment_status int
+}
+
+func (app *App) add_payment(w http.ResponseWriter, r *http.Request) {
+
+	var payment_form NewPayment
+
+	err := app.decodePostForm(r, &payment_form)
+	if err != nil {
+		app.clientError(w, http.StatusUnprocessableEntity)
+		return
+	}
 }

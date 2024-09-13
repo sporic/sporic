@@ -6,5 +6,5 @@ create table payment(
     pan_number varchar(255),
     payment_date datetime not null,
     payment_status integer not null,
-    foreign key (sporic_ref_no) references applicatons(sporic_ref_no)
+    foreign key (sporic_ref_no) references applications(sporic_ref_no)
 );
