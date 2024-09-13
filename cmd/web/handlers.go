@@ -106,8 +106,15 @@ func (app *App) admin_home(w http.ResponseWriter, r *http.Request) {
 		app.notFound(w)
 		return
 	}
+	applications, err := app.applications.FetchAll()
+	if err != nil {
+		app.serverError(w, err)
+		return
+	}
+
 	data := app.newTemplateData(r)
-	app.render(w, http.StatusOK, "admin_home.tmpl", data)
+	data.Applications = applications
+	app.render(w, http.StatusOK, "faculty_home.tmpl", data)
 }
 
 func (app *App) faculty_home(w http.ResponseWriter, r *http.Request) {
