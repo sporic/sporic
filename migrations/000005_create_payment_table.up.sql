@@ -5,5 +5,6 @@ create table payment(
     gst_number varchar(255),
     pan_number varchar(255),
     payment_date datetime not null,
+    payment_status integer not null,
     foreign key (sporic_ref_no) references applicatons(sporic_ref_no)
 );

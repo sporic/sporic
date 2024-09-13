@@ -122,6 +122,21 @@ func (m *ApplicationModel) FetchByRefNo(ref_no string) (*Application, error) {
 	if err != nil {
 		return nil, err
 	}
+
+	rows, err := m.Db.Query("Select member from team where sporic_ref_no= ?", a.SporicRefNo)
+
+	if err != nil {
+		return nil, err
+	}
+
+	for rows.Next() {
+		var member string
+		err := rows.Scan(&member)
+		if err != nil {
+			return nil, err
+		}
+		a.Members = append(a.Members, member)
+	}
 	return &a, nil
 }
 
