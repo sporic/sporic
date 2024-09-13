@@ -5,21 +5,25 @@ import (
 	"errors"
 	"log"
 	"strconv"
+	"time"
 )
 
 type Application struct {
-	SporicRefNo         string
-	Leader              int
-	FinancialYear       int
-	ActivityType        ActivityType
-	EstimatedAmt        int
-	CompanyName         string
-	CompanyAddress      string
-	ContactPersonName   string
-	ContactPersonEmail  string
-	ContactPersonMobile string
-	Status              int
-	Members             []string
+	SporicRefNo              string
+	Leader                   int
+	FinancialYear            int
+	ActivityType             ActivityType
+	EstimatedAmt             int
+	CompanyName              string
+	CompanyAddress           string
+	ContactPersonName        string
+	ContactPersonDesignation string
+	ContactPersonEmail       string
+	ContactPersonMobile      string
+	Status                   int
+	Members                  []string
+	StartDate                time.Time
+	EndDate                  time.Time
 }
 
 type ProjectStatus = int
