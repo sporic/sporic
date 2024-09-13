@@ -11,6 +11,7 @@ import (
 
 type templateData struct {
 	Applications []models.Application
+	Application  *models.Application
 	Form         any
 	User         *models.User
 }

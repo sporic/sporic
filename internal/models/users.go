@@ -5,6 +5,8 @@ import (
 	"errors"
 	"fmt"
 	"time"
+
+	"golang.org/x/crypto/bcrypt"
 )
 
 var AnonymousUser = &User{}
@@ -63,4 +65,38 @@ func (m *UserModel) Get(id int) (*User, error) {
 		return nil, err
 	}
 	return u, nil
+}
+
+func (m *UserModel) CreateUser(username, email, password string, role UserRole) (int, error) {
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
+	if err != nil {
+		return 0, err
+	}
+
+	result, err := m.Db.Exec("INSERT INTO user (username, email, hashed_password, created_at, user_role) VALUES (?, ?, ?, ?, ?)",
+		username, email, hashedPassword, time.Now(), role)
+	if err != nil {
+		return 0, err
+	}
+
+	userId, err := result.LastInsertId()
+	if err != nil {
+		return 0, err
+	}
+
+	return int(userId), nil
+}
+
+func (m *UserModel) ResetPassword(userId int, newPassword string) error {
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(newPassword), bcrypt.DefaultCost)
+	if err != nil {
+		return err
+	}
+
+	_, err = m.Db.Exec("UPDATE user SET hashed_password = ? WHERE user_id = ?", hashedPassword, userId)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }

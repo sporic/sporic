@@ -1,0 +1,117 @@
+{{define "title"}}Faculty Home{{ end }}
+
+{{define "main"}}
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+  <div class="container-fluid">
+    <a class="navbar-brand" href="#">SpoRIC</a>
+    <button
+      class="navbar-toggler"
+      type="button"
+      data-bs-toggle="collapse"
+      data-bs-target="#navbarNav"
+      aria-controls="navbarNav"
+      aria-expanded="false"
+      aria-label="Toggle navigation"
+    >
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav ms-auto">
+        <li class="nav-item">
+          <a class="nav-link" href="admin-dashboard.html">Dashboard</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#">Projects</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#">Profile</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="admin-login.html">Logout</a>
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<div class="container mt-4">
+  <h2 class="mb-4">View Record - {{.Application.SporicRefNo}}</h2>
+
+  <div class="row mb-4">
+    <!-- Project Details Section -->
+    <div class="col-md-6">
+      <h4>Project Details</h4>
+      <table class="table table-bordered">
+        <tbody>
+          <tr>
+            <th>Ref No.</th>
+            <td>{{.Application.SporicRefNo}}</td>
+          </tr>
+          <tr>
+            <th>Faculty Name</th>
+            <td>Dr. John Doe</td>
+          </tr>
+          <tr>
+            <th>Designation</th>
+            <td>Professor</td>
+          </tr>
+          <tr>
+            <th>Email</th>
+            <td>john.doe@university.edu</td>
+          </tr>
+          <tr>
+            <th>Mobile No.</th>
+            <td>+1234567890</td>
+          </tr>
+          <tr>
+            <th>School</th>
+            <td>School of Engineering</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Company Details Section -->
+    <div class="col-md-6">
+      <h4>Company Details</h4>
+      <table class="table table-bordered">
+        <tbody>
+          <tr>
+            <th>Company Name</th>
+            <td>{{.Application.CompanyName}}</td>
+          </tr>
+          <tr>
+            <th>Address</th>
+            <td>{{.Application.CompanyAddress}}</td>
+          </tr>
+          <tr>
+            <th>Contact Person</th>
+            <td>{{.Application.ContactPersonName}}</td>
+          </tr>
+          <tr>
+            <th>Designation</th>
+            <td>{{.Application.ContactPersonDesignation}}</td>
+          </tr>
+          <tr>
+            <th>Email</th>
+            <td>{{.Application.ContactPersonEmail}}</td>
+          </tr>
+          <tr>
+            <th>Mobile No.</th>
+            <td>{{.Application.ContactPersonEmail}}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Actions Section -->
+  <div class="row">
+    <div class="col-md-12 text-end">
+      <a href="admin-dashboard.html" class="btn btn-secondary"
+        >Back to Dashboard</a
+      >
+    </div>
+  </div>
+</div>
+{{ end }}

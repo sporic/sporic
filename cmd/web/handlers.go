@@ -1,12 +1,14 @@
 package main
 
 import (
+	"errors"
 	"fmt"
 	"net/http"
 	"regexp"
 	"strconv"
 	"time"
 
+	"github.com/julienschmidt/httprouter"
 	"github.com/sporic/sporic/internal/models"
 	"github.com/sporic/sporic/internal/validator"
 )
@@ -130,16 +132,17 @@ func (app *App) faculty_home(w http.ResponseWriter, r *http.Request) {
 }
 
 type newApplicationForm struct {
-	ActivityType         string   `form:"activity_type"`
-	FinancialYear        string   `form:"financial_year"`
-	EstimatedAmt         string   `form:"estimated_amount"`
-	CompanyName          string   `form:"company_name"`
-	CompanyAddress       string   `form:"company_address"`
-	ContactPersonName    string   `form:"contact_person_name"`
-	ContactPersonEmail   string   `form:"contact_person_email"`
-	ConatactPersonMobile string   `form:"contact_person_mobile"`
-	Members              []string `form:"members"`
-	validator.Validator  `form:"-"`
+	ActivityType             string   `form:"activity_type"`
+	FinancialYear            string   `form:"financial_year"`
+	EstimatedAmt             string   `form:"estimated_amount"`
+	CompanyName              string   `form:"company_name"`
+	CompanyAddress           string   `form:"company_address"`
+	ContactPersonName        string   `form:"contact_person_name"`
+	ContactPersonEmail       string   `form:"contact_person_email"`
+	ConatactPersonMobile     string   `form:"contact_person_mobile"`
+	ContactPersonDesignation string   `form:"contact_person_designation"`
+	Members                  []string `form:"members"`
+	validator.Validator      `form:"-"`
 }
 
 func (app *App) new_application(w http.ResponseWriter, r *http.Request) {
@@ -184,6 +187,8 @@ func (app *App) new_application_post(w http.ResponseWriter, r *http.Request) {
 		application.ActivityType = models.ActivityTypeConsultancy
 	case "training":
 		application.ActivityType = models.ActivityTypeTraining
+	default:
+		form.AddFieldError("activity_type", "Select a valid activity type")
 	}
 
 	estimated_amount, err := strconv.Atoi(form.EstimatedAmt)
@@ -215,6 +220,7 @@ func (app *App) new_application_post(w http.ResponseWriter, r *http.Request) {
 	application.ContactPersonName = form.ContactPersonName
 	application.ContactPersonEmail = form.ContactPersonEmail
 	application.ContactPersonMobile = form.ConatactPersonMobile
+	application.ContactPersonDesignation = form.ContactPersonDesignation
 	application.Members = form.Members
 
 	err = app.applications.Insert(application)
@@ -223,6 +229,32 @@ func (app *App) new_application_post(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	http.Redirect(w, r, "/faculty_home", http.StatusSeeOther)
+}
+
+func (app *App) faculty_view_application(w http.ResponseWriter, r *http.Request) {
+	user := app.contextGetUser(r)
+	if user.IsAnonymous() {
+		http.Redirect(w, r, "/login", http.StatusSeeOther)
+		return
+	}
+	if user.Role != models.FacultyUser {
+		app.notFound(w)
+		return
+	}
+	params := httprouter.ParamsFromContext(r.Context())
+	refno := params.ByName("refno")
+	application, err := app.applications.FetchByRefNo(refno)
+	if errors.Is(err, models.ErrRecordNotFound) {
+		app.notFound(w)
+		return
+	}
+	if err != nil {
+		app.serverError(w, err)
+		return
+	}
+	data := app.newTemplateData(r)
+	data.Application = application
+	app.render(w, http.StatusOK, "faculty_view_application.tmpl", data)
 }
 
 type NewPayment struct {

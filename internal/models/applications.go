@@ -47,7 +47,7 @@ type ApplicationModel struct {
 }
 
 func (m *ApplicationModel) FetchAll() ([]Application, error) {
-	rows, err := m.Db.Query("select sporic_ref_no, leader, financial_year, activity_type, estimated_amt, company_name, company_adress, contact_person_name, contact_person_email, contact_person_mobile, project_status from applications")
+	rows, err := m.Db.Query("select sporic_ref_no, leader, financial_year, activity_type, estimated_amt, company_name, company_adress, contact_person_name, contact_person_email, contact_person_mobile, contact_person_designation, project_status from applications")
 	if err != nil {
 		return nil, err
 	}
@@ -56,11 +56,11 @@ func (m *ApplicationModel) FetchAll() ([]Application, error) {
 	var applications []Application
 	for rows.Next() {
 		var a Application
-		err := rows.Scan(&a.SporicRefNo, &a.Leader, &a.FinancialYear, &a.ActivityType, &a.EstimatedAmt, &a.CompanyName, &a.CompanyAddress, &a.ContactPersonName, &a.ContactPersonEmail, &a.ContactPersonMobile, &a.Status)
+		err := rows.Scan(&a.SporicRefNo, &a.Leader, &a.FinancialYear, &a.ActivityType, &a.EstimatedAmt, &a.CompanyName, &a.CompanyAddress, &a.ContactPersonName, &a.ContactPersonEmail, &a.ContactPersonMobile, &a.ContactPersonDesignation, &a.Status)
 		if err != nil {
 			return nil, err
 		}
-		rows, err = m.Db.Query("Select member from team where sporic_ref_no= ?", a.SporicRefNo)
+		rows, err = m.Db.Query("Select member_name from team where sporic_ref_no= ?", a.SporicRefNo)
 
 		if err != nil {
 			return nil, err
@@ -84,7 +84,7 @@ func (m *ApplicationModel) FetchAll() ([]Application, error) {
 }
 
 func (m *ApplicationModel) FetchByLeader(leader int) ([]Application, error) {
-	rows, err := m.Db.Query("select sporic_ref_no, leader, financial_year, activity_type, estimated_amt, company_name, company_adress, contact_person_name, contact_person_email, contact_person_mobile, project_status from applications where leader=?", leader)
+	rows, err := m.Db.Query("select sporic_ref_no, leader, financial_year, activity_type, estimated_amt, company_name, company_adress, contact_person_name, contact_person_email, contact_person_mobile, contact_person_designation, project_status from applications where leader=?", leader)
 	if err != nil {
 		return nil, err
 	}
@@ -93,11 +93,11 @@ func (m *ApplicationModel) FetchByLeader(leader int) ([]Application, error) {
 	var applications []Application
 	for rows.Next() {
 		var a Application
-		err := rows.Scan(&a.SporicRefNo, &a.Leader, &a.FinancialYear, &a.ActivityType, &a.EstimatedAmt, &a.CompanyName, &a.CompanyAddress, &a.ContactPersonName, &a.ContactPersonEmail, &a.ContactPersonMobile, &a.Status)
+		err := rows.Scan(&a.SporicRefNo, &a.Leader, &a.FinancialYear, &a.ActivityType, &a.EstimatedAmt, &a.CompanyName, &a.CompanyAddress, &a.ContactPersonName, &a.ContactPersonEmail, &a.ContactPersonMobile, &a.ContactPersonDesignation, &a.Status)
 		if err != nil {
 			return nil, err
 		}
-		rows, err = m.Db.Query("Select member from team where sporic_ref_no= ?", a.SporicRefNo)
+		rows, err = m.Db.Query("Select member_name from team where sporic_ref_no= ?", a.SporicRefNo)
 
 		if err != nil {
 			return nil, err
@@ -120,14 +120,14 @@ func (m *ApplicationModel) FetchByLeader(leader int) ([]Application, error) {
 }
 
 func (m *ApplicationModel) FetchByRefNo(ref_no string) (*Application, error) {
-	row := m.Db.QueryRow("select sporic_ref_no, leader, financial_year, activity_type, estimated_amt, company_name, company_adress, contact_person_name, contact_person_email, contact_person_mobile, project_status from applications where sporic_ref_no=?", ref_no)
+	row := m.Db.QueryRow("select sporic_ref_no, leader, financial_year, activity_type, estimated_amt, company_name, company_adress, contact_person_name, contact_person_email, contact_person_mobile, contact_person_designation, project_status from applications where sporic_ref_no=?", ref_no)
 	var a Application
-	err := row.Scan(&a.SporicRefNo, &a.Leader, &a.FinancialYear, &a.ActivityType, &a.EstimatedAmt, &a.CompanyName, &a.CompanyAddress, &a.ContactPersonName, &a.ContactPersonEmail, &a.ContactPersonMobile, &a.Status)
+	err := row.Scan(&a.SporicRefNo, &a.Leader, &a.FinancialYear, &a.ActivityType, &a.EstimatedAmt, &a.CompanyName, &a.CompanyAddress, &a.ContactPersonName, &a.ContactPersonEmail, &a.ContactPersonMobile, &a.ContactPersonDesignation, &a.Status)
 	if err != nil {
 		return nil, err
 	}
 
-	rows, err := m.Db.Query("Select member from team where sporic_ref_no= ?", a.SporicRefNo)
+	rows, err := m.Db.Query("Select member_name from team where sporic_ref_no= ?", a.SporicRefNo)
 
 	if err != nil {
 		return nil, err
@@ -177,8 +177,9 @@ func (m *ApplicationModel) Insert(form Application) error {
 		 contact_person_name, 
 		 contact_person_email, 
 		 contact_person_mobile,
+		 contact_person_designation,
 		 project_status) 
-		 values (?,?,?,?,?,?,?,?,?,?,?)`,
+		 values (?,?,?,?,?,?,?,?,?,?,?,?)`,
 		sporic_ref_no,
 		form.Leader,
 		form.FinancialYear,
@@ -189,10 +190,11 @@ func (m *ApplicationModel) Insert(form Application) error {
 		form.ContactPersonName,
 		form.ContactPersonEmail,
 		form.ContactPersonMobile,
+		form.ContactPersonDesignation,
 		ProjectPendingApproval)
 
 	for _, member := range form.Members {
-		_, err := m.Db.Exec("insert into team (sporic_ref_no, member) values (? ?)", sporic_ref_no, member)
+		_, err := m.Db.Exec("insert into team (sporic_ref_no, member_name) values (? ?)", sporic_ref_no, member)
 		if err != nil {
 			log.Println(err)
 		}

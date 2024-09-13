@@ -4,7 +4,7 @@
 <div class="container mt-4">
   <h2 class="mb-4">Fill Project Details</h2>
 
-  <form action="/new_application" method="post" enctype="multipart/form-data">
+  <form action="/new_application" method="post">
     <h5>Project Details</h5>
     <!-- Activity Type Dropdown -->
     <div class="mb-3">
@@ -91,6 +91,18 @@
         placeholder="Enter mobile number"
       />
     </div>
+    <div class="mb-3">
+      <label for="ContactPersonDesignation" class="form-label"
+        >Designation</label
+      >
+      <input
+        type="text"
+        class="form-control"
+        id="contactPersonDesignation"
+        name="contact_person_designation"
+        placeholder="Enter designation"
+      />
+    </div>
 
     <!-- Additional Team Members -->
     <h5>Additional Team Members</h5>
@@ -137,7 +149,7 @@
           type="text"
           class="form-control"
           id="teamMember${teamMemberCount}"
-          name="team_members[]"
+          name="members[]"
           placeholder="Enter team member name"
         />
         <button type="button" class="btn btn-danger" onclick="removeTeamMember(${teamMemberCount})">Remove</button>
