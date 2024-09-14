@@ -216,7 +216,7 @@
         <td></td>
         <td></td>
         <td>
-          <span class="badge bg-warning">Waiting for invoice</span>
+          <span class="badge bg-warning">Pending Invoice</span>
         </td>
       </tr>
       {{
@@ -227,58 +227,6 @@
       }}
     </tbody>
   </table>
-
-  <!-- Form to request invoice: need amount, gst, pan, gst certificate-->
-  <h4>Request Invoice</h4>
-  <form action="/faculty_view_application" method="post">
-    <input type="hidden" name="action" value="request_invoice" />
-    <input type="hidden" name="sporic_ref_no" value="{{.Application.SporicRefNo}}" />
-    <div class="row">
-      <div class="col-md-6">
-        <div class="mb-3">
-          <label for="amount" class="form-label">Amount</label>
-          <input
-            type="text"
-            class="form-control"
-            id="amount"
-            name="amount"
-            required
-          />
-        </div>
-        <div class="mb-3">
-          <label for="gst" class="form-label">GST No.</label>
-          <input
-            type="text"
-            class="form-control"
-            id="gst"
-            name="gst"
-            required
-          />
-        </div>
-        <div class="mb-3">
-          <label for="pan" class="form-label">PAN No.</label>
-          <input
-            type="text"
-            class="form-control"
-            id="pan"
-            name="pan"
-            required
-          />
-        </div>
-        <div class="mb-3">
-          <label for="gst_certificate" class="form-label">GST Certificate</label>
-          <input
-            type="file"
-            class="form-control"
-            id="gst_certificate"
-            name="gst_certificate"
-            required
-          />
-        </div>
-        <button type="submit" class="btn btn-primary">Request Invoice</button>
-      </div>
-    </div>
-
 
   <!-- Actions Section -->
   <div class="row">
