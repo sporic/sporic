@@ -24,6 +24,7 @@ type Application struct {
 	Members                  []string
 	StartDate                time.Time
 	EndDate                  time.Time
+	Payments                 []Payment
 }
 
 type ProjectStatus = int
@@ -201,4 +202,33 @@ func (m *ApplicationModel) Insert(form Application) error {
 	}
 
 	return err
+}
+
+type Payment struct {
+	Payment_id     int
+	Sporic_ref_no  string
+	Payment_amt    int
+	Gst_number     string
+	Pan_number     string
+	Payment_date   time.Time
+	Payment_status int
+}
+
+func (m *ApplicationModel) Insert_payment(payment Payment) error {
+
+	var application Application
+
+	application.Payments = append(application.Payments, payment)
+
+	_, err := m.Db.Exec(`insert into payment 
+	(payment_id, 
+	sporic_ref_no, 
+	payment_amt, 
+	gst_number, 
+	pan_number, payment_date, payment_status) values (?,?,?,?,?,?,?)`, payment.Payment_id, payment.Sporic_ref_no, payment.Payment_amt, payment.Gst_number, payment.Pan_number, payment.Payment_date, payment.Payment_status)
+
+	if err != nil {
+		return err
+	}
+	return nil
 }

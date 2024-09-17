@@ -3,6 +3,7 @@ package main
 import (
 	"errors"
 	"fmt"
+	"log"
 	"net/http"
 	"regexp"
 	"strconv"
@@ -262,11 +263,20 @@ func (app *App) faculty_view_application(w http.ResponseWriter, r *http.Request)
 	data := app.newTemplateData(r)
 	data.Application = application
 	app.render(w, http.StatusOK, "faculty_view_application.tmpl", data)
+
+	var actionForm string
+
+	err = app.decodePostForm(r, &actionForm)
+	if err != nil {
+		log.Println(err)
+	}
+	if actionForm == "add_payment" {
+		app.add_payment(w, r, application.SporicRefNo)
+	}
 }
 
 type NewPayment struct {
 	payment_id     int
-	sporic_ref_no  string
 	payment_amt    int
 	gst_number     string
 	pan_number     string
@@ -274,13 +284,29 @@ type NewPayment struct {
 	payment_status int
 }
 
-func (app *App) add_payment(w http.ResponseWriter, r *http.Request) {
+func (app *App) add_payment(w http.ResponseWriter, r *http.Request, SporicRefNo string) {
 
 	var payment_form NewPayment
 
 	err := app.decodePostForm(r, &payment_form)
 	if err != nil {
 		app.clientError(w, http.StatusUnprocessableEntity)
+		return
+	}
+
+	var payment models.Payment
+
+	payment.Sporic_ref_no = SporicRefNo
+	payment.Payment_id = payment_form.payment_id
+	payment.Payment_amt = payment_form.payment_amt
+	payment.Gst_number = payment_form.gst_number
+	payment.Pan_number = payment_form.pan_number
+	payment.Payment_date = payment_form.payment_date
+	payment.Payment_status = payment_form.payment_status
+
+	err = app.applications.Insert_payment(payment)
+	if err != nil {
+		app.serverError(w, err)
 		return
 	}
 }
