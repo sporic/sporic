@@ -3,7 +3,6 @@ package models
 import (
 	"database/sql"
 	"errors"
-	"fmt"
 	"time"
 
 	"golang.org/x/crypto/bcrypt"
@@ -25,6 +24,10 @@ type User struct {
 	HashedPassword []byte
 	CreatedAt      time.Time
 	Role           UserRole
+	FullName       string
+	Designation    string
+	MobileNumber   string
+	School         string
 }
 
 func (u *User) IsAnonymous() bool {
@@ -40,7 +43,6 @@ func (m *UserModel) Authenticate(username string, password string) (int, error) 
 	var id int
 	var hashedPassword []byte
 	err := m.Db.QueryRow("select user_id, hashed_password from user where username = ?", username).Scan(&id, &hashedPassword)
-	fmt.Println("hi")
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return 0, ErrInvalidCredentials
@@ -59,6 +61,13 @@ func (m *UserModel) Authenticate(username string, password string) (int, error) 
 func (m *UserModel) Get(id int) (*User, error) {
 	u := &User{}
 	err := m.Db.QueryRow("select user_id, username, email, hashed_password, created_at, user_role from user where user_id = ?", id).Scan(&u.Id, &u.Username, &u.Email, &u.HashedPassword, &u.CreatedAt, &u.Role)
+	if err == sql.ErrNoRows {
+		return nil, ErrRecordNotFound
+	} else if err != nil {
+		return nil, err
+	}
+
+	err = m.Db.QueryRow("select full_name, designation, mobile_number, school from profile where user_id = ?", id).Scan(&u.FullName, &u.Designation, &u.MobileNumber, &u.School)
 	if err == sql.ErrNoRows {
 		return nil, ErrRecordNotFound
 	} else if err != nil {

@@ -2,7 +2,6 @@ package main
 
 import (
 	"database/sql"
-	"fmt"
 	"html/template"
 	"log"
 	"net/http"
@@ -38,7 +37,6 @@ func main() {
 	}
 
 	dsn := os.Getenv("DSN")
-	fmt.Println(dsn)
 	addr := os.Getenv("ADDR")
 
 	infoLog := log.New(os.Stdout, "INFO\t", log.Ldate|log.Ltime)
@@ -110,5 +108,6 @@ func (app App) routes() http.Handler {
 	router.Handler(http.MethodGet, "/new_application", dynamic.ThenFunc(app.new_application))
 	router.Handler(http.MethodPost, "/new_application", dynamic.ThenFunc(app.new_application_post))
 	router.Handler(http.MethodGet, "/faculty/view_application/:refno", dynamic.ThenFunc(app.faculty_view_application))
+	router.Handler(http.MethodPost, "/faculty/view_application/:refno", dynamic.ThenFunc(app.faculty_view_application))
 	return router
 }

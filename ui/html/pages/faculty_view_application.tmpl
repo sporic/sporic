@@ -4,21 +4,14 @@
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
   <div class="container-fluid">
     <a class="navbar-brand" href="#">SpoRIC</a>
-    <button
-      class="navbar-toggler"
-      type="button"
-      data-bs-toggle="collapse"
-      data-bs-target="#navbarNav"
-      aria-controls="navbarNav"
-      aria-expanded="false"
-      aria-label="Toggle navigation"
-    >
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+      aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
     </button>
     <div class="collapse navbar-collapse" id="navbarNav">
       <ul class="navbar-nav ms-auto">
         <li class="nav-item">
-          <a class="nav-link" href="admin-dashboard.html">Dashboard</a>
+          <a class="nav-link" href="/faculty_home">Dashboard</a>
         </li>
         <li class="nav-item">
           <a class="nav-link" href="#">Projects</a>
@@ -49,23 +42,23 @@
           </tr>
           <tr>
             <th>Faculty Name</th>
-            <td>Dr. John Doe</td>
+            <td>{{.User.Username}}</td>
           </tr>
           <tr>
             <th>Designation</th>
-            <td>Professor</td>
+            <td>{{.User.Designation}}</td>
           </tr>
           <tr>
             <th>Email</th>
-            <td>john.doe@university.edu</td>
+            <td>{{.User.Email}}</td>
           </tr>
           <tr>
             <th>Mobile No.</th>
-            <td>+1234567890</td>
+            <td>{{.User.MobileNumber}}</td>
           </tr>
           <tr>
             <th>School</th>
-            <td>School of Engineering</td>
+            <td>{{.User.School}}</td>
           </tr>
         </tbody>
       </table>
@@ -98,7 +91,7 @@
           </tr>
           <tr>
             <th>Mobile No.</th>
-            <td>{{.Application.ContactPersonEmail}}</td>
+            <td>{{.Application.ContactPersonMobile}}</td>
           </tr>
         </tbody>
       </table>
@@ -124,26 +117,46 @@
     </thead>
     <tbody>
       {{
-        range.Application.Payments
+      range.Application.Payments
       }}
-      {{ if eq .Status 3 }}
+      {{ if eq .Payment_status 2 }}
       <tr>
-        <td>{{.Amount}}</td>
-        <td>{{.GSTNo}}</td>
-        <td>{{.PANNo}}</td>
+        <td>{{.Payment_amt}}</td>
+        <td>{{.Gst_number}}</td>
+        <td>{{.Pan_number}}</td>
         <td><a href="#" target="_blank">View</a></td>
         <td><a href="#" target="_blank">View</a></td>
-        <td>{{.TransactionID}}</td>
+        <td>1231234324</td>
         <td><a href="#" target="_blank">View</a></td>
         <td>
-          <span class="badge bg-success">Confirmed</span>
+          <span class="badge bg-success">Approve</span>
         </td>
       </tr>
       {{
-        end
+      end
+      }}
+      {{ if eq .Payment_status 1 }}
+      <tr>
+        <td>{{.Payment_amt}}</td>
+        <td>{{.Gst_number}}</td>
+        <td>{{.Pan_number}}</td>
+        <td><a href="#" target="_blank">View</a></td>
+        <td><a href="#" target="_blank">View</a></td>
+        <td>
+          <input type="text" class="form-control" placeholder="Transaction ID" />
+        </td>
+        <td>
+          <input type="file" class="form-control" placeholder="Payment Proof" />
+        </td>
+        <td>
+          <button class="btn btn-primary">Confirm</button>
+        </td>
+      </tr>
+      {{
+      end
       }}
       {{
-        end
+      end
       }}
     </tbody>
   </table>
@@ -157,136 +170,64 @@
         <th>GST No.</th>
         <th>PAN No.</th>
         <th>GST Certificate</th>
-        <th>Invoice</th>
-        <th>Transaction ID</th>
-        <th>Payment Proof</th>
-        <th>Action</th>
       </tr>
     </thead>
     <tbody>
       {{
-        range.Application.Payments
+      range.Application.Payments
       }}
-      {{ if eq .Status 2 }}
+      {{ if eq .Payment_status 0 }}
       <tr>
         <form action="/faculty_view_application" method="post">
           <input type="hidden" name="action" value="confirm_payment" />
-          <input type="hidden" name="payment_id" value="{{.ID}}" />
-          <td>{{.Amount}}</td>
-          <td>{{.GSTNo}}</td>
-          <td>{{.PANNo}}</td>
+          <input type="hidden" name="payment_id" value="{{.Payment_id}}" />
+          <td>{{.Payment_amt}}</td>
+          <td>{{.Gst_number}}</td>
+          <td>{{.Pan_number}}</td>
           <td><a href="#" target="_blank">View</a></td>
-          <td><a href="#" target="_blank">View</a></td>
-          <td>
-            <input
-              type="text"
-              class="form-control"
-              placeholder="Transaction ID"
-            />
-          </td>
-          <td>
-            <input
-              type="file"
-              class="form-control"
-              placeholder="Payment Proof"
-            />
-          </td>
-          <td>
-            <button class="btn btn-primary">Confirm</button>
-          </td>
         </form>
       </tr>
       {{
-        end
+      end
       }}
       {{
-        end
+      end
       }}
 
       {{
-        range.Application.Payments
-      }}
-      {{ if eq .Status 1 }}
-      <tr>
-        <td>{{.Amount}}</td>
-        <td>{{.GSTNo}}</td>
-        <td>{{.PANNo}}</td>
-        <td><a href="#" target="_blank">View</a></td>
-        <td><a href="#" target="_blank">View</a></td>
-        <td></td>
-        <td></td>
-        <td>
-          <span class="badge bg-warning">Waiting for invoice</span>
-        </td>
-      </tr>
-      {{
-        end
+      range.Application.Payments
       }}
       {{
-        end
+      end
       }}
     </tbody>
   </table>
 
   <!-- Form to request invoice: need amount, gst, pan, gst certificate-->
   <h4>Request Invoice</h4>
-  <form action="/faculty_view_application" method="post">
+  <form method="post">
     <input type="hidden" name="action" value="request_invoice" />
     <input type="hidden" name="sporic_ref_no" value="{{.Application.SporicRefNo}}" />
     <div class="row">
       <div class="col-md-6">
         <div class="mb-3">
           <label for="amount" class="form-label">Amount</label>
-          <input
-            type="text"
-            class="form-control"
-            id="amount"
-            name="amount"
-            required
-          />
+          <input type="text" class="form-control" id="amount" name="payment_amt" required />
         </div>
         <div class="mb-3">
           <label for="gst" class="form-label">GST No.</label>
-          <input
-            type="text"
-            class="form-control"
-            id="gst"
-            name="gst"
-            required
-          />
+          <input type="text" class="form-control" id="gst" name="gst_number" required />
         </div>
         <div class="mb-3">
           <label for="pan" class="form-label">PAN No.</label>
-          <input
-            type="text"
-            class="form-control"
-            id="pan"
-            name="pan"
-            required
-          />
+          <input type="text" class="form-control" id="pan" name="pan_number" required />
         </div>
         <div class="mb-3">
           <label for="gst_certificate" class="form-label">GST Certificate</label>
-          <input
-            type="file"
-            class="form-control"
-            id="gst_certificate"
-            name="gst_certificate"
-            required
-          />
+          <input type="file" class="form-control" id="gst_certificate" name="gst_certificate" required />
         </div>
         <button type="submit" class="btn btn-primary">Request Invoice</button>
       </div>
     </div>
-
-
-  <!-- Actions Section -->
-  <div class="row">
-    <div class="col-md-12 text-end">
-      <a href="admin-dashboard.html" class="btn btn-secondary"
-        >Back to Dashboard</a
-      >
-    </div>
-  </div>
 </div>
 {{ end }}

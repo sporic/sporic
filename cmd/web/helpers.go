@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+	"net/url"
 	"runtime/debug"
 
 	"github.com/go-playground/form"
@@ -23,12 +24,9 @@ func (app *App) notFound(w http.ResponseWriter) {
 	app.clientError(w, http.StatusNotFound)
 }
 
-func (app *App) decodePostForm(r *http.Request, dst any) error {
-	err := r.ParseForm()
-	if err != nil {
-		return err
-	}
-	err = app.formDecoder.Decode(dst, r.PostForm)
+func (app *App) decodePostForm(r *http.Request, dst any, values url.Values) error {
+
+	err := app.formDecoder.Decode(dst, values)
 	if err != nil {
 		var invalidDecoderError *form.InvalidDecoderError
 		if errors.As(err, &invalidDecoderError) {

@@ -25,7 +25,6 @@ func newTemplateCache() (map[string]*template.Template, error) {
 	}
 
 	for _, page := range pages {
-		fmt.Println(page)
 		name := filepath.Base(page)
 		files := []string{
 			"./ui/html/base.tmpl", page,

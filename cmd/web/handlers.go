@@ -3,11 +3,9 @@ package main
 import (
 	"errors"
 	"fmt"
-	"log"
 	"net/http"
 	"regexp"
 	"strconv"
-	"time"
 
 	"github.com/julienschmidt/httprouter"
 	"github.com/sporic/sporic/internal/models"
@@ -29,7 +27,12 @@ func (app *App) login(w http.ResponseWriter, r *http.Request) {
 func (app *App) loginPost(w http.ResponseWriter, r *http.Request) {
 	var form loginForm
 
-	err := app.decodePostForm(r, &form)
+	err := r.ParseForm()
+	if err != nil {
+		app.clientError(w, http.StatusBadRequest)
+	}
+
+	err = app.decodePostForm(r, &form, r.PostForm)
 	if err != nil {
 		app.clientError(w, http.StatusUnprocessableEntity)
 		return
@@ -129,6 +132,7 @@ func (app *App) faculty_home(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	applications, err := app.applications.FetchByLeader(user.Id)
+	fmt.Println(applications)
 	if err != nil {
 		app.serverError(w, err)
 		return
@@ -179,9 +183,15 @@ func (app *App) new_application_post(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	err := r.ParseForm()
+
+	if err != nil {
+		app.clientError(w, http.StatusBadRequest)
+	}
+
 	var form newApplicationForm
 
-	err := app.decodePostForm(r, &form)
+	err = app.decodePostForm(r, &form, r.PostForm)
 	if err != nil {
 		app.clientError(w, http.StatusUnprocessableEntity)
 		return
@@ -255,6 +265,30 @@ func (app *App) faculty_view_application(w http.ResponseWriter, r *http.Request)
 	if errors.Is(err, models.ErrRecordNotFound) {
 		app.notFound(w)
 		return
+	} else if err != nil {
+		app.serverError(w, err)
+	}
+	
+	err = r.ParseForm()
+	if err != nil {
+		app.clientError(w, http.StatusBadRequest)
+	}
+
+	action := r.PostForm.Get("action")
+
+	if action == "request_invoice" {
+		err = app.request_invoice(r, application.SporicRefNo)
+		if err != nil {
+			app.serverError(w, err)
+
+			return
+		}
+	}
+
+	application, err = app.applications.FetchByRefNo(refno)
+	if errors.Is(err, models.ErrRecordNotFound) {
+		app.notFound(w)
+		return
 	}
 	if err != nil {
 		app.serverError(w, err)
@@ -263,50 +297,35 @@ func (app *App) faculty_view_application(w http.ResponseWriter, r *http.Request)
 	data := app.newTemplateData(r)
 	data.Application = application
 	app.render(w, http.StatusOK, "faculty_view_application.tmpl", data)
-
-	var actionForm string
-
-	err = app.decodePostForm(r, &actionForm)
-	if err != nil {
-		log.Println(err)
-	}
-	if actionForm == "add_payment" {
-		app.add_payment(w, r, application.SporicRefNo)
-	}
 }
 
-type NewPayment struct {
-	payment_id     int
-	payment_amt    int
-	gst_number     string
-	pan_number     string
-	payment_date   time.Time
-	payment_status int
+type NewInvoice struct {
+	PaymentAmt int    `form:"payment_amt"`
+	GstNumber  string `form:"gst_number"`
+	PanNumber  string `form:"pan_number"`
 }
 
-func (app *App) add_payment(w http.ResponseWriter, r *http.Request, SporicRefNo string) {
+func (app *App) request_invoice(r *http.Request, SporicRefNo string) error {
 
-	var payment_form NewPayment
+	var invoice_form NewInvoice
 
-	err := app.decodePostForm(r, &payment_form)
+	err := app.decodePostForm(r, &invoice_form, r.PostForm)
 	if err != nil {
-		app.clientError(w, http.StatusUnprocessableEntity)
-		return
+		return err
 	}
 
 	var payment models.Payment
 
 	payment.Sporic_ref_no = SporicRefNo
-	payment.Payment_id = payment_form.payment_id
-	payment.Payment_amt = payment_form.payment_amt
-	payment.Gst_number = payment_form.gst_number
-	payment.Pan_number = payment_form.pan_number
-	payment.Payment_date = payment_form.payment_date
-	payment.Payment_status = payment_form.payment_status
+	payment.Payment_amt = invoice_form.PaymentAmt
+	payment.Gst_number = invoice_form.GstNumber
+	payment.Pan_number = invoice_form.PanNumber
+	payment.Payment_status = models.PaymentInvoiceRequested
 
-	err = app.applications.Insert_payment(payment)
+	err = app.applications.Insert_invoice_request(payment)
 	if err != nil {
-		app.serverError(w, err)
-		return
+		return err
 	}
+
+	return nil
 }
