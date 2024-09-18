@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"regexp"
 	"strconv"
+	"time"
 
 	"github.com/julienschmidt/httprouter"
 	"github.com/sporic/sporic/internal/models"
@@ -268,7 +269,7 @@ func (app *App) faculty_view_application(w http.ResponseWriter, r *http.Request)
 	} else if err != nil {
 		app.serverError(w, err)
 	}
-	
+
 	err = r.ParseForm()
 	if err != nil {
 		app.clientError(w, http.StatusBadRequest)
@@ -278,6 +279,15 @@ func (app *App) faculty_view_application(w http.ResponseWriter, r *http.Request)
 
 	if action == "request_invoice" {
 		err = app.request_invoice(r, application.SporicRefNo)
+		if err != nil {
+			app.serverError(w, err)
+
+			return
+		}
+	}
+
+	if action == "add_expenditure" {
+		err = app.add_expenditure(r, application.SporicRefNo)
 		if err != nil {
 			app.serverError(w, err)
 
@@ -323,6 +333,36 @@ func (app *App) request_invoice(r *http.Request, SporicRefNo string) error {
 	payment.Payment_status = models.PaymentInvoiceRequested
 
 	err = app.applications.Insert_invoice_request(payment)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+type NewExpenditure struct {
+	ExpenditureName string `form:"expenditure_name"`
+	ExpenditureAmt  int    `form:"expenditure_amt"`
+}
+
+func (app *App) add_expenditure(r *http.Request, SporicRefNo string) error {
+
+	var expenditure_form NewExpenditure
+
+	err := app.decodePostForm(r, &expenditure_form, r.PostForm)
+	if err != nil {
+		return err
+	}
+
+	var expenditure models.Expenditure
+
+	expenditure.SporicRefNo = SporicRefNo
+	expenditure.Expenditure_name = expenditure_form.ExpenditureName
+	expenditure.Expenditure_date = time.Now()
+	expenditure.Expenditure_amt = expenditure_form.ExpenditureAmt
+	expenditure.Expenditure_status = models.ExpenditurePendingApproval
+
+	err = app.applications.Insert_expenditure(expenditure)
 	if err != nil {
 		return err
 	}
