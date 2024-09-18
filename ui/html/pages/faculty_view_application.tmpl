@@ -4,8 +4,15 @@
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
   <div class="container-fluid">
     <a class="navbar-brand" href="#">SpoRIC</a>
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
-      aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+    <button
+      class="navbar-toggler"
+      type="button"
+      data-bs-toggle="collapse"
+      data-bs-target="#navbarNav"
+      aria-controls="navbarNav"
+      aria-expanded="false"
+      aria-label="Toggle navigation"
+    >
       <span class="navbar-toggler-icon"></span>
     </button>
     <div class="collapse navbar-collapse" id="navbarNav">
@@ -117,7 +124,7 @@
     </thead>
     <tbody>
       {{
-      range.Application.Payments
+        range.Application.Payments
       }}
       {{ if eq .Payment_status 2 }}
       <tr>
@@ -133,7 +140,7 @@
         </td>
       </tr>
       {{
-      end
+        end
       }}
       {{ if eq .Payment_status 1 }}
       <tr>
@@ -143,7 +150,11 @@
         <td><a href="#" target="_blank">View</a></td>
         <td><a href="#" target="_blank">View</a></td>
         <td>
-          <input type="text" class="form-control" placeholder="Transaction ID" />
+          <input
+            type="text"
+            class="form-control"
+            placeholder="Transaction ID"
+          />
         </td>
         <td>
           <input type="file" class="form-control" placeholder="Payment Proof" />
@@ -153,10 +164,10 @@
         </td>
       </tr>
       {{
-      end
+        end
       }}
       {{
-      end
+        end
       }}
     </tbody>
   </table>
@@ -174,7 +185,7 @@
     </thead>
     <tbody>
       {{
-      range.Application.Payments
+        range.Application.Payments
       }}
       {{ if eq .Payment_status 0 }}
       <tr>
@@ -188,17 +199,17 @@
         </form>
       </tr>
       {{
-      end
+        end
       }}
       {{
-      end
+        end
       }}
 
       {{
-      range.Application.Payments
+        range.Application.Payments
       }}
       {{
-      end
+        end
       }}
     </tbody>
   </table>
@@ -207,27 +218,58 @@
   <h4>Request Invoice</h4>
   <form method="post">
     <input type="hidden" name="action" value="request_invoice" />
-    <input type="hidden" name="sporic_ref_no" value="{{.Application.SporicRefNo}}" />
+    <input
+      type="hidden"
+      name="sporic_ref_no"
+      value="{{.Application.SporicRefNo}}"
+    />
     <div class="row">
       <div class="col-md-6">
         <div class="mb-3">
           <label for="amount" class="form-label">Amount</label>
-          <input type="text" class="form-control" id="amount" name="payment_amt" required />
+          <input
+            type="text"
+            class="form-control"
+            id="amount"
+            name="payment_amt"
+            required
+          />
         </div>
         <div class="mb-3">
           <label for="gst" class="form-label">GST No.</label>
-          <input type="text" class="form-control" id="gst" name="gst_number" required />
+          <input
+            type="text"
+            class="form-control"
+            id="gst"
+            name="gst_number"
+            required
+          />
         </div>
         <div class="mb-3">
           <label for="pan" class="form-label">PAN No.</label>
-          <input type="text" class="form-control" id="pan" name="pan_number" required />
+          <input
+            type="text"
+            class="form-control"
+            id="pan"
+            name="pan_number"
+            required
+          />
         </div>
         <div class="mb-3">
-          <label for="gst_certificate" class="form-label">GST Certificate</label>
-          <input type="file" class="form-control" id="gst_certificate" name="gst_certificate" required />
+          <label for="gst_certificate" class="form-label"
+            >GST Certificate</label
+          >
+          <input
+            type="file"
+            class="form-control"
+            id="gst_certificate"
+            name="gst_certificate"
+            required
+          />
         </div>
         <button type="submit" class="btn btn-primary">Request Invoice</button>
       </div>
     </div>
+  </form>
 </div>
 {{ end }}
