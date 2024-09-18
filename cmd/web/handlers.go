@@ -295,6 +295,32 @@ func (app *App) faculty_view_application(w http.ResponseWriter, r *http.Request)
 		}
 	}
 
+	if action == "complete_project" {
+		closable := true
+		for _, payment := range application.Payments {
+			if payment.Payment_status != models.PaymentApproved {
+				closable = false
+			}
+		}
+		for _, expenditure := range application.Expenditures {
+			if expenditure.Expenditure_status != models.ExpenditureApproved {
+				closable = false
+			}
+		}
+		// TODO remove
+		closable = true
+		if closable {
+			err = app.complete_project(r, application.SporicRefNo)
+			if err != nil {
+				app.serverError(w, err)
+
+				return
+			}
+		} else {
+			// TODO form error
+		}
+	}
+
 	application, err = app.applications.FetchByRefNo(refno)
 	if errors.Is(err, models.ErrRecordNotFound) {
 		app.notFound(w)
@@ -304,9 +330,16 @@ func (app *App) faculty_view_application(w http.ResponseWriter, r *http.Request)
 		app.serverError(w, err)
 		return
 	}
+
 	data := app.newTemplateData(r)
 	data.Application = application
-	app.render(w, http.StatusOK, "faculty_view_application.tmpl", data)
+
+	if application.Status == models.ProjectCompleteApprovalPending || application.Status == models.ProjectCompleted {
+		app.render(w, http.StatusOK, "faculty_view_completed_application.tmpl", data)
+	} else {
+		app.render(w, http.StatusOK, "faculty_view_application.tmpl", data)
+	}
+
 }
 
 type NewInvoice struct {
@@ -363,6 +396,35 @@ func (app *App) add_expenditure(r *http.Request, SporicRefNo string) error {
 	expenditure.Expenditure_status = models.ExpenditurePendingApproval
 
 	err = app.applications.Insert_expenditure(expenditure)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+type CompleteProjectForm struct {
+	ResourceUsed   int       `form:"resource_used"`
+	Comments       string    `form:"comments"`
+	CompletionDate time.Time `form:"completion_date"`
+}
+
+func (app *App) complete_project(r *http.Request, SporicRefNo string) error {
+
+	var completion_form CompleteProjectForm
+
+	err := app.decodePostForm(r, &completion_form, r.PostForm)
+	if err != nil {
+		return err
+	}
+
+	var completion models.Completion
+	completion.SporicRefNo = SporicRefNo
+	completion.ResourceUsed = completion_form.ResourceUsed
+	completion.Comments = completion_form.Comments
+	completion_form.CompletionDate = time.Now()
+
+	err = app.applications.Complete_Project(completion)
 	if err != nil {
 		return err
 	}

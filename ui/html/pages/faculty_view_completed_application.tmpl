@@ -62,7 +62,10 @@
                     </tr>
                     <tr>
                         <th>Project Status</th>
-                        <td><span class="badge bg-success">Completed</span></td>
+
+                        <td>{{if eq .Application.Status 3}}<span class="badge bg-warning">Completed Approval
+                                Pending</span>{{end}}
+                            {{if eq .Application.Status 2}}<span class="badge bg-success">Completed</span>{{end}}</td>
                     </tr>
                 </tbody>
             </table>

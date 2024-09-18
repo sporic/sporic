@@ -1,0 +1,1 @@
+alter table applications add column resources_used integer not null, add column comments varchar(255) not null, add column completion_date datetime not null;

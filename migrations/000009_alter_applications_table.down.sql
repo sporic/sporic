@@ -1,0 +1,1 @@
+alter table applications drop column resources_used, drop column comments, drop completion_date;

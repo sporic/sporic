@@ -4,15 +4,8 @@
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
   <div class="container-fluid">
     <a class="navbar-brand" href="#">SpoRIC</a>
-    <button
-      class="navbar-toggler"
-      type="button"
-      data-bs-toggle="collapse"
-      data-bs-target="#navbarNav"
-      aria-controls="navbarNav"
-      aria-expanded="false"
-      aria-label="Toggle navigation"
-    >
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+      aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
     </button>
     <div class="collapse navbar-collapse" id="navbarNav">
@@ -63,7 +56,7 @@
           </thead>
           <tbody>
             {{
-              range.Applications
+            range.Applications
             }}
             {{if eq .Status 0}}
             <!-- Assuming Status 0 is Pending Approval -->
@@ -72,18 +65,14 @@
               <td>{{.CompanyName}}</td>
               <td>Pending Approval</td>
               <td>
-                <a
-                  class="btn btn-sm btn-primary"
-                  href="/faculty/view_application/{{.SporicRefNo}}"
-                  >View</a
-                >
+                <a class="btn btn-sm btn-primary" href="/faculty/view_application/{{.SporicRefNo}}">View</a>
               </td>
             </tr>
             {{
-              end
+            end
             }}
             {{
-              end
+            end
             }}
           </tbody>
         </table>
@@ -107,7 +96,7 @@
           </thead>
           <tbody>
             {{
-              range.Applications
+            range.Applications
             }}
             {{if eq .Status 1}}
             <!-- Assuming Status 1 is Ongoing -->
@@ -116,18 +105,14 @@
               <td>{{.CompanyName}}</td>
               <td>Ongoing</td>
               <td>
-                <a
-                  class="btn btn-sm btn-primary"
-                  href="/view-project/{{.SporicRefNo}}"
-                  >View</a
-                >
+                <a class="btn btn-sm btn-primary" href="/view-project/{{.SporicRefNo}}">View</a>
               </td>
             </tr>
             {{
-              end
+            end
             }}
             {{
-              end
+            end
             }}
           </tbody>
         </table>
@@ -149,27 +134,23 @@
           </thead>
           <tbody>
             {{
-              range.Applications
+            range.Applications
             }}
-            {{if eq .Status 2}}
+            {{if or (eq .Status 2) (eq .Status 3) }}
             <!-- Assuming Status 2 is Completed -->
             <tr>
               <td>{{.SporicRefNo}}</td>
               <td>{{.CompanyName}}</td>
               <td>Completed</td>
               <td>
-                <a
-                  class="btn btn-sm btn-primary"
-                  href="/view-project/{{.SporicRefNo}}"
-                  >View</a
-                >
+                <a class="btn btn-sm btn-primary" href="/faculty/view_application/{{.SporicRefNo}}">View</a>
               </td>
             </tr>
             {{
-              end
+            end
             }}
             {{
-              end
+            end
             }}
           </tbody>
         </table>
