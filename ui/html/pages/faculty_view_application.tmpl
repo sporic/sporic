@@ -106,8 +106,6 @@
   </div>
 
   <!-- Payments -->
-  <!-- Confirmed Payments -->
-
   <h4>Payments</h4>
   <table class="table table-bordered">
     <thead>
@@ -166,27 +164,6 @@
       {{
         end
       }}
-      {{
-        end
-      }}
-    </tbody>
-  </table>
-
-  <!-- Payments with invoice generated but not confirmed-->
-  <h4>Payments Pending Confirmation</h4>
-  <table class="table table-bordered">
-    <thead>
-      <tr>
-        <th>Amount</th>
-        <th>GST No.</th>
-        <th>PAN No.</th>
-        <th>GST Certificate</th>
-      </tr>
-    </thead>
-    <tbody>
-      {{
-        range.Application.Payments
-      }}
       {{ if eq .Payment_status 0 }}
       <tr>
         <form action="/faculty_view_application" method="post">
@@ -196,6 +173,10 @@
           <td>{{.Gst_number}}</td>
           <td>{{.Pan_number}}</td>
           <td><a href="#" target="_blank">View</a></td>
+          <td>Invoice not generated yet</td>
+          <td></td>
+          <td></td>
+          <td>Invoice Requested</td>
         </form>
       </tr>
       {{
@@ -204,72 +185,152 @@
       {{
         end
       }}
-
-      {{
-        range.Application.Payments
-      }}
       {{
         end
       }}
     </tbody>
   </table>
 
-  <!-- Form to request invoice: need amount, gst, pan, gst certificate-->
-  <h4>Request Invoice</h4>
-  <form method="post">
-    <input type="hidden" name="action" value="request_invoice" />
-    <input
-      type="hidden"
-      name="sporic_ref_no"
-      value="{{.Application.SporicRefNo}}"
-    />
-    <div class="row">
-      <div class="col-md-6">
+  <!-- Expenditures -->
+  <h4>Expenditures</h4>
+  <table class="table table-bordered">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Cost</th>
+        <th>Proof Document</th>
+        <th>Status</th>
+      </tr>
+    </thead>
+    <tbody>
+      {{
+        range.Application.Expenditures
+      }}
+      <tr>
+        <td>{{.Expenditure_name}}</td>
+        <td>{{.Expenditure_cost}}</td>
+        <td><a href="#" target="_blank">View</a></td>
+        <td>
+          <span class="badge bg-success"
+            >{{if eq .Status 1}}Approved{{ else }}Pending Approval{{
+              end
+            }}</span
+          >
+        </td>
+      </tr>
+      {{
+        end
+      }}
+    </tbody>
+  </table>
+
+  <div class="row">
+    <div class="col-md-6">
+      <h4>Request Invoice</h4>
+      <form method="post">
+        <input type="hidden" name="action" value="request_invoice" />
+        <input
+          type="hidden"
+          name="sporic_ref_no"
+          value="{{.Application.SporicRefNo}}"
+        />
+        <div class="row">
+          <div class="col-md-6">
+            <div class="mb-3">
+              <label for="amount" class="form-label">Amount</label>
+              <input
+                type="text"
+                class="form-control"
+                id="amount"
+                name="payment_amt"
+                required
+              />
+            </div>
+            <div class="mb-3">
+              <label for="gst" class="form-label">GST No.</label>
+              <input
+                type="text"
+                class="form-control"
+                id="gst"
+                name="gst_number"
+                required
+              />
+            </div>
+            <div class="mb-3">
+              <label for="pan" class="form-label">PAN No.</label>
+              <input
+                type="text"
+                class="form-control"
+                id="pan"
+                name="pan_number"
+                required
+              />
+            </div>
+            <div class="mb-3">
+              <label for="gst_certificate" class="form-label"
+                >GST Certificate</label
+              >
+              <input
+                type="file"
+                class="form-control"
+                id="gst_certificate"
+                name="gst_certificate"
+                required
+              />
+            </div>
+            <button type="submit" class="btn btn-primary">
+              Request Invoice
+            </button>
+          </div>
+        </div>
+      </form>
+    </div>
+
+    <!-- form to add expenditure (name, cost, proof document) -->
+    <div class="col-md-6">
+      <h4>Add Expenditure</h4>
+      <form method="post">
+        <input type="hidden" name="action" value="add_expenditure" />
+        <input
+          type="hidden"
+          name="sporic_ref_no"
+          value="{{.Application.SporicRefNo}}"
+        />
         <div class="mb-3">
-          <label for="amount" class="form-label">Amount</label>
+          <label for="expenditureName" class="form-label">Name</label>
           <input
             type="text"
             class="form-control"
-            id="amount"
-            name="payment_amt"
+            id="expenditureName"
+            name="expenditure_name"
             required
           />
         </div>
         <div class="mb-3">
-          <label for="gst" class="form-label">GST No.</label>
+          <label for="expenditureCost" class="form-label">Cost</label>
           <input
             type="text"
             class="form-control"
-            id="gst"
-            name="gst_number"
+            id="expenditureCost"
+            name="expenditure_cost"
             required
           />
         </div>
         <div class="mb-3">
-          <label for="pan" class="form-label">PAN No.</label>
-          <input
-            type="text"
-            class="form-control"
-            id="pan"
-            name="pan_number"
-            required
-          />
-        </div>
-        <div class="mb-3">
-          <label for="gst_certificate" class="form-label"
-            >GST Certificate</label
+          <label for="expenditureProof" class="form-label"
+            >Proof Document</label
           >
           <input
             type="file"
             class="form-control"
-            id="gst_certificate"
-            name="gst_certificate"
+            id="expenditureProof"
+            name="expenditure_proof"
             required
           />
         </div>
-        <button type="submit" class="btn btn-primary">Request Invoice</button>
-      </div>
+        <button type="submit" class="btn btn-primary">Add Expenditure</button>
+      </form>
     </div>
-  </form>
+  </div>
 </div>
 {{ end }}
