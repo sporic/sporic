@@ -114,9 +114,7 @@
       </tr>
     </thead>
     <tbody>
-      {{
-      range.Application.Payments
-      }}
+      {{ range.Application.Payments }}
       {{ if eq .Payment_status 2 }}
       <tr>
         <td>{{.Payment_amt}}</td>
@@ -130,9 +128,7 @@
           <span class="badge bg-success">Approve</span>
         </td>
       </tr>
-      {{
-      end
-      }}
+      {{ end }}
       {{ if eq .Payment_status 1 }}
       <tr>
         <td>{{.Payment_amt}}</td>
@@ -150,9 +146,7 @@
           <button class="btn btn-primary">Confirm</button>
         </td>
       </tr>
-      {{
-      end
-      }}
+      {{ end }}
       {{ if eq .Payment_status 0 }}
       <tr>
         <form action="/faculty_view_application" method="post">
@@ -168,12 +162,8 @@
           <td>Invoice Requested</td>
         </form>
       </tr>
-      {{
-      end
-      }}
-      {{
-      end
-      }}
+      {{ end }}
+      {{ end }}
     </tbody>
   </table>
 
@@ -190,23 +180,19 @@
       </tr>
     </thead>
     <tbody>
-      {{
-      range.Application.Expenditures
-      }}
+      {{ range.Application.Expenditures }}
       <tr>
         <td>{{.Expenditure_name}}</td>
         <td>{{.Expenditure_amt}}</td>
         <td>{{.Expenditure_date.Format "Monday, 02-Jan-06"}}</td>
         <td><a href="#" target="_blank">View</a></td>
         <td>
-          {{if eq .Expenditure_status 0}}<span class="badge bg-warning">Pending Approval</span>{{ end }}
-          {{if eq .Expenditure_status 1}}<span class="badge bg-success">Approved</span>{{ end }}
-          {{if eq .Expenditure_status 2}}<span class="badge bg-danger">Rejected</span>{{ end }}
+          {{ if eq .Expenditure_status 0 }}<span class="badge bg-warning">Pending Approval</span>{{ end }}
+          {{ if eq .Expenditure_status 1 }}<span class="badge bg-success">Approved</span>{{ end }}
+          {{ if eq .Expenditure_status 2 }}<span class="badge bg-danger">Rejected</span>{{ end }}
         </td>
       </tr>
-      {{
-      end
-      }}
+      {{ end }}
     </tbody>
   </table>
 
@@ -264,5 +250,31 @@
       </form>
     </div>
   </div>
+
+  <div class="row mt-4">
+    <div class="col-md-6">
+      <h4>Complete Project</h4>
+      <form method="post">
+        <input type="hidden" name="action" value="complete_project" />
+        <input type="hidden" name="sporic_ref_no" value="{{.Application.SporicRefNo}}" />
+        <div class="mb-3">
+          <label for="collegeResources" class="form-label">College Resources Used</label>
+          <select class="form-select" id="collegeResources" name="college_resources" required>
+            <option value="1">Yes</option>
+            <option value="0">No</option>
+          </select>
+          <div class="mb-3">
+            <label for="comments" class="form-label">Comments</label>
+            <textarea class="form-control" id="comments" name="comments" required></textarea>
+          </div>
+          <div class="mb-3">
+            <label for="projectClosureReport" class="form-label">Project Closure Report</label>
+            <input type="file" class="form-control" id="projectClosureReport" name="project_closure_report" required />
+          </div>
+          <button type="submit" class="btn btn-primary">Complete Project</button>
+      </form>
+    </div>
+  </div>
+
 </div>
 {{ end }}
