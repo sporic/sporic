@@ -13,6 +13,18 @@ import (
 	"github.com/sporic/sporic/internal/validator"
 )
 
+type FileType = int
+
+const (
+	ProposalDoc FileType = iota
+	Invoice
+	PaymentProof
+	GstCirtificate
+	PanCard
+	CompletionDoc
+	ExpenditureProof
+)
+
 type loginForm struct {
 	Username            string `form:"username"`
 	Password            string `form:"password"`
@@ -119,7 +131,7 @@ func (app *App) admin_home(w http.ResponseWriter, r *http.Request) {
 
 	data := app.newTemplateData(r)
 	data.Applications = applications
-	app.render(w, http.StatusOK, "faculty_home.tmpl", data)
+	app.render(w, http.StatusOK, "admin_home.tmpl", data)
 }
 
 func (app *App) faculty_home(w http.ResponseWriter, r *http.Request) {
@@ -133,7 +145,6 @@ func (app *App) faculty_home(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	applications, err := app.applications.FetchByLeader(user.Id)
-	fmt.Println(applications)
 	if err != nil {
 		app.serverError(w, err)
 		return
@@ -184,8 +195,7 @@ func (app *App) new_application_post(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err := r.ParseForm()
-
+	err := r.ParseMultipartForm(10 << 20)
 	if err != nil {
 		app.clientError(w, http.StatusBadRequest)
 	}
@@ -242,9 +252,14 @@ func (app *App) new_application_post(w http.ResponseWriter, r *http.Request) {
 	application.ContactPersonDesignation = form.ContactPersonDesignation
 	application.Members = form.Members
 
-	err = app.applications.Insert(application)
+	sporic_ref_no, err := app.applications.Insert(application)
 	if err != nil {
 		app.serverError(w, err)
+		return
+	}
+	err = app.handleFile(r, sporic_ref_no, sporic_ref_no, ProposalDoc, "project_proposal")
+	if err != nil {
+		fmt.Println(err)
 		return
 	}
 	http.Redirect(w, r, "/faculty_home", http.StatusSeeOther)
@@ -268,11 +283,15 @@ func (app *App) faculty_view_application(w http.ResponseWriter, r *http.Request)
 		return
 	} else if err != nil {
 		app.serverError(w, err)
+		return
 	}
 
-	err = r.ParseForm()
-	if err != nil {
-		app.clientError(w, http.StatusBadRequest)
+	if r.Method == http.MethodPost {
+		err = r.ParseMultipartForm(10 << 20)
+		if err != nil {
+			app.clientError(w, http.StatusBadRequest)
+			return
+		}
 	}
 
 	action := r.PostForm.Get("action")
@@ -290,7 +309,14 @@ func (app *App) faculty_view_application(w http.ResponseWriter, r *http.Request)
 		err = app.add_expenditure(r, application.SporicRefNo)
 		if err != nil {
 			app.serverError(w, err)
+			return
+		}
+	}
 
+	if action == "update_payment" {
+		err = app.update_payment(r, application.SporicRefNo)
+		if err != nil {
+			app.serverError(w, err)
 			return
 		}
 	}
@@ -365,7 +391,12 @@ func (app *App) request_invoice(r *http.Request, SporicRefNo string) error {
 	payment.Pan_number = invoice_form.PanNumber
 	payment.Payment_status = models.PaymentInvoiceRequested
 
-	err = app.applications.Insert_invoice_request(payment)
+	id, err := app.applications.Insert_invoice_request(payment)
+	if err != nil {
+		return err
+	}
+
+	err = app.handleFile(r, SporicRefNo, strconv.Itoa(id), Invoice, "tax_certificate")
 	if err != nil {
 		return err
 	}
@@ -395,7 +426,13 @@ func (app *App) add_expenditure(r *http.Request, SporicRefNo string) error {
 	expenditure.Expenditure_amt = expenditure_form.ExpenditureAmt
 	expenditure.Expenditure_status = models.ExpenditurePendingApproval
 
-	err = app.applications.Insert_expenditure(expenditure)
+	exp_id, err := app.applications.Insert_expenditure(expenditure)
+	if err != nil {
+		return err
+	}
+
+	err = app.handleFile(r, SporicRefNo, strconv.Itoa(exp_id), ExpenditureProof, "expenditure_proof")
+
 	if err != nil {
 		return err
 	}
@@ -429,5 +466,126 @@ func (app *App) complete_project(r *http.Request, SporicRefNo string) error {
 		return err
 	}
 
+	err = app.handleFile(r, SporicRefNo, SporicRefNo, CompletionDoc, "project_closure_report")
+
+	if err != nil {
+		return err
+	}
+
 	return nil
+}
+
+func (app *App) update_payment(r *http.Request, SporicRefNo string) error {
+	err := app.handleFile(r, SporicRefNo, SporicRefNo, PaymentProof, "payment_proof")
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (app *App) admin_view_application(w http.ResponseWriter, r *http.Request) {
+	user := app.contextGetUser(r)
+	if user.IsAnonymous() {
+		http.Redirect(w, r, "/login", http.StatusSeeOther)
+		return
+	}
+	if user.Role != models.AdminUser {
+		app.notFound(w)
+		return
+	}
+	params := httprouter.ParamsFromContext(r.Context())
+	refno := params.ByName("refno")
+	_, err := app.applications.FetchByRefNo(refno)
+	if errors.Is(err, models.ErrRecordNotFound) {
+		app.notFound(w)
+		return
+	} else if err != nil {
+		app.serverError(w, err)
+	}
+
+	err = r.ParseForm()
+	if err != nil {
+		app.clientError(w, http.StatusBadRequest)
+	}
+
+	action := r.PostForm.Get("action")
+
+	if action == "approve_completion" {
+		err = app.applications.SetStatus(refno, models.ProjectCompleted)
+		if err != nil {
+			app.serverError(w, err)
+
+			return
+		}
+	}
+	if action == "approve_application" {
+		err = app.applications.SetStatus(refno, models.ProjectApproved)
+		if err != nil {
+			app.serverError(w, err)
+
+			return
+		}
+	}
+	if action == "reject_application" {
+		err = app.applications.SetStatus(refno, models.ProjectRejected)
+		if err != nil {
+			app.serverError(w, err)
+
+			return
+		}
+	}
+	if action == "approve_expenditure" {
+		err = app.applications.SetExpenditureStatus(refno, models.ExpenditureApproved)
+		if err != nil {
+			app.serverError(w, err)
+
+			return
+		}
+	}
+	if action == "reject_expenditure" {
+		err = app.applications.SetExpenditureStatus(refno, models.ExpenditureRejected)
+		if err != nil {
+			app.serverError(w, err)
+
+			return
+		}
+	}
+	if action == "invoice_forwared" {
+		err = app.applications.SetPaymentStatus(refno, models.PaymentInvoiceForwarded)
+		if err != nil {
+			app.serverError(w, err)
+
+			return
+		}
+
+	}
+
+	application, err := app.applications.FetchByRefNo(refno)
+
+	if errors.Is(err, models.ErrRecordNotFound) {
+		app.notFound(w)
+		return
+	}
+	if err != nil {
+		app.serverError(w, err)
+		return
+	}
+
+	user, err = app.users.Get(application.Leader)
+	if errors.Is(err, models.ErrRecordNotFound) {
+		app.notFound(w)
+		return
+	}
+	if err != nil {
+		app.serverError(w, err)
+		return
+	}
+
+	data := app.newTemplateData(r)
+	data.Application = application
+	data.User = user
+
+	app.render(w, http.StatusOK, "admin_view_application.tmpl", data)
+
 }

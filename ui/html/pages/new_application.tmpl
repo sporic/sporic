@@ -4,7 +4,7 @@
 <div class="container mt-4">
   <h2 class="mb-4">Fill Project Details</h2>
 
-  <form action="/new_application" method="post">
+  <form action="/new_application" method="post" enctype="multipart/form-data">
     <h5>Project Details</h5>
     <!-- Activity Type Dropdown -->
     <div class="mb-3">
@@ -27,91 +27,49 @@
     <!-- Estimated Amount -->
     <div class="mb-3">
       <label for="estimatedAmount" class="form-label">Estimated Amount</label>
-      <input
-        type="text"
-        class="form-control"
-        id="estimatedAmount"
-        name="estimated_amount"
-        placeholder="Enter estimated amount"
-      />
+      <input type="text" class="form-control" id="estimatedAmount" name="estimated_amount"
+        placeholder="Enter estimated amount" />
     </div>
 
     <!-- Company Details -->
     <h5>Company Details</h5>
     <div class="mb-3">
       <label for="companyName" class="form-label">Company Name</label>
-      <input
-        type="text"
-        class="form-control"
-        id="companyName"
-        name="company_name"
-        placeholder="Enter company name"
-      />
+      <input type="text" class="form-control" id="companyName" name="company_name" placeholder="Enter company name" />
     </div>
     <div class="mb-3">
       <label for="companyAddress" class="form-label">Company Address</label>
-      <input
-        type="text"
-        class="form-control"
-        id="companyAddress"
-        name="company_address"
-        placeholder="Enter company address"
-      />
+      <input type="text" class="form-control" id="companyAddress" name="company_address"
+        placeholder="Enter company address" />
     </div>
 
     <!-- Contact Person Details -->
     <h5>Contact Person Details</h5>
     <div class="mb-3">
       <label for="contactPersonName" class="form-label">Name</label>
-      <input
-        type="text"
-        class="form-control"
-        id="contactPersonName"
-        name="contact_person_name"
-        placeholder="Enter contact person name"
-      />
+      <input type="text" class="form-control" id="contactPersonName" name="contact_person_name"
+        placeholder="Enter contact person name" />
     </div>
     <div class="mb-3">
       <label for="contactPersonEmail" class="form-label">Email</label>
-      <input
-        type="email"
-        class="form-control"
-        id="contactPersonEmail"
-        name="contact_person_email"
-        placeholder="Enter email"
-      />
+      <input type="email" class="form-control" id="contactPersonEmail" name="contact_person_email"
+        placeholder="Enter email" />
     </div>
     <div class="mb-3">
       <label for="contactPersonMobile" class="form-label">Mobile</label>
-      <input
-        type="text"
-        class="form-control"
-        id="contactPersonMobile"
-        name="contact_person_mobile"
-        placeholder="Enter mobile number"
-      />
+      <input type="text" class="form-control" id="contactPersonMobile" name="contact_person_mobile"
+        placeholder="Enter mobile number" />
     </div>
     <div class="mb-3">
-      <label for="ContactPersonDesignation" class="form-label"
-        >Designation</label
-      >
-      <input
-        type="text"
-        class="form-control"
-        id="contactPersonDesignation"
-        name="contact_person_designation"
-        placeholder="Enter designation"
-      />
+      <label for="ContactPersonDesignation" class="form-label">Designation</label>
+      <input type="text" class="form-control" id="contactPersonDesignation" name="contact_person_designation"
+        placeholder="Enter designation" />
     </div>
 
     <!-- Additional Team Members -->
     <h5>Additional Team Members</h5>
     <div id="teamMembersContainer"></div>
-    <button
-      type="button"
-      class="btn btn-secondary mb-3"
-      onclick="addTeamMember()"
-    >
+    <button type="button" class="btn btn-secondary mb-3" onclick="addTeamMember()">
       Add Team Member
     </button>
 
@@ -119,13 +77,7 @@
     <h5>Project Proposal</h5>
     <div class="mb-3">
       <label for="projectProposal" class="form-label">Upload Proposal</label>
-      <input
-        type="file"
-        class="form-control"
-        id="projectProposal"
-        name="project_proposal"
-        accept=".pdf"
-      />
+      <input type="file" class="form-control" id="projectProposal" name="project_proposal" accept=".pdf" />
     </div>
 
     <!-- Submit Button with Additional Space -->
@@ -149,7 +101,7 @@
           type="text"
           class="form-control"
           id="teamMember${teamMemberCount}"
-          name="members[]"
+          name="members"
           placeholder="Enter team member name"
         />
         <button type="button" class="btn btn-danger" onclick="removeTeamMember(${teamMemberCount})">Remove</button>

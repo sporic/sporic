@@ -56,6 +56,7 @@ const (
 	PaymentPending
 	PaymentApproved
 	PaymentRejected
+	PaymentInvoiceForwarded
 )
 
 type ExpenditureStatus = int
@@ -114,14 +115,14 @@ func (m *ApplicationModel) FetchAll() ([]Application, error) {
 			a.Payments = append(a.Payments, p)
 		}
 
-		rows_expenditure, err := m.Db.Query("Select expenditure_name, expenditure_amt, expenditure_date, expenditure_status from expenditure where sporic_ref_no= ?", a.SporicRefNo)
+		rows_expenditure, err := m.Db.Query("Select sporic_ref_no, expenditure_name, expenditure_amt, expenditure_date, expenditure_status from expenditure where sporic_ref_no= ?", a.SporicRefNo)
 		if err != nil {
 			return nil, err
 		}
 
 		for rows_expenditure.Next() {
 			var e Expenditure
-			err := rows_expenditure.Scan(&e.Expenditure_name, &e.Expenditure_amt, &e.Expenditure_date, &e.Expenditure_status)
+			err := rows_expenditure.Scan(&e.SporicRefNo, &e.Expenditure_name, &e.Expenditure_amt, &e.Expenditure_date, &e.Expenditure_status)
 			if err != nil {
 				return nil, err
 			}
@@ -180,14 +181,14 @@ func (m *ApplicationModel) FetchByLeader(leader int) ([]Application, error) {
 			a.Payments = append(a.Payments, p)
 		}
 
-		rows_expenditure, err := m.Db.Query("Select expenditure_name, expenditure_amt, expenditure_date, expenditure_status from expenditure where sporic_ref_no= ?", a.SporicRefNo)
+		rows_expenditure, err := m.Db.Query("Select sporic_ref_no, expenditure_name, expenditure_amt, expenditure_date, expenditure_status from expenditure where sporic_ref_no= ?", a.SporicRefNo)
 		if err != nil {
 			return nil, err
 		}
 
 		for rows_expenditure.Next() {
 			var e Expenditure
-			err := rows_expenditure.Scan(&e.Expenditure_name, &e.Expenditure_amt, &e.Expenditure_date, &e.Expenditure_status)
+			err := rows_expenditure.Scan(&e.SporicRefNo, &e.Expenditure_name, &e.Expenditure_amt, &e.Expenditure_date, &e.Expenditure_status)
 			if err != nil {
 				return nil, err
 			}
@@ -235,14 +236,14 @@ func (m *ApplicationModel) FetchByRefNo(ref_no string) (*Application, error) {
 		a.Payments = append(a.Payments, p)
 	}
 
-	rows_expenditure, err := m.Db.Query("Select expenditure_name, expenditure_amt, expenditure_date, expenditure_status from expenditure where sporic_ref_no= ?", a.SporicRefNo)
+	rows_expenditure, err := m.Db.Query("Select sporic_ref_no, expenditure_name, expenditure_amt, expenditure_date, expenditure_status from expenditure where sporic_ref_no= ?", a.SporicRefNo)
 	if err != nil {
 		return nil, err
 	}
 
 	for rows_expenditure.Next() {
 		var e Expenditure
-		err := rows_expenditure.Scan(&e.Expenditure_name, &e.Expenditure_amt, &e.Expenditure_date, &e.Expenditure_status)
+		err := rows_expenditure.Scan(&e.SporicRefNo, &e.Expenditure_name, &e.Expenditure_amt, &e.Expenditure_date, &e.Expenditure_status)
 		if err != nil {
 			return nil, err
 		}
@@ -252,7 +253,7 @@ func (m *ApplicationModel) FetchByRefNo(ref_no string) (*Application, error) {
 	return &a, nil
 }
 
-func (m *ApplicationModel) Insert(form Application) error {
+func (m *ApplicationModel) Insert(form Application) (string, error) {
 
 	var count int
 
@@ -261,7 +262,7 @@ func (m *ApplicationModel) Insert(form Application) error {
 	if errors.Is(err, sql.ErrNoRows) {
 		count = 0
 	} else if err != nil {
-		return err
+		return "", err
 	}
 
 	type_code := ""
@@ -304,13 +305,38 @@ func (m *ApplicationModel) Insert(form Application) error {
 		ProjectPendingApproval)
 
 	for _, member := range form.Members {
-		_, err := m.Db.Exec("insert into team (sporic_ref_no, member_name) values (? ?)", sporic_ref_no, member)
+		_, err := m.Db.Exec("insert into team (sporic_ref_no, member_name) values (?, ?)", sporic_ref_no, member)
 		if err != nil {
-			return err
+			return "", err
 		}
 	}
 
-	return err
+	return sporic_ref_no, err
+}
+
+func (m *ApplicationModel) SetStatus(refno string, status ProjectStatus) error {
+	_, err := m.Db.Exec("update applications set project_status = ? where sporic_ref_no = ?", status, refno)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (m *ApplicationModel) SetExpenditureStatus(refno string, status ExpenditureStatus) error {
+	_, err := m.Db.Exec("update expenditure set expenditure_status = ? where sporic_ref_no = ?", status, refno)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (m *ApplicationModel) SetPaymentStatus(refno string, status PaymentStatus) error {
+	_, err := m.Db.Exec("update payment set payment_status = ? where sporic_ref_no = ?", status, refno)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
 type Payment struct {
@@ -323,12 +349,12 @@ type Payment struct {
 	Payment_status int
 }
 
-func (m *ApplicationModel) Insert_invoice_request(payment Payment) error {
+func (m *ApplicationModel) Insert_invoice_request(payment Payment) (int, error) {
 
 	var application Application
 
 	application.Payments = append(application.Payments, payment)
-	_, err := m.Db.Exec(`insert into payment 
+	res, err := m.Db.Exec(`insert into payment 
 	(sporic_ref_no, 
 	payment_amt, 
 	gst_number, 
@@ -341,9 +367,15 @@ func (m *ApplicationModel) Insert_invoice_request(payment Payment) error {
 		payment.Pan_number,
 		payment.Payment_status)
 	if err != nil {
-		return err
+		return -1, err
 	}
-	return nil
+
+	lastInsertId, err := res.LastInsertId()
+	if err != nil {
+		return -1, err
+	}
+
+	return int(lastInsertId), err
 }
 
 type Expenditure struct {
@@ -354,13 +386,13 @@ type Expenditure struct {
 	Expenditure_status int
 }
 
-func (m *ApplicationModel) Insert_expenditure(expenditure Expenditure) error {
+func (m *ApplicationModel) Insert_expenditure(expenditure Expenditure) (int, error) {
 
 	var application Application
 
 	application.Expenditures = append(application.Expenditures, expenditure)
 
-	_, err := m.Db.Exec(`insert into expenditure
+	res, err := m.Db.Exec(`insert into expenditure
 	(sporic_ref_no,
 	expenditure_name,
 	expenditure_amt, 
@@ -373,10 +405,14 @@ func (m *ApplicationModel) Insert_expenditure(expenditure Expenditure) error {
 		expenditure.Expenditure_date,
 		expenditure.Expenditure_status)
 	if err != nil {
-		return err
+		return -1, err
 	}
 
-	return nil
+	lastInsertId, err := res.LastInsertId()
+	if err != nil {
+		return -1, err
+	}
+	return int(lastInsertId), nil
 }
 
 type Completion struct {

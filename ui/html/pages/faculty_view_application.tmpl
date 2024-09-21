@@ -129,22 +129,41 @@
         </td>
       </tr>
       {{ end }}
-      {{ if eq .Payment_status 1 }}
+      {{ if eq .Payment_status 3 }}
       <tr>
         <td>{{.Payment_amt}}</td>
         <td>{{.Gst_number}}</td>
         <td>{{.Pan_number}}</td>
         <td><a href="#" target="_blank">View</a></td>
         <td><a href="#" target="_blank">View</a></td>
+        <td>1231234324</td>
+        <td><a href="#" target="_blank">View</a></td>
         <td>
-          <input type="text" class="form-control" placeholder="Transaction ID" />
+          <span class="badge bg-danger">Rejected</span>
         </td>
-        <td>
-          <input type="file" class="form-control" placeholder="Payment Proof" />
-        </td>
-        <td>
-          <button class="btn btn-primary">Confirm</button>
-        </td>
+      </tr>
+      {{ end }}
+      {{ if eq .Payment_status 0 }}
+      <tr>
+        <form action="/faculty/view_application/{{$.Application.SporicRefNo}}" method="post" ,
+          enctype="multipart/form-data">
+          <input type="hidden" name="action" value="update_payment" />
+          <td>{{.Payment_amt}}</td>
+          <td>{{.Gst_number}}</td>
+          <td>{{.Pan_number}}</td>
+          <td><a href="#" target="_blank">View</a></td>
+          <td><a href="#" target="_blank">View</a></td>
+          <td>
+            <input type="text" class="form-control" placeholder="Transaction ID" />
+          </td>
+          <td>
+            <input type="file" class="form-control" placeholder="Payment Proof" name="payment_proof" accept=".pdf"
+              required />
+          </td>
+          <td>
+            <button class="btn btn-primary">Confirm</button>
+          </td>
+        </form>
       </tr>
       {{ end }}
       {{ if eq .Payment_status 0 }}
@@ -159,7 +178,23 @@
           <td>Invoice not generated yet</td>
           <td></td>
           <td></td>
-          <td>Invoice Requested</td>
+          <td><span class="badge bg-info">Invoice Requested</span></td>
+        </form>
+      </tr>
+      {{ end }}
+      {{ if eq .Payment_status 4 }}
+      <tr>
+        <form action="/faculty_view_application" method="post">
+          <input type="hidden" name="action" value="confirm_payment" />
+          <input type="hidden" name="payment_id" value="{{.Payment_id}}" />
+          <td>{{.Payment_amt}}</td>
+          <td>{{.Gst_number}}</td>
+          <td>{{.Pan_number}}</td>
+          <td><a href="#" target="_blank">View</a></td>
+          <td>Invoice not generated yet</td>
+          <td></td>
+          <td></td>
+          <td><span class="badge bg-info">Request Forwarded</span></td>
         </form>
       </tr>
       {{ end }}
@@ -199,7 +234,7 @@
   <div class="row">
     <div class="col-md-6">
       <h4>Request Invoice</h4>
-      <form method="post">
+      <form method="post" enctype="multipart/form-data">
         <input type="hidden" name="action" value="request_invoice" />
         <input type="hidden" name="sporic_ref_no" value="{{.Application.SporicRefNo}}" />
         <div class="row">
@@ -218,7 +253,7 @@
             </div>
             <div class="mb-3">
               <label for="gst_certificate" class="form-label">GST Certificate</label>
-              <input type="file" class="form-control" id="gst_certificate" name="gst_certificate" required />
+              <input type="file" class="form-control" id="gst_certificate" name="tax_certificate" required />
             </div>
             <button type="submit" class="btn btn-primary">
               Request Invoice
@@ -231,7 +266,7 @@
     <!-- form to add expenditure (name, cost, proof document) -->
     <div class="col-md-6">
       <h4>Add Expenditure</h4>
-      <form method="post">
+      <form method="post" enctype="multipart/form-data">
         <input type="hidden" name="action" value="add_expenditure" />
         <input type="hidden" name="sporic_ref_no" value="{{.Application.SporicRefNo}}" />
         <div class="mb-3">
@@ -244,7 +279,8 @@
         </div>
         <div class="mb-3">
           <label for="expenditureProof" class="form-label">Proof Document</label>
-          <input type="file" class="form-control" id="expenditureProof" name="expenditure_proof" required />
+          <input type="file" class="form-control" id="expenditureProof" name="expenditure_proof" accept=".pdf"
+            required />
         </div>
         <button type="submit" class="btn btn-primary">Add Expenditure</button>
       </form>
@@ -254,7 +290,7 @@
   <div class="row mt-4">
     <div class="col-md-6">
       <h4>Complete Project</h4>
-      <form method="post">
+      <form method="post" enctype="multipart/form-data">
         <input type="hidden" name="action" value="complete_project" />
         <input type="hidden" name="sporic_ref_no" value="{{.Application.SporicRefNo}}" />
         <div class="mb-3">

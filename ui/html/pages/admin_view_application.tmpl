@@ -69,8 +69,14 @@
                             {{if eq .Application.Status 2}}<span class="badge bg-success">Completed</span>{{end}}
                             {{if eq .Application.Status 1}}<span class="badge bg-success">Application
                                 Approved</span>{{end}}
-                            {{if eq .Application.Status 0}}<span class="badge bg-warnign">Application Approval
+                            {{if eq .Application.Status 0}}<span class="badge bg-warning">Application Approval
                                 Pending</span>{{end}}
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>Exstimated Cost</th>
+                        <td>
+                            {{.Application.EstimatedAmt}}
                         </td>
                     </tr>
                 </tbody>
@@ -124,6 +130,7 @@
                 <th>Transaction ID</th>
                 <th>Payment Proof</th>
                 <th>Status</th>
+                <th>Action</th>
             </tr>
         </thead>
         <tbody>
@@ -156,14 +163,14 @@
                     <input type="file" class="form-control" placeholder="Payment Proof" />
                 </td>
                 <td>
-                    <button class="btn btn-primary">Confirm</button>
+                    <span class="badge bg-warning">Payment Pending</span>
                 </td>
+                <td></td>
             </tr>
             {{end}}
             {{if eq .Payment_status 0}}
             <tr>
-                <form action="/faculty_view_application" method="post">
-                    <input type="hidden" name="action" value="confirm_payment" />
+                <form action="/admin/view_application/{{.Sporic_ref_no}}" method="post">
                     <input type="hidden" name="payment_id" value="{{.Payment_id}}" />
                     <td>{{.Payment_amt}}</td>
                     <td>{{.Gst_number}}</td>
@@ -172,8 +179,40 @@
                     <td>Invoice not generated yet</td>
                     <td></td>
                     <td></td>
-                    <td>Invoice Requested</td>
+                    <td><span class="badge bg-info">Invoice Requested</span></td>
+                    <td>
+                        <input type="hidden" name="action" value="invoice_forwared" />
+                        <button class="btn btn-info">Forward Invoice</button>
+                    </td>
                 </form>
+            </tr>
+            {{end}}
+            {{if eq .Payment_status 3}}
+            <tr>
+                <input type="hidden" name="payment_id" value="{{.Payment_id}}" />
+                <td>{{.Payment_amt}}</td>
+                <td>{{.Gst_number}}</td>
+                <td>{{.Pan_number}}</td>
+                <td><a href="#" target="_blank">View</a></td>
+                <td>Invoice not generated yet</td>
+                <td></td>
+                <td></td>
+                <td><span class="badge bg-danger">Rejected</span></td>
+                <td></td>
+            </tr>
+            {{end}}
+            {{if eq .Payment_status 4}}
+            <tr>
+                <input type="hidden" name="payment_id" value="{{.Payment_id}}" />
+                <td>{{.Payment_amt}}</td>
+                <td>{{.Gst_number}}</td>
+                <td>{{.Pan_number}}</td>
+                <td><a href="#" target="_blank">View</a></td>
+                <td>Invoice not generated yet</td>
+                <td></td>
+                <td></td>
+                <td><span class="badge bg-primary">Invoice Forwarded</span></td>
+                <td></td>
             </tr>
             {{end}}
             {{end}}
@@ -190,6 +229,7 @@
                 <th>Date</th>
                 <th>Proof Document</th>
                 <th>Status</th>
+                <th>Actions</th>
             </tr>
         </thead>
         <tbody>
@@ -204,26 +244,52 @@
                     {{if eq .Expenditure_status 1}}<span class="badge bg-success">Approved</span>{{ end }}
                     {{if eq .Expenditure_status 2}}<span class="badge bg-danger">Rejected</span>{{ end }}
                 </td>
+                <td>
+                    <div style="display: flex; gap: 10px;">
+                        <form action="/admin/view_application/{{.SporicRefNo}}" method="post" style="display: inline;">
+                            <input type="hidden" name="action" value="approve_expenditure" />
+                            <button class="btn btn-success">Approve</button>
+                        </form>
+                        <form action="/admin/view_application/{{.SporicRefNo}}" method="post" style="display: inline;">
+                            <input type="hidden" name="action" value="reject_expenditure" />
+                            <button class="btn btn-danger">Reject</button>
+                        </form>
+                    </div>
+                </td>
+
             </tr>
             {{end}}
         </tbody>
     </table>
 
     {{ if eq .Application.Status 0 }}
-    <form action="/admin/view_application/{{.SporicRefNo}}" method="post">
-        <input type="hidden" name="action" value="approve_application" />
-        <button class="btn btn-success">Approve Application</button>
-    </form>
+    <table>
+        <tr>
+            <td>
+                <form action="/admin/view_application/{{.Application.SporicRefNo}}" method="post">
+                    <input type="hidden" name="action" value="approve_application" />
+                    <button class="btn btn-success">Approve Application</button>
+                </form>
+            </td>
+            <td>
+                <form action="/admin/view_application/{{.Application.SporicRefNo}}" method="post"></form>
+                <input type="hidden" name="action" value="reject_application" />
+                <button class="btn btn-danger">Reject Application</button>
+                </form>
+            </td>
+        </tr>
+    </table>
+
+
     {{ end }}
 
-    {{ if eq .Application.Status 2 }}
-    <form action="/admin/view_application/{{.SporicRefNo}}" method="post">
+    {{ if eq .Application.Status 3 }}
+    <form action="/admin/view_application/{{.Application.SporicRefNo}}" method="post">
         <input type="hidden" name="action" value="approve_completion" />
         <button class="btn btn-success">Approve Completion</button>
     </form>
     {{ end }}
 
-
-
+    <div style="height: 100px;"></div>
 </div>
 {{ end }}
