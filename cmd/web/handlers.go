@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+	"path/filepath"
 	"regexp"
 	"strconv"
 	"time"
@@ -396,7 +397,7 @@ func (app *App) request_invoice(r *http.Request, SporicRefNo string) error {
 		return err
 	}
 
-	err = app.handleFile(r, SporicRefNo, strconv.Itoa(id), Invoice, "tax_certificate")
+	err = app.handleFile(r, SporicRefNo, strconv.Itoa(id), GstCirtificate, "tax_certificate")
 	if err != nil {
 		return err
 	}
@@ -475,8 +476,33 @@ func (app *App) complete_project(r *http.Request, SporicRefNo string) error {
 	return nil
 }
 
+type UpadatePaymentForm struct {
+	Payment_id     int    `form:"payment_id"`
+	Transaction_id string `form:"transaction_id"`
+}
+
 func (app *App) update_payment(r *http.Request, SporicRefNo string) error {
-	err := app.handleFile(r, SporicRefNo, SporicRefNo, PaymentProof, "payment_proof")
+
+	var update_payment_form UpadatePaymentForm
+
+	err := app.decodePostForm(r, &update_payment_form, r.PostForm)
+
+	if err != nil {
+		return err
+	}
+
+	var payment models.Payment
+
+	payment.Sporic_ref_no = SporicRefNo
+	payment.Payment_id = update_payment_form.Payment_id
+	payment.Transaction_id = update_payment_form.Transaction_id
+
+	err = app.applications.UpdatePayment(payment)
+	if err != nil {
+		return err
+	}
+
+	err = app.handleFile(r, SporicRefNo, strconv.Itoa(payment.Payment_id), PaymentProof, "payment_proof")
 	if err != nil {
 		return err
 	}
@@ -588,4 +614,29 @@ func (app *App) admin_view_application(w http.ResponseWriter, r *http.Request) {
 
 	app.render(w, http.StatusOK, "admin_view_application.tmpl", data)
 
+}
+
+func (app *App) download(w http.ResponseWriter, r *http.Request) {
+	params := httprouter.ParamsFromContext(r.Context())
+	folder := params.ByName("folder")
+	doc_id := params.ByName("doc_id")
+	doc_type := params.ByName("doc_type")
+
+	fmt.Println(folder, doc_id, doc_type)
+
+	if folder == "" || doc_id == "" || doc_type == "" {
+		http.Error(w, "File not specified.", http.StatusBadRequest)
+		return
+	}
+
+	filename := folder + "_" + doc_id + "_" + doc_type + ".pdf"
+
+	prefixPath := "Documents/" + folder + "/"
+
+	filePath := filepath.Join(prefixPath, filepath.Clean(filename))
+
+	w.Header().Set("Content-Disposition", fmt.Sprintf("attachment; filename=%s", filename))
+	w.Header().Set("Content-Type", "application/octet-stream")
+
+	http.ServeFile(w, r, filePath)
 }

@@ -1,0 +1,1 @@
+alter table payment drop column transaction_id;

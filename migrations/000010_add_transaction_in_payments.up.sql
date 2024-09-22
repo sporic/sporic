@@ -1,0 +1,1 @@
+alter table payment add column transaction_id varchar(255) not null;

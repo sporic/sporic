@@ -24,7 +24,6 @@
         </li>
       </ul>
     </div>
-  </div>
 </nav>
 
 <div class="container mt-4">
@@ -117,13 +116,15 @@
       {{ range.Application.Payments }}
       {{ if eq .Payment_status 2 }}
       <tr>
+        <input type="hidden" name="payment_id" value="{{.Payment_id}}" />
         <td>{{.Payment_amt}}</td>
         <td>{{.Gst_number}}</td>
         <td>{{.Pan_number}}</td>
-        <td><a href="#" target="_blank">View</a></td>
-        <td><a href="#" target="_blank">View</a></td>
+        <td><a href="/download/{{$.Application.SporicRefNo}}/{{.Payment_id}}/tax_cirtificate" target="_blank">View</a>
+        </td>
+        <td><a href="/download/{{$.Application.SporicRefNo}}/{{.Payment_id}}/invoice" target="_blank">View</a></td>
         <td>1231234324</td>
-        <td><a href="#" target="_blank">View</a></td>
+        <td><a href="/download/{{$.Application.SporicRefNo}}/{{.Payment_id}}/payment" target="_blank">View</a></td>
         <td>
           <span class="badge bg-success">Approve</span>
         </td>
@@ -131,13 +132,15 @@
       {{ end }}
       {{ if eq .Payment_status 3 }}
       <tr>
+        <input type="hidden" name="payment_id" value="{{.Payment_id}}" />
         <td>{{.Payment_amt}}</td>
         <td>{{.Gst_number}}</td>
         <td>{{.Pan_number}}</td>
-        <td><a href="#" target="_blank">View</a></td>
-        <td><a href="#" target="_blank">View</a></td>
+        <td><a href="/download/{{$.Application.SporicRefNo}}/{{.Payment_id}}/tax_cirtificate" target="_blank">View</a>
+        </td>
+        <td><a href="/download/{{$.Application.SporicRefNo}}/{{.Payment_id}}/invoice" target="_blank">View</a></td>
         <td>1231234324</td>
-        <td><a href="#" target="_blank">View</a></td>
+        <td><a href="/download/{{$.Application.SporicRefNo}}/{{.Payment_id}}/payment" target="_blank">View</a></td>
         <td>
           <span class="badge bg-danger">Rejected</span>
         </td>
@@ -148,17 +151,29 @@
         <form action="/faculty/view_application/{{$.Application.SporicRefNo}}" method="post" ,
           enctype="multipart/form-data">
           <input type="hidden" name="action" value="update_payment" />
+          <input type="hidden" name="payment_id" value="{{.Payment_id}}" />
           <td>{{.Payment_amt}}</td>
           <td>{{.Gst_number}}</td>
           <td>{{.Pan_number}}</td>
-          <td><a href="#" target="_blank">View</a></td>
-          <td><a href="#" target="_blank">View</a></td>
+          <td><a href="/download/{{$.Application.SporicRefNo}}/{{.Payment_id}}/tax_cirtificate" target="_blank">View</a>
+          </td>
+          <td><a href="/download/{{$.Application.SporicRefNo}}/{{.Payment_id}}/invoice" target="_blank">View</a></td>
           <td>
-            <input type="text" class="form-control" placeholder="Transaction ID" />
+            {{if eq .Transaction_id ""}}
+            <input type="text" class="form-control" name="transaction_id" placeholder="Transaction ID" />
+            {{end}}
+            {{if ne .Transaction_id ""}}
+            {{.Transaction_id}}
+            {{end}}
           </td>
           <td>
+            {{if eq .Transaction_id ""}}
             <input type="file" class="form-control" placeholder="Payment Proof" name="payment_proof" accept=".pdf"
               required />
+            {{end}}
+            {{if ne .Transaction_id ""}}
+            <a href="/download/{{$.Application.SporicRefNo}}/{{.Payment_id}}/payment" target="_blank">View</a>
+            {{end}}
           </td>
           <td>
             <button class="btn btn-primary">Confirm</button>
@@ -174,7 +189,8 @@
           <td>{{.Payment_amt}}</td>
           <td>{{.Gst_number}}</td>
           <td>{{.Pan_number}}</td>
-          <td><a href="#" target="_blank">View</a></td>
+          <td><a href="/download/{{$.Application.SporicRefNo}}/{{.Payment_id}}/tax_cirtificate" target="_blank">View</a>
+          </td>
           <td>Invoice not generated yet</td>
           <td></td>
           <td></td>
@@ -190,7 +206,8 @@
           <td>{{.Payment_amt}}</td>
           <td>{{.Gst_number}}</td>
           <td>{{.Pan_number}}</td>
-          <td><a href="#" target="_blank">View</a></td>
+          <td><a href="/download/{{$.Application.SporicRefNo}}/{{.Payment_id}}/tax_cirtificate" target="_blank">View</a>
+          </td>
           <td>Invoice not generated yet</td>
           <td></td>
           <td></td>
@@ -220,7 +237,8 @@
         <td>{{.Expenditure_name}}</td>
         <td>{{.Expenditure_amt}}</td>
         <td>{{.Expenditure_date.Format "Monday, 02-Jan-06"}}</td>
-        <td><a href="#" target="_blank">View</a></td>
+        <td><a href="/download/{{$.Application.SporicRefNo}}/{{.Expenditure_id}}/expenditure_proof"
+            target="_blank">View</a></td>
         <td>
           {{ if eq .Expenditure_status 0 }}<span class="badge bg-warning">Pending Approval</span>{{ end }}
           {{ if eq .Expenditure_status 1 }}<span class="badge bg-success">Approved</span>{{ end }}
@@ -233,6 +251,7 @@
 
   <div class="row">
     <div class="col-md-6">
+      {{if eq .Application.Status 1}}
       <h4>Request Invoice</h4>
       <form method="post" enctype="multipart/form-data">
         <input type="hidden" name="action" value="request_invoice" />
@@ -261,10 +280,12 @@
           </div>
         </div>
       </form>
+      {{end}}
     </div>
 
     <!-- form to add expenditure (name, cost, proof document) -->
     <div class="col-md-6">
+      {{if eq .Application.Status 1}}
       <h4>Add Expenditure</h4>
       <form method="post" enctype="multipart/form-data">
         <input type="hidden" name="action" value="add_expenditure" />
@@ -284,11 +305,13 @@
         </div>
         <button type="submit" class="btn btn-primary">Add Expenditure</button>
       </form>
+      {{end}}
     </div>
   </div>
 
   <div class="row mt-4">
     <div class="col-md-6">
+      {{if eq .Application.Status 1}}
       <h4>Complete Project</h4>
       <form method="post" enctype="multipart/form-data">
         <input type="hidden" name="action" value="complete_project" />
@@ -309,6 +332,7 @@
           </div>
           <button type="submit" class="btn btn-primary">Complete Project</button>
       </form>
+      {{end}}
     </div>
   </div>
 

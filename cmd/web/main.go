@@ -111,5 +111,6 @@ func (app App) routes() http.Handler {
 	router.Handler(http.MethodPost, "/faculty/view_application/:refno", dynamic.ThenFunc(app.faculty_view_application))
 	router.Handler(http.MethodGet, "/admin/view_application/:refno", dynamic.ThenFunc(app.admin_view_application))
 	router.Handler(http.MethodPost, "/admin/view_application/:refno", dynamic.ThenFunc(app.admin_view_application))
+	router.Handler(http.MethodGet, "/download/:folder/:doc_id/:doc_type", dynamic.ThenFunc(app.download))
 	return router
 }

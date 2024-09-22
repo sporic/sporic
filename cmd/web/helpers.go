@@ -55,25 +55,25 @@ func (app *App) handleFile(r *http.Request, folder_name string, prefix string, f
 
 	filename := ""
 	if file_type == ProposalDoc {
-		filename = prefix + "_proposal" + ".pdf"
+		filename = folder_name + "_" + prefix + "_proposal" + ".pdf"
 	}
 	if file_type == Invoice {
-		filename = prefix + "_invoice" + ".pdf"
+		filename = folder_name + "_" + prefix + "_invoice" + ".pdf"
 	}
 	if file_type == PaymentProof {
-		filename = prefix + "_payment" + ".pdf"
+		filename = folder_name + "_" + prefix + "_payment" + ".pdf"
 	}
 	if file_type == GstCirtificate {
-		filename = prefix + "_gst_cirtificate" + ".pdf"
+		filename = folder_name + "_" + prefix + "_tax_cirtificate" + ".pdf"
 	}
 	if file_type == PanCard {
-		filename = prefix + "_pan_card" + ".pdf"
+		filename = folder_name + "_" + prefix + "_tax_cirtificate" + ".pdf"
 	}
 	if file_type == CompletionDoc {
-		filename = prefix + "_completion_form" + ".pdf"
+		filename = folder_name + "_" + prefix + "_completion_form" + ".pdf"
 	}
 	if file_type == ExpenditureProof {
-		filename = prefix + "_expenditure_proof" + ".pdf"
+		filename = folder_name + "_" + prefix + "_expenditure_proof" + ".pdf"
 	}
 
 	filePath := filepath.Join(uploadDir, filename)
