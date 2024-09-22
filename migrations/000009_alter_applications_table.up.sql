@@ -1,1 +1,1 @@
-alter table applications add column resources_used integer not null default 0, add column comments varchar(255) not null, add column completion_date datetime not null;
+alter table applications add column resources_used integer not null default 0, add column comments varchar(255) not null default "", add column completion_date datetime not null default "2004-01-10 00:00:00";
