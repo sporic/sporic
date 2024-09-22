@@ -303,6 +303,9 @@ func (m *ApplicationModel) Insert(form Application) (string, error) {
 		form.ContactPersonMobile,
 		form.ContactPersonDesignation,
 		ProjectPendingApproval)
+	if err != nil {
+		return "", err
+	}
 
 	for _, member := range form.Members {
 		_, err := m.Db.Exec("insert into team (sporic_ref_no, member_name) values (?, ?)", sporic_ref_no, member)

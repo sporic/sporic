@@ -61,8 +61,11 @@
                         <td>{{.User.School}}</td>
                     </tr>
                     <tr>
+                        <th>Closure Document</th>
+                        <td><a href="#">View</a></td>
+                    </tr>
+                    <tr>
                         <th>Project Status</th>
-
                         <td>{{if eq .Application.Status 3}}<span class="badge bg-warning">Completed Approval
                                 Pending</span>{{end}}
                             {{if eq .Application.Status 2}}<span class="badge bg-success">Completed</span>{{end}}</td>
@@ -100,6 +103,54 @@
                         <th>Mobile No.</th>
                         <td>{{.Application.ContactPersonMobile}}</td>
                     </tr>
+                    <tr>
+                        <th>Exstimated Cost</th>
+                        <td>
+                            {{.Application.EstimatedAmt}}
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>Proposal</th>
+                        <td><a href="#" target=" _blank">View</a></td>
+                    </tr>
+                    {{ if or (eq .Application.Status 2) (eq .Application.Status 3) }}
+                    <tr>
+                        <td>Closure Document</td>
+                        <td><a href="#" target=" _blank">View</a></td>
+                    </tr>
+                    {{ end }}
+                    <tr>
+                        <th>Project Status</th>
+
+                        <td>
+                            {{if eq .Application.Status 3}}<span class="badge bg-warning">Completed Approval
+                                Pending</span>{{end}}
+                            {{if eq .Application.Status 2}}<span class="badge bg-success">Completed</span>{{end}}
+                            {{if eq .Application.Status 1}}<span class="badge bg-success">Application
+                                Approved</span>{{end}}
+                            {{if eq .Application.Status 0}}<span class="badge bg-warning">Application Approval
+                                Pending</span>{{end}}
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Team Members -->
+        <div class="col-md-6">
+            <h4>Team Members</h4>
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {{range .Application.Members}}
+                    <tr>
+                        <td>{{.}}</td>
+                    </tr>
+                    {{end}}
                 </tbody>
             </table>
         </div>

@@ -1,0 +1,200 @@
+{{define "title"}}Admin Home{{ end }}
+
+{{define "main"}}
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="#">SpoRIC</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+            aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item">
+                    <a class="nav-link active" href="/admin_home">Dashboard</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/faculty-notifications">Notifications</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/faculty-profile">Profile</a>
+                </li>
+                <li class="nav-item">
+                    <form action="/logout" method="post">
+                        <input class="nav-link" type="submit" value="Logout" />
+                    </form>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<div class="container mt-4">
+    <h2 class="mb-4">Welcome, {{.User.Username}}</h2>
+
+    <!-- Ivoice Generation -->
+    <div class="row mt-4">
+        <div class="col-md-12">
+            <h4>Invoice Generations</h4>
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>Amount</th>
+                        <th>GST No.</th>
+                        <th>PAN No.</th>
+                        <th>GST Certificate</th>
+                        <th>Invoice</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {{range.Application.Payments}}
+                    {{if eq .Payment_status 4}}
+                    <tr>
+                        <form action="/admin_home" method="post">
+                            <input type="hidden" name="action" value="generate_invoice" />
+                            <input type="hidden" name="payment_id" value="{{.Payment_id}}" />
+                            <td>{{.Payment_amt}}</td>
+                            <td>{{.Gst_number}}</td>
+                            <td>{{.Pan_number}}</td>
+                            <td><a href="#" target="_blank">View</a></td>
+                            <td><input type="file" class="form-control" placeholder="Invoice" name="invoice"
+                                    accept=".pdf" required /></td>
+                            <td><button type="submit" class="btn btn-primary">Submit</button></td>
+                        </form>
+                    </tr>
+                    {{end}}
+                    {{end}}
+                </tbody>
+            </table>
+
+        </div>
+    </div>
+
+    <!-- Payment Verification -->
+    <div class="row mt-4">
+        <div class="col-md-12">
+            <h4>Payment Verification</h4>
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>Amount</th>
+                        <th>GST No.</th>
+                        <th>PAN No.</th>
+                        <th>GST Certificate</th>
+                        <th>Invoice</th>
+                        <th>Transaction ID</th>
+                        <th>Payment Proof</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {{range.Application.Payments}}
+                    {{if eq .Payment_status 1}}<!-- TODO status pending approval -->
+                    <tr>
+                        <form action="/admin_home" method="post">
+                            <td>{{.Payment_amt}}</td>
+                            <td>{{.Gst_number}}</td>
+                            <td>{{.Pan_number}}</td>
+                            <td><a href="/download/{{$.Application.SporicRefNo}}/{{.Payment_id}}/tax_cirtificate"
+                                    target="_blank">View</a></td>
+                            <td><a href="/download/{{$.Application.SporicRefNo}}/{{.Payment_id}}/invoice"
+                                    target="_blank">View</a>
+                            </td>
+                            <td>{{.Transaction_id}}</td>
+                            <td><a href="/download/{{$.Application.SporicRefNo}}/{{.Payment_id}}/payment"
+                                    target="_blank">View</a>
+                            </td>
+                            <td>
+                                <span class="badge bg-success">Approve</span>
+                            </td>
+                            <td>
+                                <div style="display: flex; gap: 10px;">
+                                    <form action="/admin/view_application/{{.SporicRefNo}}" method="post"
+                                        style="display: inline;">
+                                        <input type="hidden" name="action" value="approve_expenditure" />
+                                        <button class="btn btn-success">Approve</button>
+                                    </form>
+                                    <form action="/admin/view_application/{{.SporicRefNo}}" method="post"
+                                        style="display: inline;">
+                                        <input type="hidden" name="action" value="reject_expenditure" />
+                                        <button class="btn btn-danger">Reject</button>
+                                    </form>
+                                </div>
+                            </td>
+                        </form>
+                    </tr>
+                    {{end}}
+                    {{end}}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+
+    <!-- Everything Else -->
+    <div class="row mt-4">
+        <div class="col-md-12">
+            <h4>All other paymets</h4>
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>Amount</th>
+                        <th>GST No.</th>
+                        <th>PAN No.</th>
+                        <th>GST Certificate</th>
+                        <th>Invoice</th>
+                        <th>Transaction ID</th>
+                        <th>Payment Proof</th>
+                        <th>Status</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {{range.Application.Payments}}
+                    {{ if eq .Payment_status 2 }}
+                    <tr>
+                        <td>{{.Payment_amt}}</td>
+                        <td>{{.Gst_number}}</td>
+                        <td>{{.Pan_number}}</td>
+                        <td><a href="/download/{{$.Application.SporicRefNo}}/{{.Payment_id}}/tax_cirtificate"
+                                target="_blank">View</a></td>
+                        <td><a href="/download/{{$.Application.SporicRefNo}}/{{.Payment_id}}/invoice"
+                                target="_blank">View</a>
+                        </td>
+                        <td>{{.}}</td>
+                        <td><a href="/download/{{$.Application.SporicRefNo}}/{{.Payment_id}}/payment"
+                                target="_blank">View</a>
+                        </td>
+                        <td>
+                            <span class="badge bg-success">Approved</span>
+                        </td>
+                    </tr>
+                    {{end}}
+                    {{if eq .Payment_status 3}}
+                    <tr>
+                        <td>{{.Payment_amt}}</td>
+                        <td>{{.Gst_number}}</td>
+                        <td>{{.Pan_number}}</td>
+                        <td><a href="/download/{{$.Application.SporicRefNo}}/{{.Payment_id}}/tax_cirtificate"
+                                target="_blank">View</a></td>
+                        <td><a href="/download/{{$.Application.SporicRefNo}}/{{.Payment_id}}/invoice"
+                                target="_blank">View</a>
+                        </td>
+                        <td>{{.}}</td>
+                        <td><a href="/download/{{$.Application.SporicRefNo}}/{{.Payment_id}}/payment"
+                                target="_blank">View</a>
+                        </td>
+                        <td>
+                            <span class="badge bg-success">Rejected</span>
+                        </td>
+                    </tr>
+                    {{end}}
+                    {{end}}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</div>
+{{ end }}
