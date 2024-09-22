@@ -123,7 +123,7 @@
         <td><a href="/download/{{$.Application.SporicRefNo}}/{{.Payment_id}}/tax_cirtificate" target="_blank">View</a>
         </td>
         <td><a href="/download/{{$.Application.SporicRefNo}}/{{.Payment_id}}/invoice" target="_blank">View</a></td>
-        <td>1231234324</td>
+        <td>{{.Transaction_id}}</td>
         <td><a href="/download/{{$.Application.SporicRefNo}}/{{.Payment_id}}/payment" target="_blank">View</a></td>
         <td>
           <span class="badge bg-success">Approve</span>
@@ -146,7 +146,7 @@
         </td>
       </tr>
       {{ end }}
-      {{ if eq .Payment_status 0 }}
+      {{ if eq .Payment_status 1 }}
       <tr>
         <form action="/faculty/view_application/{{$.Application.SporicRefNo}}" method="post" ,
           enctype="multipart/form-data">
