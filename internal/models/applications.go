@@ -18,6 +18,7 @@ type Application struct {
 	EstimatedAmt             int
 	CompanyName              string
 	CompanyAddress           string
+	BillingAddress           string
 	ContactPersonName        string
 	ContactPersonDesignation string
 	ContactPersonEmail       string
@@ -73,7 +74,7 @@ type ApplicationModel struct {
 }
 
 func (m *ApplicationModel) FetchAll() ([]Application, error) {
-	rows, err := m.Db.Query("select sporic_ref_no, project_title, leader, financial_year, activity_type, estimated_amt, company_name, company_adress, contact_person_name, contact_person_email, contact_person_mobile, contact_person_designation, project_status, comments, resources_used, completion_date from applications")
+	rows, err := m.Db.Query("select sporic_ref_no, project_title, leader, financial_year, activity_type, estimated_amt, company_name, company_adress, billing_address,  contact_person_name, contact_person_email, contact_person_mobile, contact_person_designation, project_status, comments, resources_used, completion_date from applications")
 	if err != nil {
 		return nil, err
 	}
@@ -82,7 +83,7 @@ func (m *ApplicationModel) FetchAll() ([]Application, error) {
 	var applications []Application
 	for rows.Next() {
 		var a Application
-		err := rows.Scan(&a.SporicRefNo, &a.Leader, &a.FinancialYear, &a.ActivityType, &a.EstimatedAmt, &a.CompanyName, &a.CompanyAddress, &a.ContactPersonName, &a.ContactPersonEmail, &a.ContactPersonMobile, &a.ContactPersonDesignation, &a.Status, &a.Comments, &a.ResourceUsed, &a.CompletionDate)
+		err := rows.Scan(&a.SporicRefNo, &a.ProjectTitle, &a.Leader, &a.FinancialYear, &a.ActivityType, &a.EstimatedAmt, &a.CompanyName, &a.CompanyAddress, &a.BillingAddress, &a.ContactPersonName, &a.ContactPersonEmail, &a.ContactPersonMobile, &a.ContactPersonDesignation, &a.Status, &a.Comments, &a.ResourceUsed, &a.CompletionDate)
 		if err != nil {
 			return nil, err
 		}
@@ -101,7 +102,7 @@ func (m *ApplicationModel) FetchAll() ([]Application, error) {
 			a.Members = append(a.Members, member)
 		}
 
-		rows_payments, err := m.Db.Query("Select payment_id, sporic_ref_no, payment_amt, gst_number, pan_number ,payment_date, payment_status, transaction_id from payment where sporic_ref_no= ?", a.SporicRefNo)
+		rows_payments, err := m.Db.Query("Select payment_id, sporic_ref_no, currency, payment_amt,tax, gst_number, pan_number ,payment_date, payment_status, transaction_id from payment where sporic_ref_no= ?", a.SporicRefNo)
 
 		if err != nil {
 			return nil, err
@@ -109,7 +110,7 @@ func (m *ApplicationModel) FetchAll() ([]Application, error) {
 
 		for rows_payments.Next() {
 			var p Payment
-			err := rows_payments.Scan(&p.Payment_id, &p.Sporic_ref_no, &p.Payment_amt, &p.Gst_number, &p.Pan_number, &p.Payment_date, &p.Payment_status, &p.Transaction_id)
+			err := rows_payments.Scan(&p.Payment_id, &p.Sporic_ref_no, &p.Currency, &p.Payment_amt, &p.Tax, &p.Gst_number, &p.Pan_number, &p.Payment_date, &p.Payment_status, &p.Transaction_id)
 			if err != nil {
 				return nil, err
 			}
@@ -141,7 +142,7 @@ func (m *ApplicationModel) FetchAll() ([]Application, error) {
 }
 
 func (m *ApplicationModel) FetchByLeader(leader int) ([]Application, error) {
-	rows, err := m.Db.Query("select sporic_ref_no, project_title, leader, financial_year, activity_type, estimated_amt, company_name, company_adress, contact_person_name, contact_person_email, contact_person_mobile, contact_person_designation, project_status, comments, resources_used, completion_date from applications where leader=?", leader)
+	rows, err := m.Db.Query("select sporic_ref_no, project_title, leader, financial_year, activity_type, estimated_amt, company_name, company_adress, billing_address, contact_person_name, contact_person_email, contact_person_mobile, contact_person_designation, project_status, comments, resources_used, completion_date from applications where leader=?", leader)
 	if err != nil {
 		return nil, err
 	}
@@ -151,7 +152,7 @@ func (m *ApplicationModel) FetchByLeader(leader int) ([]Application, error) {
 	for rows.Next() {
 
 		var a Application
-		err := rows.Scan(&a.SporicRefNo, &a.Leader, &a.FinancialYear, &a.ActivityType, &a.EstimatedAmt, &a.CompanyName, &a.CompanyAddress, &a.ContactPersonName, &a.ContactPersonEmail, &a.ContactPersonMobile, &a.ContactPersonDesignation, &a.Status, &a.Comments, &a.ResourceUsed, &a.CompletionDate)
+		err := rows.Scan(&a.SporicRefNo, &a.ProjectTitle, &a.Leader, &a.FinancialYear, &a.ActivityType, &a.EstimatedAmt, &a.CompanyName, &a.CompanyAddress, &a.BillingAddress, &a.ContactPersonName, &a.ContactPersonEmail, &a.ContactPersonMobile, &a.ContactPersonDesignation, &a.Status, &a.Comments, &a.ResourceUsed, &a.CompletionDate)
 		if err != nil {
 			return nil, err
 		}
@@ -168,14 +169,14 @@ func (m *ApplicationModel) FetchByLeader(leader int) ([]Application, error) {
 			}
 			a.Members = append(a.Members, member)
 		}
-		rows_payments, err := m.Db.Query("Select payment_id, sporic_ref_no, payment_amt, gst_number, pan_number ,payment_date, payment_status, transaction_id from payment where sporic_ref_no= ?", a.SporicRefNo)
+		rows_payments, err := m.Db.Query("Select payment_id, sporic_ref_no,currency, payment_amt,tax, gst_number, pan_number ,payment_date, payment_status, transaction_id from payment where sporic_ref_no= ?", a.SporicRefNo)
 		if err != nil {
 			return nil, err
 		}
 
 		for rows_payments.Next() {
 			var p Payment
-			err := rows_payments.Scan(&p.Payment_id, &p.Sporic_ref_no, &p.Payment_amt, &p.Gst_number, &p.Pan_number, &p.Payment_date, &p.Payment_status, &p.Transaction_id)
+			err := rows_payments.Scan(&p.Payment_id, &p.Sporic_ref_no, &p.Currency, &p.Payment_amt, &p.Tax, &p.Gst_number, &p.Pan_number, &p.Payment_date, &p.Payment_status, &p.Transaction_id)
 			if err != nil {
 				return nil, err
 			}
@@ -201,9 +202,9 @@ func (m *ApplicationModel) FetchByLeader(leader int) ([]Application, error) {
 }
 
 func (m *ApplicationModel) FetchByRefNo(ref_no string) (*Application, error) {
-	row := m.Db.QueryRow("select sporic_ref_no, project_title, leader, financial_year, activity_type, estimated_amt, company_name, company_adress, contact_person_name, contact_person_email, contact_person_mobile, contact_person_designation, project_status,comments, resources_used, completion_date from applications where sporic_ref_no=?", ref_no)
+	row := m.Db.QueryRow("select sporic_ref_no, project_title, leader, financial_year, activity_type, estimated_amt, company_name, company_adress, billing_address, contact_person_name, contact_person_email, contact_person_mobile, contact_person_designation, project_status,comments, resources_used, completion_date from applications where sporic_ref_no=?", ref_no)
 	var a Application
-	err := row.Scan(&a.SporicRefNo, &a.Leader, &a.FinancialYear, &a.ActivityType, &a.EstimatedAmt, &a.CompanyName, &a.CompanyAddress, &a.ContactPersonName, &a.ContactPersonEmail, &a.ContactPersonMobile, &a.ContactPersonDesignation, &a.Status, &a.Comments, &a.ResourceUsed, &a.CompletionDate)
+	err := row.Scan(&a.SporicRefNo, &a.ProjectTitle, &a.Leader, &a.FinancialYear, &a.ActivityType, &a.EstimatedAmt, &a.CompanyName, &a.CompanyAddress, &a.BillingAddress, &a.ContactPersonName, &a.ContactPersonEmail, &a.ContactPersonMobile, &a.ContactPersonDesignation, &a.Status, &a.Comments, &a.ResourceUsed, &a.CompletionDate)
 	if err != nil {
 		return nil, err
 	}
@@ -223,14 +224,14 @@ func (m *ApplicationModel) FetchByRefNo(ref_no string) (*Application, error) {
 		a.Members = append(a.Members, member)
 	}
 
-	rows, err = m.Db.Query("Select payment_id, sporic_ref_no, payment_amt, gst_number, pan_number ,payment_date, payment_status, transaction_id from payment where sporic_ref_no= ?", a.SporicRefNo)
+	rows, err = m.Db.Query("Select payment_id, sporic_ref_no, currency, payment_amt,tax, gst_number, pan_number ,payment_date, payment_status, transaction_id from payment where sporic_ref_no= ?", a.SporicRefNo)
 	if err != nil {
 		return nil, err
 	}
 
 	for rows.Next() {
 		var p Payment
-		err := rows.Scan(&p.Payment_id, &p.Sporic_ref_no, &p.Payment_amt, &p.Gst_number, &p.Pan_number, &p.Payment_date, &p.Payment_status, &p.Transaction_id)
+		err := rows.Scan(&p.Payment_id, &p.Sporic_ref_no, &p.Currency, &p.Payment_amt,&p.Tax, &p.Gst_number, &p.Pan_number, &p.Payment_date, &p.Payment_status, &p.Transaction_id)
 		if err != nil {
 			return nil, err
 		}
@@ -286,20 +287,23 @@ func (m *ApplicationModel) Insert(form Application) (string, error) {
 		 activity_type, 
 		 estimated_amt, 
 		 company_name, 
-		 company_adress, 
+		 company_adress,
+		 billing_address, 
 		 contact_person_name, 
 		 contact_person_email, 
 		 contact_person_mobile,
 		 contact_person_designation,
 		 project_status) 
-		 values (?,?,?,?,?,?,?,?,?,?,?,?)`,
+		 values (?,?,?,?,?,?,?,?,?,?,?,?, ?, ?)`,
 		sporic_ref_no,
+		form.ProjectTitle,
 		form.Leader,
 		form.FinancialYear,
 		form.ActivityType,
 		form.EstimatedAmt,
 		form.CompanyName,
 		form.CompanyAddress,
+		form.BillingAddress,
 		form.ContactPersonName,
 		form.ContactPersonEmail,
 		form.ContactPersonMobile,
@@ -346,9 +350,11 @@ func (m *ApplicationModel) SetPaymentStatus(refno string, status PaymentStatus) 
 
 type Payment struct {
 	Payment_id     int
+	Currency       string
 	Transaction_id string
 	Sporic_ref_no  string
 	Payment_amt    int
+	Tax            int
 	Gst_number     string
 	Pan_number     string
 	Payment_date   sql.NullTime
@@ -361,13 +367,16 @@ func (m *ApplicationModel) Insert_invoice_request(payment Payment) (int, error) 
 
 	application.Payments = append(application.Payments, payment)
 	res, err := m.Db.Exec(`insert into payment 
-	(sporic_ref_no, 
-	payment_amt, 
+	(sporic_ref_no,
+	currency, 
+	payment_amt,
+	tax, 
 	gst_number, 
 	pan_number, 
 	payment_status) 
-	values (?,?,?,?,?)`,
+	values (?,?,?,?,?,?)`,
 		payment.Sporic_ref_no,
+		payment.Currency,
 		payment.Payment_amt,
 		payment.Gst_number,
 		payment.Pan_number,

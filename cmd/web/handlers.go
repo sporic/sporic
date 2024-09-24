@@ -161,11 +161,13 @@ func (app *App) faculty_home(w http.ResponseWriter, r *http.Request) {
 }
 
 type newApplicationForm struct {
+	ProjectTitle             string   `form:"project_title"`
 	ActivityType             string   `form:"activity_type"`
 	FinancialYear            string   `form:"financial_year"`
 	EstimatedAmt             string   `form:"estimated_amount"`
 	CompanyName              string   `form:"company_name"`
 	CompanyAddress           string   `form:"company_address"`
+	BillingAddress           string   `form:"billing_address"`
 	ContactPersonName        string   `form:"contact_person_name"`
 	ContactPersonEmail       string   `form:"contact_person_email"`
 	ConatactPersonMobile     string   `form:"contact_person_mobile"`
@@ -247,10 +249,12 @@ func (app *App) new_application_post(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	application.ProjectTitle = form.ProjectTitle
 	application.FinancialYear = fy_year
 	application.EstimatedAmt = estimated_amount
 	application.CompanyName = form.CompanyName
 	application.CompanyAddress = form.CompanyAddress
+	application.BillingAddress = form.BillingAddress
 	application.ContactPersonName = form.ContactPersonName
 	application.ContactPersonEmail = form.ContactPersonEmail
 	application.ContactPersonMobile = form.ConatactPersonMobile
@@ -374,7 +378,9 @@ func (app *App) faculty_view_application(w http.ResponseWriter, r *http.Request)
 }
 
 type NewInvoice struct {
+	Currency   string `form:"currency"`
 	PaymentAmt int    `form:"payment_amt"`
+	Tax        int    `form:"tax"`
 	GstNumber  string `form:"gst_number"`
 	PanNumber  string `form:"pan_number"`
 }
@@ -391,7 +397,9 @@ func (app *App) request_invoice(r *http.Request, SporicRefNo string) error {
 	var payment models.Payment
 
 	payment.Sporic_ref_no = SporicRefNo
+	payment.Currency = invoice_form.Currency
 	payment.Payment_amt = invoice_form.PaymentAmt
+	payment.Tax = invoice_form.Tax
 	payment.Gst_number = invoice_form.GstNumber
 	payment.Pan_number = invoice_form.PanNumber
 	payment.Payment_status = models.PaymentInvoiceRequested
