@@ -412,7 +412,7 @@ func (m *ApplicationModel) Insert_expenditure(expenditure Expenditure) (int, err
 
 	res, err := m.Db.Exec(`insert into expenditure
 	(sporic_ref_no,
-	expendiyure_type
+	expenditure_type,
 	expenditure_name,
 	expenditure_amt, 
 	expenditure_date,

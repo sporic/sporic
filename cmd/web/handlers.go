@@ -447,7 +447,12 @@ func (app *App) add_expenditure(r *http.Request, SporicRefNo string) error {
 		return err
 	}
 
-	err = app.handleFile(r, SporicRefNo, strconv.Itoa(exp_id), ExpenditureProof, "expenditure_proof")
+	if expenditure_form.ExpenditureType == 0 {
+		err = app.handleFile(r, SporicRefNo, strconv.Itoa(exp_id), ExpenditureProof, "expenditure_proof")
+	}
+	if expenditure_form.ExpenditureType == 1 {
+		err = app.handleFile(r, SporicRefNo, strconv.Itoa(exp_id), ExpenditureInvoice, "expenditure_proof")
+	}
 
 	if err != nil {
 		return err
