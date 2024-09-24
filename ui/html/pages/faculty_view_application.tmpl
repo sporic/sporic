@@ -164,7 +164,9 @@
   <table class="table table-bordered">
     <thead>
       <tr>
+        <th>Currency</th>
         <th>Amount</th>
+        <th>Tax</th>
         <th>GST No.</th>
         <th>PAN No.</th>
         <th>GST Certificate</th>
@@ -179,7 +181,9 @@
       {{ if eq .Payment_status 2 }}
       <tr>
         <input type="hidden" name="payment_id" value="{{.Payment_id}}" />
+        <td>{{.Currency}}</td>
         <td>{{.Payment_amt}}</td>
+        <td>{{.Tax}}</td>
         <td>{{.Gst_number}}</td>
         <td>{{.Pan_number}}</td>
         <td><a href="/download/{{$.Application.SporicRefNo}}/{{.Payment_id}}/tax_cirtificate" target="_blank">View</a>
@@ -195,7 +199,9 @@
       {{ if eq .Payment_status 3 }}
       <tr>
         <input type="hidden" name="payment_id" value="{{.Payment_id}}" />
+        <td>{{.Currency}}</td>
         <td>{{.Payment_amt}}</td>
+        <td>{{.Tax}}</td>
         <td>{{.Gst_number}}</td>
         <td>{{.Pan_number}}</td>
         <td><a href="/download/{{$.Application.SporicRefNo}}/{{.Payment_id}}/tax_cirtificate" target="_blank">View</a>
@@ -214,7 +220,9 @@
           enctype="multipart/form-data">
           <input type="hidden" name="action" value="update_payment" />
           <input type="hidden" name="payment_id" value="{{.Payment_id}}" />
+          <td>{{.Currency}}</td>
           <td>{{.Payment_amt}}</td>
+          <td>{{.Tax}}</td>
           <td>{{.Gst_number}}</td>
           <td>{{.Pan_number}}</td>
           <td><a href="/download/{{$.Application.SporicRefNo}}/{{.Payment_id}}/tax_cirtificate" target="_blank">View</a>
@@ -250,7 +258,9 @@
         <form action="/faculty_view_application" method="post">
           <input type="hidden" name="action" value="confirm_payment" />
           <input type="hidden" name="payment_id" value="{{.Payment_id}}" />
+          <td>{{.Currency}}</td>
           <td>{{.Payment_amt}}</td>
+          <td>{{.Tax}}</td>
           <td>{{.Gst_number}}</td>
           <td>{{.Pan_number}}</td>
           <td><a href="/download/{{$.Application.SporicRefNo}}/{{.Payment_id}}/tax_cirtificate" target="_blank">View</a>
@@ -267,7 +277,9 @@
         <form action="/faculty_view_application" method="post">
           <input type="hidden" name="action" value="confirm_payment" />
           <input type="hidden" name="payment_id" value="{{.Payment_id}}" />
+          <td>{{.Currency}}</td>
           <td>{{.Payment_amt}}</td>
+          <td>{{.Tax}}</td>
           <td>{{.Gst_number}}</td>
           <td>{{.Pan_number}}</td>
           <td><a href="/download/{{$.Application.SporicRefNo}}/{{.Payment_id}}/tax_cirtificate" target="_blank">View</a>
@@ -313,7 +325,9 @@
     </tbody>
   </table>
 
+
   <div class="row">
+    <!-- Request Invoice Form -->
     <div class="col-md-6">
       {{if eq .Application.Status 1}}
       <h4>Request Invoice</h4>
@@ -323,20 +337,31 @@
         <div class="row">
           <div class="col-md-6">
             <div class="mb-3">
-              <label for="amount" class="form-label">Amount</label>
+              <label for="currency" class="form-label">Currency</label>
+              <select class="form-select" id="currency" name="currency" required>
+                <option value="INR">INR</option>
+                <option value="USD">USD</option>
+              </select>
+            </div>
+            <div class="mb-3">
+              <label for="amount" class="form-label">Amount Excluding Tax</label>
               <input type="text" class="form-control" id="amount" name="payment_amt" required />
             </div>
             <div class="mb-3">
+              <label for="tax" class="form-label">Tax</label>
+              <input type="text" class="form-control" id="tax" name="tax" required />
+            </div>
+            <div class="mb-3">
               <label for="gst" class="form-label">GST No.</label>
-              <input type="text" class="form-control" id="gst" name="gst_number" required />
+              <input type="text" class="form-control" id="gst" name="gst_number" />
             </div>
             <div class="mb-3">
               <label for="pan" class="form-label">PAN No.</label>
-              <input type="text" class="form-control" id="pan" name="pan_number" required />
+              <input type="text" class="form-control" id="pan" name="pan_number" />
             </div>
             <div class="mb-3">
               <label for="gst_certificate" class="form-label">GST Certificate</label>
-              <input type="file" class="form-control" id="gst_certificate" name="tax_certificate" required />
+              <input type="file" class="form-control" id="gst_certificate" name="tax_certificate" />
             </div>
             <button type="submit" class="btn btn-primary">
               Request Invoice
@@ -347,7 +372,7 @@
       {{end}}
     </div>
 
-    <!-- form to add expenditure (name, cost, proof document) -->
+    <!-- Expenditure Form -->
     <div class="col-md-6">
       {{if eq .Application.Status 1}}
       <h4>Add Expenditure</h4>
@@ -373,6 +398,7 @@
     </div>
   </div>
 
+  <!-- Complete Project form -->
   <div class="row mt-4">
     <div class="col-md-6">
       {{if eq .Application.Status 1}}
