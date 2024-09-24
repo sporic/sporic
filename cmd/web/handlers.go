@@ -655,8 +655,8 @@ func (app *App) download(w http.ResponseWriter, r *http.Request) {
 
 	filePath := filepath.Join(prefixPath, filepath.Clean(filename))
 
-	w.Header().Set("Content-Disposition", fmt.Sprintf("attachment; filename=%s", filename))
-	w.Header().Set("Content-Type", "application/octet-stream")
+	//w.Header().Set("Content-Disposition", fmt.Sprintf("inline; filename=%s", filename))
+	w.Header().Set("Content-Type", "application/pdf")
 
 	http.ServeFile(w, r, filePath)
 }
