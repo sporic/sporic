@@ -75,6 +75,9 @@ func (app *App) handleFile(r *http.Request, folder_name string, prefix string, f
 	if file_type == ExpenditureProof {
 		filename = folder_name + "_" + prefix + "_expenditure_proof" + ".pdf"
 	}
+	if file_type == ExpenditureInvoice{
+		filename = folder_name + "_" + prefix + "_expenditure_invoice" + ".pdf"
+	}
 
 	filePath := filepath.Join(uploadDir, filename)
 

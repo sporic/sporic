@@ -1,0 +1,1 @@
+alter table expenditure drop column expenditure_type;

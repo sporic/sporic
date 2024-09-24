@@ -117,14 +117,14 @@ func (m *ApplicationModel) FetchAll() ([]Application, error) {
 			a.Payments = append(a.Payments, p)
 		}
 
-		rows_expenditure, err := m.Db.Query("Select expenditure_id, sporic_ref_no, expenditure_name, expenditure_amt, expenditure_date, expenditure_status from expenditure where sporic_ref_no= ?", a.SporicRefNo)
+		rows_expenditure, err := m.Db.Query("Select expenditure_id, expenditure_type, sporic_ref_no, expenditure_name, expenditure_amt, expenditure_date, expenditure_status from expenditure where sporic_ref_no= ?", a.SporicRefNo)
 		if err != nil {
 			return nil, err
 		}
 
 		for rows_expenditure.Next() {
 			var e Expenditure
-			err := rows_expenditure.Scan(&e.Expenditure_id, &e.SporicRefNo, &e.Expenditure_name, &e.Expenditure_amt, &e.Expenditure_date, &e.Expenditure_status)
+			err := rows_expenditure.Scan(&e.Expenditure_id, &e.Expenditure_type, &e.SporicRefNo, &e.Expenditure_name, &e.Expenditure_amt, &e.Expenditure_date, &e.Expenditure_status)
 			if err != nil {
 				return nil, err
 			}
@@ -183,14 +183,14 @@ func (m *ApplicationModel) FetchByLeader(leader int) ([]Application, error) {
 			a.Payments = append(a.Payments, p)
 		}
 
-		rows_expenditure, err := m.Db.Query("Select expenditure_id, sporic_ref_no, expenditure_name, expenditure_amt, expenditure_date, expenditure_status from expenditure where sporic_ref_no= ?", a.SporicRefNo)
+		rows_expenditure, err := m.Db.Query("Select expenditure_id,expenditure_type, sporic_ref_no, expenditure_name, expenditure_amt, expenditure_date, expenditure_status from expenditure where sporic_ref_no= ?", a.SporicRefNo)
 		if err != nil {
 			return nil, err
 		}
 
 		for rows_expenditure.Next() {
 			var e Expenditure
-			err := rows_expenditure.Scan(&e.Expenditure_id, &e.SporicRefNo, &e.Expenditure_name, &e.Expenditure_amt, &e.Expenditure_date, &e.Expenditure_status)
+			err := rows_expenditure.Scan(&e.Expenditure_id, &e.Expenditure_type, &e.SporicRefNo, &e.Expenditure_name, &e.Expenditure_amt, &e.Expenditure_date, &e.Expenditure_status)
 			if err != nil {
 				return nil, err
 			}
@@ -231,21 +231,21 @@ func (m *ApplicationModel) FetchByRefNo(ref_no string) (*Application, error) {
 
 	for rows.Next() {
 		var p Payment
-		err := rows.Scan(&p.Payment_id, &p.Sporic_ref_no, &p.Currency, &p.Payment_amt,&p.Tax, &p.Gst_number, &p.Pan_number, &p.Payment_date, &p.Payment_status, &p.Transaction_id)
+		err := rows.Scan(&p.Payment_id, &p.Sporic_ref_no, &p.Currency, &p.Payment_amt, &p.Tax, &p.Gst_number, &p.Pan_number, &p.Payment_date, &p.Payment_status, &p.Transaction_id)
 		if err != nil {
 			return nil, err
 		}
 		a.Payments = append(a.Payments, p)
 	}
 
-	rows_expenditure, err := m.Db.Query("Select expenditure_id, sporic_ref_no, expenditure_name, expenditure_amt, expenditure_date, expenditure_status from expenditure where sporic_ref_no= ?", a.SporicRefNo)
+	rows_expenditure, err := m.Db.Query("Select expenditure_id, expenditure_type, sporic_ref_no, expenditure_name, expenditure_amt, expenditure_date, expenditure_status from expenditure where sporic_ref_no= ?", a.SporicRefNo)
 	if err != nil {
 		return nil, err
 	}
 
 	for rows_expenditure.Next() {
 		var e Expenditure
-		err := rows_expenditure.Scan(&e.Expenditure_id, &e.SporicRefNo, &e.Expenditure_name, &e.Expenditure_amt, &e.Expenditure_date, &e.Expenditure_status)
+		err := rows_expenditure.Scan(&e.Expenditure_id, &e.Expenditure_type, &e.SporicRefNo, &e.Expenditure_name, &e.Expenditure_amt, &e.Expenditure_date, &e.Expenditure_status)
 		if err != nil {
 			return nil, err
 		}
@@ -374,10 +374,11 @@ func (m *ApplicationModel) Insert_invoice_request(payment Payment) (int, error) 
 	gst_number, 
 	pan_number, 
 	payment_status) 
-	values (?,?,?,?,?,?)`,
+	values (?,?,?,?,?,?,?)`,
 		payment.Sporic_ref_no,
 		payment.Currency,
 		payment.Payment_amt,
+		payment.Tax,
 		payment.Gst_number,
 		payment.Pan_number,
 		payment.Payment_status)
@@ -394,6 +395,7 @@ func (m *ApplicationModel) Insert_invoice_request(payment Payment) (int, error) 
 }
 
 type Expenditure struct {
+	Expenditure_type   int
 	Expenditure_id     int
 	SporicRefNo        string
 	Expenditure_name   string
@@ -410,12 +412,14 @@ func (m *ApplicationModel) Insert_expenditure(expenditure Expenditure) (int, err
 
 	res, err := m.Db.Exec(`insert into expenditure
 	(sporic_ref_no,
+	expendiyure_type
 	expenditure_name,
 	expenditure_amt, 
 	expenditure_date,
 	expenditure_status)
-	values (?,?,?,?,?)`,
+	values (?,?,?,?,?,?)`,
 		expenditure.SporicRefNo,
+		expenditure.Expenditure_type,
 		expenditure.Expenditure_name,
 		expenditure.Expenditure_amt,
 		expenditure.Expenditure_date,

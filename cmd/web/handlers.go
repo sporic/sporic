@@ -24,6 +24,7 @@ const (
 	PanCard
 	CompletionDoc
 	ExpenditureProof
+	ExpenditureInvoice
 )
 
 type loginForm struct {
@@ -418,6 +419,7 @@ func (app *App) request_invoice(r *http.Request, SporicRefNo string) error {
 }
 
 type NewExpenditure struct {
+	ExpenditureType int    `form:"expenditure_type"`
 	ExpenditureName string `form:"expenditure_name"`
 	ExpenditureAmt  int    `form:"expenditure_amt"`
 }
@@ -434,6 +436,7 @@ func (app *App) add_expenditure(r *http.Request, SporicRefNo string) error {
 	var expenditure models.Expenditure
 
 	expenditure.SporicRefNo = SporicRefNo
+	expenditure.Expenditure_type = expenditure_form.ExpenditureType
 	expenditure.Expenditure_name = expenditure_form.ExpenditureName
 	expenditure.Expenditure_date = time.Now()
 	expenditure.Expenditure_amt = expenditure_form.ExpenditureAmt
