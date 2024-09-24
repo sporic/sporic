@@ -1,4 +1,4 @@
-{{define "title"}}Faculty Home{{ end }}
+{{define "title"}}View Application{{ end }}
 
 {{define "main"}}
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
@@ -303,8 +303,12 @@
                 <td>{{if eq .Expenditure_type 0}}Claim{{else}}Invoice{{end}}</td>
                 <td>{{.Expenditure_amt}}</td>
                 <td>{{.Expenditure_date.Format "Monday, 02-Jan-06"}}</td>
-                <td><a href="/download/{{$.Application.SporicRefNo}}/{{.Expenditure_id}}/expenditure_proof"
-                        target="_blank">View</a></td>
+                <td>{{if eq .Expenditure_type 0}}<a
+                        href="/download/{{$.Application.SporicRefNo}}/{{.Expenditure_id}}/expenditure_proof"
+                        target="_blank">View</a>{{else}}<a
+                        href="/download/{{$.Application.SporicRefNo}}/{{.Expenditure_id}}/expenditure_invoice"
+                        target="_blank">View</a>{{end}}</td>
+                </td>
                 <td>
                     {{if eq .Expenditure_status 0}}<span class="badge bg-warning">Pending Approval</span>{{ end }}
                     {{if eq .Expenditure_status 1}}<span class="badge bg-success">Approved</span>{{ end }}
