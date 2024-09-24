@@ -300,10 +300,11 @@
   <table class="table table-bordered">
     <thead>
       <tr>
-        <th>Name</th>
+        <th>Purpose</th>
+        <th>Expenditure Type</th>
         <th>Cost</th>
         <th>Date</th>
-        <th>Proof Document</th>
+        <th>Document</th>
         <th>Status</th>
       </tr>
     </thead>
@@ -311,6 +312,7 @@
       {{ range.Application.Expenditures }}
       <tr>
         <td>{{.Expenditure_name}}</td>
+        <td>{{if eq .Expenditure_type 0}}Claim{{else}}Invoice{{end}}</td>
         <td>{{.Expenditure_amt}}</td>
         <td>{{.Expenditure_date.Format "Monday, 02-Jan-06"}}</td>
         <td><a href="/download/{{$.Application.SporicRefNo}}/{{.Expenditure_id}}/expenditure_proof"
@@ -380,15 +382,27 @@
         <input type="hidden" name="action" value="add_expenditure" />
         <input type="hidden" name="sporic_ref_no" value="{{.Application.SporicRefNo}}" />
         <div class="mb-3">
-          <label for="expenditureName" class="form-label">Name</label>
+          <label for="expenditureName" class="form-label">Purpose</label>
           <input type="text" class="form-control" id="expenditureName" name="expenditure_name" required />
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Expenditure Type</label>
+          <div>
+            <input type="radio" id="claim" name="expenditure_type" value="0" onclick="updateProofLabel()" required
+              checked />
+            <label for="claim">Claim (Request for Reimbursement)</label>
+          </div>
+          <div>
+            <input type="radio" id="invoice" name="expenditure_type" value="1" onclick="updateProofLabel()" required />
+            <label for="invoice">Invoice (To Be Paid by Accounts)</label>
+          </div>
         </div>
         <div class="mb-3">
           <label for="expenditureCost" class="form-label">Cost</label>
           <input type="text" class="form-control" id="expenditureCost" name="expenditure_amt" required />
         </div>
         <div class="mb-3">
-          <label for="expenditureProof" class="form-label">Proof Document</label>
+          <label for="expenditureProof" id="proofLabel" class="form-label">Proof of Expense (e.g., Receipt)</label>
           <input type="file" class="form-control" id="expenditureProof" name="expenditure_proof" accept=".pdf"
             required />
         </div>
@@ -425,6 +439,20 @@
       {{end}}
     </div>
   </div>
+
+  <!-- Script for expenditure form -->
+  <script>
+    function updateProofLabel() {
+      const claimRadio = document.getElementById('claim');
+      const proofLabel = document.getElementById('proofLabel');
+
+      if (claimRadio.checked) {
+        proofLabel.textContent = 'Proof of Expense (e.g., Receipt)';
+      } else {
+        proofLabel.textContent = 'Invoice Document';
+      }
+    }
+  </script>
 
 </div>
 {{ end }}

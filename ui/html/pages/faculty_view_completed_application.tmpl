@@ -160,7 +160,9 @@
     <table class="table table-bordered">
         <thead>
             <tr>
+                <th>Currency</th>
                 <th>Amount</th>
+                <th>Tax</th>
                 <th>GST No.</th>
                 <th>PAN No.</th>
                 <th>GST Certificate</th>
@@ -174,7 +176,9 @@
             {{range.Application.Payments}}
             {{ if eq .Payment_status 2 }}
             <tr>
+                <td>{{.Currency}}</td>
                 <td>{{.Payment_amt}}</td>
+                <td>{{.Tax}}</td>
                 <td>{{.Gst_number}}</td>
                 <td>{{.Pan_number}}</td>
                 <td><a href="/download/{{$.Application.SporicRefNo}}/{{.Payment_id}}/tax_cirtificate"
@@ -198,10 +202,11 @@
     <table class="table table-bordered">
         <thead>
             <tr>
-                <th>Name</th>
+                <th>Purpose</th>
+                <th>Expenditure Type</th>
                 <th>Cost</th>
                 <th>Date</th>
-                <th>Proof Document</th>
+                <th>Document</th>
                 <th>Status</th>
             </tr>
         </thead>
@@ -209,6 +214,7 @@
             {{range.Application.Expenditures}}
             <tr>
                 <td>{{.Expenditure_name}}</td>
+                <td>{{if eq .Expenditure_type 0}}Claim{{else}}Invoice{{end}}</td>
                 <td>{{.Expenditure_amt}}</td>
                 <td>{{.Expenditure_date.Format "Monday, 02-Jan-06"}}</td>
                 <td><a href="/download/{{$.Application.SporicRefNo}}/{{.Expenditure_id}}/expenditure_proof"

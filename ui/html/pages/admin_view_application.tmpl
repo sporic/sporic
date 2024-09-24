@@ -287,7 +287,8 @@
     <table class="table table-bordered">
         <thead>
             <tr>
-                <th>Name</th>
+                <th>Purpose</th>
+                <th>Expenditure Type</th>
                 <th>Cost</th>
                 <th>Date</th>
                 <th>Proof Document</th>
@@ -299,6 +300,7 @@
             {{range.Application.Expenditures}}
             <tr>
                 <td>{{.Expenditure_name}}</td>
+                <td>{{if eq .Expenditure_type 0}}Claim{{else}}Invoice{{end}}</td>
                 <td>{{.Expenditure_amt}}</td>
                 <td>{{.Expenditure_date.Format "Monday, 02-Jan-06"}}</td>
                 <td><a href="/download/{{$.Application.SporicRefNo}}/{{.Expenditure_id}}/expenditure_proof"
