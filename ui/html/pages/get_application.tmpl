@@ -1,253 +1,223 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>View Project - SpoRIC</title>
-    <link
-      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
-      rel="stylesheet"
-    />
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <style>
-      .container {
-        background-color: #ffffff;
-        border-radius: 10px;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-        padding: 25px;
-        margin-top: 40px;
-      }
 
-      .btn-primary {
-        margin-top: 20px;
-        background-color: #0069d9;
-        border-color: #0069d9;
-      }
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>View Project - SpoRIC</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <style>
+    .container {
+      background-color: #ffffff;
+      border-radius: 10px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      padding: 25px;
+      margin-top: 40px;
+    }
 
-      .btn-primary:hover {
-        background-color: #0056b3;
-        border-color: #0056b3;
-      }
+    .btn-primary {
+      margin-top: 20px;
+      background-color: #0069d9;
+      border-color: #0069d9;
+    }
 
-      .project-details,
-      .form-section,
-      .payment-phases-section {
-        margin-bottom: 25px;
-        padding: 20px;
-        background-color: #f8f9fa;
-        border-radius: 8px;
-        border: 1px solid #dee2e6;
-      }
+    .btn-primary:hover {
+      background-color: #0056b3;
+      border-color: #0056b3;
+    }
 
-      .project-details h5,
-      .form-section h5,
-      .payment-phases-section h5 {
-        margin-bottom: 15px;
-        font-size: 18px;
-        font-weight: 600;
-      }
+    .project-details,
+    .form-section,
+    .payment-phases-section {
+      margin-bottom: 25px;
+      padding: 20px;
+      background-color: #f8f9fa;
+      border-radius: 8px;
+      border: 1px solid #dee2e6;
+    }
 
-      .project-details p,
-      .form-section p,
-      .payment-phases-section p {
-        margin-bottom: 5px;
-        font-size: 16px;
-      }
+    .project-details h5,
+    .form-section h5,
+    .payment-phases-section h5 {
+      margin-bottom: 15px;
+      font-size: 18px;
+      font-weight: 600;
+    }
 
-      .form-section input,
-      .form-section textarea {
-        border-radius: 5px;
-        border: 1px solid #ced4da;
-      }
+    .project-details p,
+    .form-section p,
+    .payment-phases-section p {
+      margin-bottom: 5px;
+      font-size: 16px;
+    }
 
-      .form-section textarea {
-        resize: none;
-      }
+    .form-section input,
+    .form-section textarea {
+      border-radius: 5px;
+      border: 1px solid #ced4da;
+    }
 
-      .add-phase-btn {
-        margin-top: 20px;
-      }
+    .form-section textarea {
+      resize: none;
+    }
 
-      table {
-        width: 100%;
-        margin-top: 20px;
-        border-collapse: collapse;
-      }
+    .add-phase-btn {
+      margin-top: 20px;
+    }
 
-      table th,
-      table td {
-        padding: 10px;
-        border: 1px solid #dee2e6;
-        text-align: center;
-      }
+    table {
+      width: 100%;
+      margin-top: 20px;
+      border-collapse: collapse;
+    }
 
-      table th {
-        background-color: #007bff;
-        color: white;
-      }
-    </style>
-  </head>
+    table th,
+    table td {
+      padding: 10px;
+      border: 1px solid #dee2e6;
+      text-align: center;
+    }
 
-  <body>
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-      <div class="container-fluid">
-        <a class="navbar-brand" href="#">SpoRIC</a>
-        <button
-          class="navbar-toggler"
-          type="button"
-          data-bs-toggle="collapse"
-          data-bs-target="#navbarNav"
-          aria-controls="navbarNav"
-          aria-expanded="false"
-          aria-label="Toggle navigation"
-        >
-          <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarNav">
-          <ul class="navbar-nav ms-auto">
-            <li class="nav-item">
-              <a class="nav-link" href="faculty-dashboard.html">Dashboard</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="faculty-notifications.html"
-                >Notifications</a
-              >
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="faculty-profile.html">Profile</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="faculty-login.html">Logout</a>
-            </li>
-          </ul>
-        </div>
-      </div>
-    </nav>
+    table th {
+      background-color: #007bff;
+      color: white;
+    }
+  </style>
+</head>
 
-    <div class="container">
-      <h2 class="mb-4">View Project</h2>
-
-      <!-- Project Details -->
-      <div class="project-details">
-        <h5>Project Details</h5>
-        <p><strong>Project ID:</strong> SPORIC-2024-005</p>
-        <p><strong>Company Name:</strong> ABC Corp</p>
-        <p><strong>Contact Person:</strong> Jane Doe</p>
-        <p><strong>Project Duration:</strong> 2024-08-01 to 2024-12-31</p>
-        <p><strong>Payment Option:</strong> Partial Payment</p>
-        <p><strong>Project Status:</strong> In Progress</p>
-      </div>
-
-      <!-- Project Actions -->
-      <div class="form-section">
-        <h5>Project Actions</h5>
-        <div class="mb-3">
-          <label for="projectStatus" class="form-label"
-            >Update Project Status</label
-          >
-          <select class="form-select" id="projectStatus" name="projectStatus">
-            <option selected disabled>Choose Status...</option>
-            <option value="completed">Completed</option>
-            <option value="delayed">Delayed Beyond Completion Time</option>
-          </select>
-        </div>
-
-        <div class="mb-3">
-          <label for="completionProof" class="form-label"
-            >Upload Proof Document</label
-          >
-          <input
-            type="file"
-            class="form-control"
-            id="completionProof"
-            name="completionProof"
-          />
-        </div>
-
-        <div class="mb-3">
-          <label for="projectRemarks" class="form-label"
-            >Remarks (Optional)</label
-          >
-          <textarea
-            class="form-control"
-            id="projectRemarks"
-            name="projectRemarks"
-            rows="4"
-            placeholder="Add any relevant comments..."
-          ></textarea>
-        </div>
-
-        <button type="submit" class="btn btn-primary">Update Project</button>
-      </div>
-
-      <!-- Payment Phases Section -->
-      <div class="payment-phases-section">
-        <h5>Payment Phases</h5>
-
-        <table class="table table-bordered">
-          <thead>
-            <tr>
-              <th>Phase No.</th>
-              <th>Amount</th>
-              <th>Reference No.</th>
-              <th>Payment Date</th>
-              <th>Status</th>
-            </tr>
-          </thead>
-          <tbody id="paymentPhasesTableBody">
-            <!-- Existing Payment Phases -->
-            <tr>
-              <td>1</td>
-              <td>₹50,000</td>
-              <td>ABC123</td>
-              <td>2024-09-01</td>
-              <td>Approved</td>
-            </tr>
-            <tr>
-              <td>2</td>
-              <td>₹30,000</td>
-              <td>XYZ456</td>
-              <td>2024-10-01</td>
-              <td>Confirmation Pending</td>
-            </tr>
-          </tbody>
-        </table>
-
-        <!-- Add New Payment Phases Dynamically -->
-        <div id="paymentPhasesContainer"></div>
-
-        <button
-          type="button"
-          class="btn btn-secondary add-phase-btn"
-          id="addPhaseBtn"
-        >
-          Add Another Phase
-        </button>
+<body>
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="#">SpoRIC</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+        aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ms-auto">
+          <li class="nav-item">
+            <a class="nav-link" href="/home">Dashboard</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="faculty-notifications.html">Notifications</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="faculty-profile.html">Profile</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="faculty-login.html">Logout</a>
+          </li>
+        </ul>
       </div>
     </div>
+  </nav>
 
-    <script>
-      // Script for dynamically adding payment phases
-      let phaseCount = 2;
+  <div class="container">
+    <h2 class="mb-4">View Project</h2>
 
-      document
-        .getElementById("addPhaseBtn")
-        .addEventListener("click", function () {
-          phaseCount++;
-          const paymentPhasesTableBody = document.getElementById(
-            "paymentPhasesTableBody"
-          );
+    <!-- Project Details -->
+    <div class="project-details">
+      <h5>Project Details</h5>
+      <p><strong>Project ID:</strong> SPORIC-2024-005</p>
+      <p><strong>Company Name:</strong> ABC Corp</p>
+      <p><strong>Contact Person:</strong> Jane Doe</p>
+      <p><strong>Project Duration:</strong> 2024-08-01 to 2024-12-31</p>
+      <p><strong>Payment Option:</strong> Partial Payment</p>
+      <p><strong>Project Status:</strong> In Progress</p>
+    </div>
 
-          const newRow = document.createElement("tr");
-          newRow.innerHTML = `
+    <!-- Project Actions -->
+    <div class="form-section">
+      <h5>Project Actions</h5>
+      <div class="mb-3">
+        <label for="projectStatus" class="form-label">Update Project Status</label>
+        <select class="form-select" id="projectStatus" name="projectStatus">
+          <option selected disabled>Choose Status...</option>
+          <option value="completed">Completed</option>
+          <option value="delayed">Delayed Beyond Completion Time</option>
+        </select>
+      </div>
+
+      <div class="mb-3">
+        <label for="completionProof" class="form-label">Upload Proof Document</label>
+        <input type="file" class="form-control" id="completionProof" name="completionProof" />
+      </div>
+
+      <div class="mb-3">
+        <label for="projectRemarks" class="form-label">Remarks (Optional)</label>
+        <textarea class="form-control" id="projectRemarks" name="projectRemarks" rows="4"
+          placeholder="Add any relevant comments..."></textarea>
+      </div>
+
+      <button type="submit" class="btn btn-primary">Update Project</button>
+    </div>
+
+    <!-- Payment Phases Section -->
+    <div class="payment-phases-section">
+      <h5>Payment Phases</h5>
+
+      <table class="table table-bordered">
+        <thead>
+          <tr>
+            <th>Phase No.</th>
+            <th>Amount</th>
+            <th>Reference No.</th>
+            <th>Payment Date</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody id="paymentPhasesTableBody">
+          <!-- Existing Payment Phases -->
+          <tr>
+            <td>1</td>
+            <td>₹50,000</td>
+            <td>ABC123</td>
+            <td>2024-09-01</td>
+            <td>Approved</td>
+          </tr>
+          <tr>
+            <td>2</td>
+            <td>₹30,000</td>
+            <td>XYZ456</td>
+            <td>2024-10-01</td>
+            <td>Confirmation Pending</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <!-- Add New Payment Phases Dynamically -->
+      <div id="paymentPhasesContainer"></div>
+
+      <button type="button" class="btn btn-secondary add-phase-btn" id="addPhaseBtn">
+        Add Another Phase
+      </button>
+    </div>
+  </div>
+
+  <script>
+    // Script for dynamically adding payment phases
+    let phaseCount = 2;
+
+    document
+      .getElementById("addPhaseBtn")
+      .addEventListener("click", function () {
+        phaseCount++;
+        const paymentPhasesTableBody = document.getElementById(
+          "paymentPhasesTableBody"
+        );
+
+        const newRow = document.createElement("tr");
+        newRow.innerHTML = `
                 <td>${phaseCount}</td>
                 <td><input type="text" class="form-control" placeholder="Enter amount"></td>
                 <td><input type="text" class="form-control" placeholder="Enter reference number"></td>
                 <td><input type="date" class="form-control"></td>
             `;
 
-          paymentPhasesTableBody.appendChild(newRow);
-        });
-    </script>
-  </body>
+        paymentPhasesTableBody.appendChild(newRow);
+      });
+  </script>
+</body>
+
 </html>

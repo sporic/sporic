@@ -27,6 +27,7 @@ type App struct {
 	sessionManager *scs.SessionManager
 	users          *models.UserModel
 	applications   *models.ApplicationModel
+	payments       *models.PaymentModel
 }
 
 func main() {
@@ -61,6 +62,7 @@ func main() {
 		templateCache:  templateCache,
 		users:          &models.UserModel{Db: db},
 		applications:   &models.ApplicationModel{Db: db},
+		payments:       &models.PaymentModel{Db: db},
 		sessionManager: sessionManager,
 		formDecoder:    formDecoder,
 	}
@@ -112,5 +114,6 @@ func (app App) routes() http.Handler {
 	router.Handler(http.MethodGet, "/admin/view_application/:refno", dynamic.ThenFunc(app.admin_view_application))
 	router.Handler(http.MethodPost, "/admin/view_application/:refno", dynamic.ThenFunc(app.admin_view_application))
 	router.Handler(http.MethodGet, "/download/:folder/:doc_id/:doc_type", dynamic.ThenFunc(app.download))
+	router.Handler(http.MethodGet, "/accounts_home", dynamic.ThenFunc(app.accounts_home))
 	return router
 }

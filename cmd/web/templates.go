@@ -14,6 +14,7 @@ type templateData struct {
 	Application  *models.Application
 	Form         any
 	User         *models.User
+	Payments     []models.Payment
 }
 
 func newTemplateCache() (map[string]*template.Template, error) {

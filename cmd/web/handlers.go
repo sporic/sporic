@@ -111,6 +111,10 @@ func (app *App) home(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/faculty_home", http.StatusSeeOther)
 		return
 	}
+	if user.Role == models.AccountantUser {
+		http.Redirect(w, r, "/accounts_home", http.StatusSeeOther)
+		return
+	}
 	app.notFound(w)
 }
 
@@ -121,7 +125,7 @@ func (app *App) admin_home(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if user.Role != models.AdminUser {
-		app.notFound(w)
+		http.Redirect(w, r, "/home", http.StatusSeeOther)
 		return
 	}
 	applications, err := app.applications.FetchAll()
@@ -142,7 +146,7 @@ func (app *App) faculty_home(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if user.Role != models.FacultyUser {
-		app.notFound(w)
+		http.Redirect(w, r, "/home", http.StatusSeeOther)
 		return
 	}
 	applications, err := app.applications.FetchByLeader(user.Id)
@@ -639,4 +643,26 @@ func (app *App) download(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/octet-stream")
 
 	http.ServeFile(w, r, filePath)
+}
+
+func (app *App) accounts_home(w http.ResponseWriter, r *http.Request) {
+	user := app.contextGetUser(r)
+	if user.IsAnonymous() {
+		http.Redirect(w, r, "/login", http.StatusSeeOther)
+		return
+	}
+	if user.Role != models.AccountantUser {
+		http.Redirect(w, r, "/home", http.StatusSeeOther)
+		return
+	}
+
+	payments, err := app.payments.GetAllPayments()
+	if err != nil {
+		app.serverError(w, err)
+	}
+
+	data := app.newTemplateData(r)
+	data.User = user
+	data.Payments = payments
+	app.render(w, http.StatusOK, "accounts_home.tmpl", data)
 }

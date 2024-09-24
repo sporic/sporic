@@ -1,4 +1,4 @@
-{{define "title"}}Admin Home{{ end }}
+{{define "title"}}Accounts Home{{ end }}
 
 {{define "main"}}
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
@@ -48,7 +48,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    {{range.Application.Payments}}
+                    {{range.Payments}}
                     {{if eq .Payment_status 4}}
                     <tr>
                         <form action="/admin_home" method="post">
@@ -57,7 +57,7 @@
                             <td>{{.Payment_amt}}</td>
                             <td>{{.Gst_number}}</td>
                             <td>{{.Pan_number}}</td>
-                            <td><a href="#" target="_blank">View</a></td>
+                            <td><a href="/download/{{.Sporic_ref_no}}/{{.Payment_id}}/tax_cirtificate" target="_blank">View</a></td>
                             <td><input type="file" class="form-control" placeholder="Invoice" name="invoice"
                                     accept=".pdf" required /></td>
                             <td><button type="submit" class="btn btn-primary">Submit</button></td>
@@ -85,37 +85,36 @@
                         <th>Invoice</th>
                         <th>Transaction ID</th>
                         <th>Payment Proof</th>
+                        <th>Status</th>
                         <th>Action</th>
                     </tr>
                 </thead>
                 <tbody>
-                    {{range.Application.Payments}}
+                    {{range.Payments}}
                     {{if eq .Payment_status 1}}<!-- TODO status pending approval -->
                     <tr>
                         <form action="/admin_home" method="post">
                             <td>{{.Payment_amt}}</td>
                             <td>{{.Gst_number}}</td>
                             <td>{{.Pan_number}}</td>
-                            <td><a href="/download/{{$.Application.SporicRefNo}}/{{.Payment_id}}/tax_cirtificate"
+                            <td><a href="/download/{{.Sporic_ref_no}}/{{.Payment_id}}/tax_cirtificate"
                                     target="_blank">View</a></td>
-                            <td><a href="/download/{{$.Application.SporicRefNo}}/{{.Payment_id}}/invoice"
-                                    target="_blank">View</a>
+                            <td><a href="/download/{{.Sporic_ref_no}}/{{.Payment_id}}/invoice" target="_blank">View</a>
                             </td>
                             <td>{{.Transaction_id}}</td>
-                            <td><a href="/download/{{$.Application.SporicRefNo}}/{{.Payment_id}}/payment"
-                                    target="_blank">View</a>
+                            <td><a href="/download/{{.Sporic_ref_no}}/{{.Payment_id}}/payment" target="_blank">View</a>
                             </td>
                             <td>
                                 <span class="badge bg-success">Approve</span>
                             </td>
                             <td>
                                 <div style="display: flex; gap: 10px;">
-                                    <form action="/admin/view_application/{{.SporicRefNo}}" method="post"
+                                    <form action="/admin/view_application/{{.Sporic_ref_no}}" method="post"
                                         style="display: inline;">
                                         <input type="hidden" name="action" value="approve_expenditure" />
                                         <button class="btn btn-success">Approve</button>
                                     </form>
-                                    <form action="/admin/view_application/{{.SporicRefNo}}" method="post"
+                                    <form action="/admin/view_application/{{.Sporic_ref_no}}" method="post"
                                         style="display: inline;">
                                         <input type="hidden" name="action" value="reject_expenditure" />
                                         <button class="btn btn-danger">Reject</button>
@@ -147,24 +146,21 @@
                         <th>Transaction ID</th>
                         <th>Payment Proof</th>
                         <th>Status</th>
-                        <th>Action</th>
                     </tr>
                 </thead>
                 <tbody>
-                    {{range.Application.Payments}}
+                    {{range.Payments}}
                     {{ if eq .Payment_status 2 }}
                     <tr>
                         <td>{{.Payment_amt}}</td>
                         <td>{{.Gst_number}}</td>
                         <td>{{.Pan_number}}</td>
-                        <td><a href="/download/{{$.Application.SporicRefNo}}/{{.Payment_id}}/tax_cirtificate"
+                        <td><a href="/download/{{.Sporic_ref_no}}/{{.Payment_id}}/tax_cirtificate"
                                 target="_blank">View</a></td>
-                        <td><a href="/download/{{$.Application.SporicRefNo}}/{{.Payment_id}}/invoice"
-                                target="_blank">View</a>
+                        <td><a href="/download/{{.Sporic_ref_no}}/{{.Payment_id}}/invoice" target="_blank">View</a>
                         </td>
-                        <td>{{.}}</td>
-                        <td><a href="/download/{{$.Application.SporicRefNo}}/{{.Payment_id}}/payment"
-                                target="_blank">View</a>
+                        <td>{{.Transaction_id}}</td>
+                        <td><a href="/download/{{.Sporic_ref_no}}/{{.Payment_id}}/payment" target="_blank">View</a>
                         </td>
                         <td>
                             <span class="badge bg-success">Approved</span>
@@ -176,14 +172,12 @@
                         <td>{{.Payment_amt}}</td>
                         <td>{{.Gst_number}}</td>
                         <td>{{.Pan_number}}</td>
-                        <td><a href="/download/{{$.Application.SporicRefNo}}/{{.Payment_id}}/tax_cirtificate"
+                        <td><a href="/download/{{.Sporic_ref_no}}/{{.Payment_id}}/tax_cirtificate"
                                 target="_blank">View</a></td>
-                        <td><a href="/download/{{$.Application.SporicRefNo}}/{{.Payment_id}}/invoice"
-                                target="_blank">View</a>
+                        <td><a href="/download/{{.Sporic_ref_no}}/{{.Payment_id}}/invoice" target="_blank">View</a>
                         </td>
-                        <td>{{.}}</td>
-                        <td><a href="/download/{{$.Application.SporicRefNo}}/{{.Payment_id}}/payment"
-                                target="_blank">View</a>
+                        <td>{{.Transaction_id}}</td>
+                        <td><a href="/download/{{.Sporic_ref_no}}/{{.Payment_id}}/payment" target="_blank">View</a>
                         </td>
                         <td>
                             <span class="badge bg-success">Rejected</span>

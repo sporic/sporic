@@ -1,4 +1,4 @@
-{{define "title"}}Faculty Home{{ end }}
+{{define "title"}}View Application{{ end }}
 
 {{define "main"}}
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
@@ -61,9 +61,27 @@
                         <td>{{.User.School}}</td>
                     </tr>
                     <tr>
-                        <th>Closure Document</th>
-                        <td><a href="#">View</a></td>
+                        <th>Exstimated Cost</th>
+                        <td>
+                            {{.Application.EstimatedAmt}}
+                        </td>
                     </tr>
+                    <tr>
+                        <th>Proposal</th>
+                        <td><a href="/download/{{.Application.SporicRefNo}}/{{.Application.SporicRefNo}}/proposal"
+                                target=" _blank">View</a></td>
+                    </tr>
+                    {{ if or (eq .Application.Status 2) (eq .Application.Status 3) }}
+                    <tr>
+                        <th>Closure Document</th>
+                        <td><a href="/download/{{.Application.SporicRefNo}}/{{.Application.SporicRefNo}}/completion_form"
+                                target=" _blank">View</a></td>
+                    </tr>
+                    <tr>
+                        <th>VIT resources used</th>
+                        <td>{{if eq .Application.ResourceUsed 1}}No{{else}}Yes{{end}}</td>
+                    </tr>
+                    {{ end }}
                     <tr>
                         <th>Project Status</th>
                         <td>{{if eq .Application.Status 3}}<span class="badge bg-warning">Completed Approval
@@ -103,35 +121,8 @@
                         <th>Mobile No.</th>
                         <td>{{.Application.ContactPersonMobile}}</td>
                     </tr>
-                    <tr>
-                        <th>Exstimated Cost</th>
-                        <td>
-                            {{.Application.EstimatedAmt}}
-                        </td>
-                    </tr>
-                    <tr>
-                        <th>Proposal</th>
-                        <td><a href="#" target=" _blank">View</a></td>
-                    </tr>
-                    {{ if or (eq .Application.Status 2) (eq .Application.Status 3) }}
-                    <tr>
-                        <td>Closure Document</td>
-                        <td><a href="#" target=" _blank">View</a></td>
-                    </tr>
-                    {{ end }}
-                    <tr>
-                        <th>Project Status</th>
 
-                        <td>
-                            {{if eq .Application.Status 3}}<span class="badge bg-warning">Completed Approval
-                                Pending</span>{{end}}
-                            {{if eq .Application.Status 2}}<span class="badge bg-success">Completed</span>{{end}}
-                            {{if eq .Application.Status 1}}<span class="badge bg-success">Application
-                                Approved</span>{{end}}
-                            {{if eq .Application.Status 0}}<span class="badge bg-warning">Application Approval
-                                Pending</span>{{end}}
-                        </td>
-                    </tr>
+
                 </tbody>
             </table>
         </div>
@@ -178,47 +169,16 @@
                 <td>{{.Payment_amt}}</td>
                 <td>{{.Gst_number}}</td>
                 <td>{{.Pan_number}}</td>
-                <td><a href="#" target="_blank">View</a></td>
-                <td><a href="#" target="_blank">View</a></td>
-                <td>1231234324</td>
-                <td><a href="#" target="_blank">View</a></td>
-                <td>
-                    <span class="badge bg-success">Approve</span>
+                <td><a href="/download/{{$.Application.SporicRefNo}}/{{.Payment_id}}/tax_cirtificate"
+                        target="_blank">View</a></td>
+                <td><a href="/download/{{$.Application.SporicRefNo}}/{{.Payment_id}}/invoice" target="_blank">View</a>
                 </td>
-            </tr>
-            {{end}}
-            {{ if eq .Payment_status 1 }}
-            <tr>
-                <td>{{.Payment_amt}}</td>
-                <td>{{.Gst_number}}</td>
-                <td>{{.Pan_number}}</td>
-                <td><a href="#" target="_blank">View</a></td>
-                <td><a href="#" target="_blank">View</a></td>
-                <td>
-                    <input type="text" class="form-control" placeholder="Transaction ID" />
+                <td>{{.Transaction_id}}</td>
+                <td><a href="/download/{{$.Application.SporicRefNo}}/{{.Payment_id}}/payment" target="_blank">View</a>
                 </td>
                 <td>
-                    <input type="file" class="form-control" placeholder="Payment Proof" />
+                    <span class="badge bg-success">Approved</span>
                 </td>
-                <td>
-                    <button class="btn btn-primary">Confirm</button>
-                </td>
-            </tr>
-            {{end}}
-            {{if eq .Payment_status 0}}
-            <tr>
-                <form action="/faculty_view_application" method="post">
-                    <input type="hidden" name="action" value="confirm_payment" />
-                    <input type="hidden" name="payment_id" value="{{.Payment_id}}" />
-                    <td>{{.Payment_amt}}</td>
-                    <td>{{.Gst_number}}</td>
-                    <td>{{.Pan_number}}</td>
-                    <td><a href="#" target="_blank">View</a></td>
-                    <td>Invoice not generated yet</td>
-                    <td></td>
-                    <td></td>
-                    <td>Invoice Requested</td>
-                </form>
             </tr>
             {{end}}
             {{end}}
@@ -243,11 +203,10 @@
                 <td>{{.Expenditure_name}}</td>
                 <td>{{.Expenditure_amt}}</td>
                 <td>{{.Expenditure_date.Format "Monday, 02-Jan-06"}}</td>
-                <td><a href="#" target="_blank">View</a></td>
+                <td><a href="/download/{{$.Application.SporicRefNo}}/{{.Expenditure_id}}/expenditure_proof"
+                        target="_blank">View</a></td>
                 <td>
-                    {{if eq .Expenditure_status 0}}<span class="badge bg-warning">Pending Approval</span>{{ end }}
                     {{if eq .Expenditure_status 1}}<span class="badge bg-success">Approved</span>{{ end }}
-                    {{if eq .Expenditure_status 2}}<span class="badge bg-danger">Rejected</span>{{ end }}
                 </td>
             </tr>
             {{end}}

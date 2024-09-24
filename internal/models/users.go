@@ -15,6 +15,7 @@ type UserRole = int
 const (
 	AdminUser UserRole = iota
 	FacultyUser
+	AccountantUser
 )
 
 type User struct {

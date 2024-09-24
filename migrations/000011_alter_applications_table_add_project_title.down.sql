@@ -1,0 +1,1 @@
+alter table applications drop column project_title;

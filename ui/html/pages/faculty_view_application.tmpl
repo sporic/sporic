@@ -67,12 +67,18 @@
           </tr>
           <tr>
             <th>Proposal</th>
-            <td><a href="#" target=" _blank">View</a></td>
+            <td><a href="/download/{{.Application.SporicRefNo}}/{{.Application.SporicRefNo}}/proposal"
+                target=" _blank">View</a></td>
           </tr>
           {{ if or (eq .Application.Status 2) (eq .Application.Status 3) }}
           <tr>
-            <td>Closure Document</td>
-            <td><a href="#" target=" _blank">View</a></td>
+            <th>Closure Document</th>
+            <td><a href="/download/{{.Application.SporicRefNo}}/{{.Application.SporicRefNo}}/completion_form"
+                target=" _blank">View</a></td>
+          </tr>
+          <tr>
+            <th>VIT resources used</th>
+            <td>{{if eq .Application.ResourceUsed 1}}No{{else}}Yes{{end}}</td>
           </tr>
           {{ end }}
           <tr>
@@ -174,7 +180,7 @@
         <td>{{.Transaction_id}}</td>
         <td><a href="/download/{{$.Application.SporicRefNo}}/{{.Payment_id}}/payment" target="_blank">View</a></td>
         <td>
-          <span class="badge bg-success">Approve</span>
+          <span class="badge bg-success">Approved</span>
         </td>
       </tr>
       {{ end }}
@@ -187,7 +193,7 @@
         <td><a href="/download/{{$.Application.SporicRefNo}}/{{.Payment_id}}/tax_cirtificate" target="_blank">View</a>
         </td>
         <td><a href="/download/{{$.Application.SporicRefNo}}/{{.Payment_id}}/invoice" target="_blank">View</a></td>
-        <td>1231234324</td>
+        <td>{{.Transaction_id}}</td>
         <td><a href="/download/{{$.Application.SporicRefNo}}/{{.Payment_id}}/payment" target="_blank">View</a></td>
         <td>
           <span class="badge bg-danger">Rejected</span>
@@ -224,7 +230,9 @@
             {{end}}
           </td>
           <td>
+            {{if eq .Transaction_id ""}}
             <button class="btn btn-primary">Confirm</button>
+            {{end}}
           </td>
         </form>
       </tr>
@@ -259,7 +267,7 @@
           <td>Invoice not generated yet</td>
           <td></td>
           <td></td>
-          <td><span class="badge bg-info">Request Forwarded</span></td>
+          <td><span class="badge bg-primary">Invoice Request Forwarded</span></td>
         </form>
       </tr>
       {{ end }}

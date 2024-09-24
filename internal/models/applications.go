@@ -11,6 +11,7 @@ import (
 
 type Application struct {
 	SporicRefNo              string
+	ProjectTitle             string
 	Leader                   int
 	FinancialYear            int
 	ActivityType             ActivityType
@@ -72,7 +73,7 @@ type ApplicationModel struct {
 }
 
 func (m *ApplicationModel) FetchAll() ([]Application, error) {
-	rows, err := m.Db.Query("select sporic_ref_no, leader, financial_year, activity_type, estimated_amt, company_name, company_adress, contact_person_name, contact_person_email, contact_person_mobile, contact_person_designation, project_status, comments, resources_used, completion_date from applications")
+	rows, err := m.Db.Query("select sporic_ref_no, project_title, leader, financial_year, activity_type, estimated_amt, company_name, company_adress, contact_person_name, contact_person_email, contact_person_mobile, contact_person_designation, project_status, comments, resources_used, completion_date from applications")
 	if err != nil {
 		return nil, err
 	}
@@ -140,7 +141,7 @@ func (m *ApplicationModel) FetchAll() ([]Application, error) {
 }
 
 func (m *ApplicationModel) FetchByLeader(leader int) ([]Application, error) {
-	rows, err := m.Db.Query("select sporic_ref_no, leader, financial_year, activity_type, estimated_amt, company_name, company_adress, contact_person_name, contact_person_email, contact_person_mobile, contact_person_designation, project_status, comments, resources_used, completion_date from applications where leader=?", leader)
+	rows, err := m.Db.Query("select sporic_ref_no, project_title, leader, financial_year, activity_type, estimated_amt, company_name, company_adress, contact_person_name, contact_person_email, contact_person_mobile, contact_person_designation, project_status, comments, resources_used, completion_date from applications where leader=?", leader)
 	if err != nil {
 		return nil, err
 	}
@@ -200,7 +201,7 @@ func (m *ApplicationModel) FetchByLeader(leader int) ([]Application, error) {
 }
 
 func (m *ApplicationModel) FetchByRefNo(ref_no string) (*Application, error) {
-	row := m.Db.QueryRow("select sporic_ref_no, leader, financial_year, activity_type, estimated_amt, company_name, company_adress, contact_person_name, contact_person_email, contact_person_mobile, contact_person_designation, project_status,comments, resources_used, completion_date from applications where sporic_ref_no=?", ref_no)
+	row := m.Db.QueryRow("select sporic_ref_no, project_title, leader, financial_year, activity_type, estimated_amt, company_name, company_adress, contact_person_name, contact_person_email, contact_person_mobile, contact_person_designation, project_status,comments, resources_used, completion_date from applications where sporic_ref_no=?", ref_no)
 	var a Application
 	err := row.Scan(&a.SporicRefNo, &a.Leader, &a.FinancialYear, &a.ActivityType, &a.EstimatedAmt, &a.CompanyName, &a.CompanyAddress, &a.ContactPersonName, &a.ContactPersonEmail, &a.ContactPersonMobile, &a.ContactPersonDesignation, &a.Status, &a.Comments, &a.ResourceUsed, &a.CompletionDate)
 	if err != nil {
@@ -279,6 +280,7 @@ func (m *ApplicationModel) Insert(form Application) (string, error) {
 
 	_, err = m.Db.Exec(`insert into applications 
 		(sporic_ref_no,
+		 project_title,
 		 leader, 
 		 financial_year, 
 		 activity_type, 
