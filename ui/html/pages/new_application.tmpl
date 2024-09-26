@@ -84,6 +84,13 @@
       Add Team Member
     </button>
 
+    <!-- Student Members -->
+    <h5>Student Members</h5>
+    <div id="studentMembersContainer"></div>
+    <button type="button" class="btn btn-secondary mb-3" onclick="addStudentMember()">
+      Add Student Member
+    </button>
+
     <!-- Project Proposal Upload -->
     <h5>Project Proposal</h5>
     <div class="mb-3">
@@ -123,6 +130,36 @@
 
   function removeTeamMember(id) {
     const memberDiv = document.getElementById(`teamMemberDiv${id}`);
+    if (memberDiv) {
+      memberDiv.remove();
+    }
+  }
+
+  let studentMemberCount = 0;
+  function addStudentMember() {
+    studentMemberCount++;
+    const container = document.getElementById("studentMembersContainer");
+    const newMember = document.createElement("div");
+    newMember.classList.add("mb-3");
+    newMember.setAttribute("id", `studentMemberDiv${studentMemberCount}`);
+    newMember.innerHTML = `
+      <label for="studentMember${studentMemberCount}" class="form-label">Student Member Name</label>
+      <div class="input-group">
+        <input
+          type="text"
+          class="form-control"
+          id="studentMember${studentMemberCount}"
+          name="student_members"
+          placeholder="Enter student member name"
+        />
+        <button type="button" class="btn btn-danger" onclick="removeStudentMember(${studentMemberCount})">Remove</button>
+      </div>
+    `;
+    container.appendChild(newMember);
+  }
+
+  function removeStudentMember(id) {
+    const memberDiv = document.getElementById(`studentMemberDiv${id}`);
     if (memberDiv) {
       memberDiv.remove();
     }

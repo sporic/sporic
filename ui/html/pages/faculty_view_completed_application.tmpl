@@ -153,6 +153,25 @@
                 </tbody>
             </table>
         </div>
+
+        <!-- Student Members -->
+        <div class="col-md-6">
+            <h4>Student Members</h4>
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {{range .Application.MemberStudents}}
+                    <tr>
+                        <td>{{.Name}}</td>
+                    </tr>
+                    {{end}}
+                </tbody>
+            </table>
+        </div>
     </div>
 
     <!-- Payments -->
