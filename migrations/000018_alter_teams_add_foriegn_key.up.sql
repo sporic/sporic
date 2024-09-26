@@ -1,0 +1,1 @@
+alter table team add constraint fk_to_teams foreign key (id) references profile(username);

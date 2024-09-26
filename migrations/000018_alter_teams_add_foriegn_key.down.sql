@@ -1,0 +1,1 @@
+alter table team drop constrain fk_to_teams;

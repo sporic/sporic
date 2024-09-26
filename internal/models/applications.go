@@ -25,6 +25,7 @@ type Application struct {
 	ContactPersonMobile      string
 	Status                   int
 	Members                  []string
+	MemberStudents           []string
 	StartDate                time.Time
 	EndDate                  time.Time
 	Payments                 []Payment
@@ -102,6 +103,21 @@ func (m *ApplicationModel) FetchAll() ([]Application, error) {
 			a.Members = append(a.Members, member)
 		}
 
+		rows_member_student, err := m.Db.Query("Select member_name from team_student where sporic_ref_no= ?", a.SporicRefNo)
+
+		if err != nil {
+			return nil, err
+		}
+
+		for rows_member_student.Next() {
+			var member string
+			err := rows_member_student.Scan(&member)
+			if err != nil {
+				return nil, err
+			}
+			a.MemberStudents = append(a.MemberStudents, member)
+		}
+
 		rows_payments, err := m.Db.Query("Select payment_id, sporic_ref_no, currency, payment_amt,tax, gst_number, pan_number ,payment_date, payment_status, transaction_id from payment where sporic_ref_no= ?", a.SporicRefNo)
 
 		if err != nil {
@@ -169,6 +185,22 @@ func (m *ApplicationModel) FetchByLeader(leader int) ([]Application, error) {
 			}
 			a.Members = append(a.Members, member)
 		}
+
+		rows_member_student, err := m.Db.Query("Select member_name from team_student where sporic_ref_no= ?", a.SporicRefNo)
+
+		if err != nil {
+			return nil, err
+		}
+
+		for rows_member_student.Next() {
+			var member string
+			err := rows_member_student.Scan(&member)
+			if err != nil {
+				return nil, err
+			}
+			a.MemberStudents = append(a.MemberStudents, member)
+		}
+
 		rows_payments, err := m.Db.Query("Select payment_id, sporic_ref_no,currency, payment_amt,tax, gst_number, pan_number ,payment_date, payment_status, transaction_id from payment where sporic_ref_no= ?", a.SporicRefNo)
 		if err != nil {
 			return nil, err
@@ -222,6 +254,21 @@ func (m *ApplicationModel) FetchByRefNo(ref_no string) (*Application, error) {
 			return nil, err
 		}
 		a.Members = append(a.Members, member)
+	}
+
+	rows_member_student, err := m.Db.Query("Select member_name from team_student where sporic_ref_no= ?", a.SporicRefNo)
+
+	if err != nil {
+		return nil, err
+	}
+
+	for rows_member_student.Next() {
+		var member string
+		err := rows_member_student.Scan(&member)
+		if err != nil {
+			return nil, err
+		}
+		a.MemberStudents = append(a.MemberStudents, member)
 	}
 
 	rows, err = m.Db.Query("Select payment_id, sporic_ref_no, currency, payment_amt,tax, gst_number, pan_number ,payment_date, payment_status, transaction_id from payment where sporic_ref_no= ?", a.SporicRefNo)
@@ -315,6 +362,13 @@ func (m *ApplicationModel) Insert(form Application) (string, error) {
 
 	for _, member := range form.Members {
 		_, err := m.Db.Exec("insert into team (sporic_ref_no, member_name) values (?, ?)", sporic_ref_no, member)
+		if err != nil {
+			return "", err
+		}
+	}
+
+	for _, member := range form.MemberStudents {
+		_, err := m.Db.Exec("insert into team_student (sporic_ref_no, member_name) values (?, ?)", sporic_ref_no, member)
 		if err != nil {
 			return "", err
 		}

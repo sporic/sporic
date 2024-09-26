@@ -1,0 +1,1 @@
+alter table team add column share integer not null;

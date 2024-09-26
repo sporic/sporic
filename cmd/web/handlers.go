@@ -174,6 +174,7 @@ type newApplicationForm struct {
 	ConatactPersonMobile     string   `form:"contact_person_mobile"`
 	ContactPersonDesignation string   `form:"contact_person_designation"`
 	Members                  []string `form:"members"`
+	MemberStudents            []string `form:"member_students"`
 	validator.Validator      `form:"-"`
 }
 
@@ -261,6 +262,7 @@ func (app *App) new_application_post(w http.ResponseWriter, r *http.Request) {
 	application.ContactPersonMobile = form.ConatactPersonMobile
 	application.ContactPersonDesignation = form.ContactPersonDesignation
 	application.Members = form.Members
+	application.MemberStudents = form.MemberStudents
 
 	sporic_ref_no, err := app.applications.Insert(application)
 	if err != nil {
@@ -677,7 +679,13 @@ func (app *App) accounts_home(w http.ResponseWriter, r *http.Request) {
 		app.serverError(w, err)
 	}
 
+	applications, err := app.applications.FetchAll()
+	if err != nil {
+		app.serverError(w, err)
+	}
+
 	data := app.newTemplateData(r)
+	data.Applications = applications
 	data.User = user
 	data.Payments = payments
 	app.render(w, http.StatusOK, "accounts_home.tmpl", data)

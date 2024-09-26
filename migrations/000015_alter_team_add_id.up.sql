@@ -1,0 +1,1 @@
+alter table team add column id varchar(255) not null;
