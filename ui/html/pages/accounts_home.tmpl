@@ -33,162 +33,231 @@
     <h2 class="mb-4">Welcome, {{.User.Username}}</h2>
 
     <!-- Ivoice Generation -->
-    <div class="row mt-4">
-        <div class="col-md-12">
-            <h4>Invoice Generations</h4>
-            <table class="table table-bordered">
-                <thead>
-                    <tr>
-                        <th>Amount</th>
-                        <th>GST No.</th>
-                        <th>PAN No.</th>
-                        <th>GST Certificate</th>
-                        <th>Invoice</th>
-                        <th>Action</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {{range.Payments}}
-                    {{if eq .Payment_status 4}}
-                    <tr>
-                        <form action="/admin_home" method="post">
-                            <input type="hidden" name="action" value="generate_invoice" />
-                            <input type="hidden" name="payment_id" value="{{.Payment_id}}" />
-                            <td>{{.Payment_amt}}</td>
-                            <td>{{.Gst_number}}</td>
-                            <td>{{.Pan_number}}</td>
-                            <td><a href="/download/{{.Sporic_ref_no}}/{{.Payment_id}}/tax_cirtificate" target="_blank">View</a></td>
-                            <td><input type="file" class="form-control" placeholder="Invoice" name="invoice"
-                                    accept=".pdf" required /></td>
-                            <td><button type="submit" class="btn btn-primary">Submit</button></td>
-                        </form>
-                    </tr>
-                    {{end}}
-                    {{end}}
-                </tbody>
-            </table>
-
+    <div class="accordian" id="paymentInvoiceGeneration">
+        {{range $application := .Applications}}
+        {{range $payment := $application.Payments}}
+        {{if eq $payment.Payment_status 4}}
+        <!-- Heading -->
+        <h2 class="accordion-header" id="heading-invoice-gen-{{.Payment_id}}">
+            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                data-bs-target="#collapse-invoice-gen-{{.Payment_id}}" aria-expanded="false"
+                aria-controls="collapse-invoice-gen-{{.Payment_id}}">
+                Payment Record #{{.Payment_id}} - Sporic Ref No: {{.Sporic_ref_no}}
+            </button>
+        </h2>
+        <!-- Body -->
+        <div id="collapse-invoice-gen-{{.Payment_id}}" class="accordion-collapse collapse"
+            aria-labelledby="heading-invoice-gen-{{.Payment_id}}" data-bs-parent="#paymentInvoiceGeneration">
+            <div class="accordion-body">
+                <form action="/admin_home" method="post">
+                    <input type="hidden" name="action" value="generate_invoice" />
+                    <input type="hidden" name="payment_id" value="{{.Payment_id}}" />
+                    <ul class="list-group">
+                        <li class="list-group-item">
+                            <span class="fw-bold">Sproic Ref No.</span> {{$application.Sporic_ref_no}}
+                        </li>
+                        <li class="list-group-item">
+                            <span class="fw-bold">Project Title</span> {{$application.Project_title}}
+                        </li>
+                        <li class="list-group-item">
+                            <span class="fw-bold">Company Name</span> {{$payment.Company_name}}
+                        </li>
+                        <li class="list-group-item">
+                            <span class="fw-bold">Billing Address</span> {{$payment.Billing_address}}
+                        </li>
+                        <li class="list-group-item">
+                            <span class="fw-bold">Currency</span> {{$payment.Currency}}
+                        </li>
+                        <li class="list-group-item">
+                            <span class="fw-bold">Amount</span> {{$payment.Payment_amt}}
+                        </li>
+                        <li class="list-group-item">
+                            <span class="fw-bold">Tax</span> {{$payment.Tax}}
+                        </li>
+                        <li class="list-group-item">
+                            <span class="fw-bold">GST No.</span> {{$payment.Gst_number}}
+                        </li>
+                        <li class="list-group-item">
+                            <span class="fw-bold">PAN No.</span> {{$payment.Pan_number}}
+                        </li>
+                        <li class="list-group-item">
+                            <span class="fw-bold">GST Certificate</span>
+                            <a href="/download/{{.Sporic_ref_no}}/{{.Payment_id}}/tax_cirtificate"
+                                target="_blank">View</a>
+                        </li>
+                        <li class="list-group-item">
+                            <span class="fw-bold">Invoice</span>
+                            <input type="file" class="form-control" placeholder="Invoice" name="invoice" accept=".pdf"
+                                required />
+                        </li>
+                        <li class="list-group-item">
+                            <button type="submit" class="btn btn-primary">Submit</button>
+                        </li>
+                    </ul>
+                </form>
+            </div>
         </div>
+        {{end}}
+        {{end}}
+        {{end}}
     </div>
 
     <!-- Payment Verification -->
-    <div class="row mt-4">
-        <div class="col-md-12">
-            <h4>Payment Verification</h4>
-            <table class="table table-bordered">
-                <thead>
-                    <tr>
-                        <th>Amount</th>
-                        <th>GST No.</th>
-                        <th>PAN No.</th>
-                        <th>GST Certificate</th>
-                        <th>Invoice</th>
-                        <th>Transaction ID</th>
-                        <th>Payment Proof</th>
-                        <th>Status</th>
-                        <th>Action</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {{range.Payments}}
-                    {{if eq .Payment_status 1}}<!-- TODO status pending approval -->
-                    <tr>
-                        <form action="/admin_home" method="post">
-                            <td>{{.Payment_amt}}</td>
-                            <td>{{.Gst_number}}</td>
-                            <td>{{.Pan_number}}</td>
-                            <td><a href="/download/{{.Sporic_ref_no}}/{{.Payment_id}}/tax_cirtificate"
-                                    target="_blank">View</a></td>
-                            <td><a href="/download/{{.Sporic_ref_no}}/{{.Payment_id}}/invoice" target="_blank">View</a>
-                            </td>
-                            <td>{{.Transaction_id}}</td>
-                            <td><a href="/download/{{.Sporic_ref_no}}/{{.Payment_id}}/payment" target="_blank">View</a>
-                            </td>
-                            <td>
-                                <span class="badge bg-success">Approve</span>
-                            </td>
-                            <td>
-                                <div style="display: flex; gap: 10px;">
-                                    <form action="/admin/view_application/{{.Sporic_ref_no}}" method="post"
-                                        style="display: inline;">
-                                        <input type="hidden" name="action" value="approve_expenditure" />
-                                        <button class="btn btn-success">Approve</button>
-                                    </form>
-                                    <form action="/admin/view_application/{{.Sporic_ref_no}}" method="post"
-                                        style="display: inline;">
-                                        <input type="hidden" name="action" value="reject_expenditure" />
-                                        <button class="btn btn-danger">Reject</button>
-                                    </form>
-                                </div>
-                            </td>
-                        </form>
-                    </tr>
-                    {{end}}
-                    {{end}}
-                </tbody>
-            </table>
-        </div>
-    </div>
+    <div class="accordian" id="paymentVerification">
+        {{range $application := .Applications}}
+        {{range $payment := $application.Payments}}
+        {{if eq $payment.Payment_status 1}}
+        <!-- Heading -->
+        <h2 class="accordion-header" id="heading-payment-verification-{{.Payment_id}}">
+            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                data-bs-target="#collapse-payment-verification-{{.Payment_id}}" aria-expanded="false"
+                aria-controls="collapse-payment-verification-{{.Payment_id}}">
+                Payment Record #{{.Payment_id}} - Sporic Ref No: {{.Sporic_ref_no}}
+            </button>
+        </h2>
+        <!-- Body -->
+        <div id="collapse-payment-verification-{{.Payment_id}}" class="accordion-collapse collapse"
+            aria-labelledby="heading-payment-verification-{{.Payment_id}}" data-bs-parent="#paymentVerification">
+            <div class="accordion-body">
+                <ul class="list-group">
+                    <li class="list-group-item">
+                        <span class="fw-bold">Sproic Ref No.</span> {{$application.Sporic_ref_no}}
+                    </li>
+                    <li class="list-group-item">
+                        <span class="fw-bold">Project Title</span> {{$application.Project_title}}
+                    </li>
+                    <li class="list-group-item">
+                        <span class="fw-bold">Company Name</span> {{$payment.Company_name}}
+                    </li>
+                    <li class="list-group-item">
+                        <span class="fw-bold">Billing Address</span> {{$payment.Billing_address}}
+                    </li>
+                    <li class="list-group-item">
+                        <span class="fw-bold">Currency</span> {{$payment.Currency}}
+                    </li>
+                    <li class="list-group-item">
+                        <span class="fw-bold">Amount</span> {{$payment.Payment_amt}}
+                    </li>
+                    <li class="list-group-item">
+                        <span class="fw-bold">Tax</span> {{$payment.Tax}}
+                    </li>
+                    <li class="list-group-item">
+                        <span class="fw-bold">GST No.</span> {{$payment.Gst_number}}
+                    </li>
+                    <li class="list-group-item">
+                        <span class="fw-bold">PAN No.</span> {{$payment.Pan_number}}
+                    </li>
+                    <li class="list-group-item">
+                        <span class="fw-bold">GST Certificate</span>
+                        <a href="/download/{{.Sporic_ref_no}}/{{.Payment_id}}/tax_cirtificate" target="_blank">View</a>
+                    </li>
+                    <li class="list-group-item">
+                        <span class="fw-bold">Invoice</span>
+                        <a href="/download/{{.Sporic_ref_no}}/{{.Payment_id}}/invoice" target="_blank">View</a>
+                    </li>
+                    <li class="list-group-item">
+                        <span class="fw-bold">Transaction ID</span> {{$payment.Transaction_id}}
+                    </li>
+                    <li class="list-group-item">
+                        <span class="fw-bold">Payment Proof</span>
+                        <a href="/download/{{.Sporic_ref_no}}/{{.Payment_id}}/payment" target="_blank">View</a>
+                    </li>
+                    <li class="list-group-item">
+                        <div style="display: flex; gap: 10px;">
+                            <form action="/admin/view_application/{{.Sporic_ref_no}}" method="post"
+                                style="display: inline;">
+                                <input type="hidden" name="action" value="approve_expenditure" />
+                                <button class="btn btn-success">Approve</button>
+                            </form>
+                            <form action="/admin/view_application/{{.Sporic_ref_no}}" method="post"
+                                style="display: inline;">
+                                <input type="hidden" name="action" value="reject_expenditure" />
+                                <button class="btn btn-danger">Reject</button>
+                            </form>
+                        </div>
 
+                    </li>
+                </ul>
+            </div>
+        </div>
+        {{end}}
+        {{end}}
+        {{end}}
+    </div>
 
     <!-- Everything Else -->
-    <div class="row mt-4">
-        <div class="col-md-12">
-            <h4>All other paymets</h4>
-            <table class="table table-bordered">
-                <thead>
-                    <tr>
-                        <th>Amount</th>
-                        <th>GST No.</th>
-                        <th>PAN No.</th>
-                        <th>GST Certificate</th>
-                        <th>Invoice</th>
-                        <th>Transaction ID</th>
-                        <th>Payment Proof</th>
-                        <th>Status</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {{range.Payments}}
-                    {{ if eq .Payment_status 2 }}
-                    <tr>
-                        <td>{{.Payment_amt}}</td>
-                        <td>{{.Gst_number}}</td>
-                        <td>{{.Pan_number}}</td>
-                        <td><a href="/download/{{.Sporic_ref_no}}/{{.Payment_id}}/tax_cirtificate"
-                                target="_blank">View</a></td>
-                        <td><a href="/download/{{.Sporic_ref_no}}/{{.Payment_id}}/invoice" target="_blank">View</a>
-                        </td>
-                        <td>{{.Transaction_id}}</td>
-                        <td><a href="/download/{{.Sporic_ref_no}}/{{.Payment_id}}/payment" target="_blank">View</a>
-                        </td>
-                        <td>
-                            <span class="badge bg-success">Approved</span>
-                        </td>
-                    </tr>
-                    {{end}}
-                    {{if eq .Payment_status 3}}
-                    <tr>
-                        <td>{{.Payment_amt}}</td>
-                        <td>{{.Gst_number}}</td>
-                        <td>{{.Pan_number}}</td>
-                        <td><a href="/download/{{.Sporic_ref_no}}/{{.Payment_id}}/tax_cirtificate"
-                                target="_blank">View</a></td>
-                        <td><a href="/download/{{.Sporic_ref_no}}/{{.Payment_id}}/invoice" target="_blank">View</a>
-                        </td>
-                        <td>{{.Transaction_id}}</td>
-                        <td><a href="/download/{{.Sporic_ref_no}}/{{.Payment_id}}/payment" target="_blank">View</a>
-                        </td>
-                        <td>
-                            <span class="badge bg-success">Rejected</span>
-                        </td>
-                    </tr>
-                    {{end}}
-                    {{end}}
-                </tbody>
-            </table>
+    <div class="accordian" id="everythingElse">
+        {{range $application := .Applications}}
+        {{range $payment := $application.Payments}}
+        {{if ne $payment.Payment_status 1}}
+        {{if ne $payment.Payment_status 4}}
+        <!-- Heading -->
+        <h2 class="accordion-header" id="heading-everything-else-{{.Payment_id}}">
+            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                data-bs-target="#collapse-everything-else-{{.Payment_id}}" aria-expanded="false"
+                aria-controls="collapse-everything-else-{{.Payment_id}}">
+                Payment Record #{{.Payment_id}} - Sporic Ref No: {{.Sporic_ref_no}} <span
+                    class="badge bg-success">Approved Payment</span>
+            </button>
+        </h2>
+        <!-- Body -->
+        <div id="collapse-everything-else-{{.Payment_id}}" class="accordion-collapse collapse"
+            aria-labelledby="heading-everything-else-{{.Payment_id}}" data-bs-parent="#everythingElse">
+            <div class="accordion-body">
+                <ul class="list-group">
+                    <li class="list-group-item">
+                        <span class="fw-bold">Sproic Ref No.</span> {{$application.Sporic_ref_no}}
+                    </li>
+                    <li class="list-group-item">
+                        <span class="fw-bold">Project Title</span> {{$application.Project_title}}
+                    </li>
+                    <li class="list-group-item">
+                        <span class="fw-bold">Company Name</span> {{$payment.Company_name}}
+                    </li>
+                    <li class="list-group-item">
+                        <span class="fw-bold">Billing Address</span> {{$payment.Billing_address}}
+                    </li>
+                    <li class="list-group-item">
+                        <span class="fw-bold">Currency</span> {{$payment.Currency}}
+                    </li>
+                    <li class="list-group-item">
+                        <span class="fw-bold">Amount</span> {{$payment.Payment_amt}}
+                    </li>
+                    <li class="list-group-item">
+                        <span class="fw-bold">Tax</span> {{$payment.Tax}}
+                    </li>
+                    <li class="list-group-item">
+                        <span class="fw-bold">GST No.</span> {{$payment.Gst_number}}
+                    </li>
+                    <li class="list-group-item">
+                        <span class="fw-bold">PAN No.</span> {{$payment.Pan_number}}
+                    </li>
+                    <li class="list-group-item">
+                        <span class="fw-bold">GST Certificate</span>
+                        <a href="/download/{{.Sporic_ref_no}}/{{.Payment_id}}/tax_cirtificate" target="_blank">View</a>
+                    </li>
+                    <li class="list-group-item">
+                        <span class="fw-bold">Invoice</span>
+                        <a href="/download/{{.Sporic_ref_no}}/{{.Payment_id}}/invoice" target="_blank">View</a>
+                    </li>
+                    <li class="list-group-item">
+                        <span class="fw-bold">Transaction ID</span> {{$payment.Transaction_id}}
+                    </li>
+                    <li class="list-group-item">
+                        <span class="fw-bold">Payment Proof</span>
+                        <a href="/download/{{.Sporic_ref_no}}/{{.Payment_id}}/payment" target="_blank">View</a>
+                    </li>
+                    <li class="list-group-item">
+                        <span class="fw-bold">Status</span>
+                        <span class="badge bg-success">Approved</span>
+                    </li>
+                </ul>
+            </div>
         </div>
+        {{end}}
+        {{end}}
+        {{end}}
+        {{end}}
     </div>
-
 </div>
 {{ end }}
