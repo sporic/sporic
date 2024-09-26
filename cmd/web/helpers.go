@@ -11,6 +11,8 @@ import (
 	"runtime/debug"
 
 	"github.com/go-playground/form"
+	"github.com/sporic/sporic/internal/models"
+	"github.com/xuri/excelize/v2"
 )
 
 func (app *App) serverError(w http.ResponseWriter, err error) {
@@ -75,7 +77,7 @@ func (app *App) handleFile(r *http.Request, folder_name string, prefix string, f
 	if file_type == ExpenditureProof {
 		filename = folder_name + "_" + prefix + "_expenditure_proof" + ".pdf"
 	}
-	if file_type == ExpenditureInvoice{
+	if file_type == ExpenditureInvoice {
 		filename = folder_name + "_" + prefix + "_expenditure_invoice" + ".pdf"
 	}
 
@@ -92,4 +94,95 @@ func (app *App) handleFile(r *http.Request, folder_name string, prefix string, f
 		return err
 	}
 	return nil
+}
+
+func (app *App) GenerateExcel(applications []models.Application) (*excelize.File, error) {
+
+	f := excelize.NewFile()
+	index, err := f.NewSheet("Sheet1")
+
+	if err != nil {
+		app.errorLog.Println(err)
+		return nil, err
+	}
+
+	headers := []string{
+		"Sporic ID",
+		"Project Title",
+		"Leader",
+		"Financial Year",
+		"Activity Type",
+		"Estimated Amount",
+		"Total Payment",
+		"Total Tax",
+		"Total Amount Paid",
+		"Company Name",
+		"Company Address",
+		"Billing Address",
+		"Contact Person Name",
+		"Contact Person Designation",
+		"Contact Person Email",
+		"Contact Person Mobile",
+		"Status",
+		"Members",
+		"Member Students",
+		"Start Date",
+		"End Date",
+		"Comments",
+		"Completion Date",
+		"Resource Used",
+	}
+
+	for i, header := range headers {
+		cell := fmt.Sprintf("%s1", string(rune('A'+i)))
+		f.SetCellValue("Sheet1", cell, header)
+	}
+
+	for i, row := range applications {
+		f.SetCellValue("Sheet1", fmt.Sprintf("A%d", i+2), row.SporicRefNo)
+		f.SetCellValue("Sheet1", fmt.Sprintf("B%d", i+2), row.ProjectTitle)
+		f.SetCellValue("Sheet1", fmt.Sprintf("C%d", i+2), row.Leader)
+		f.SetCellValue("Sheet1", fmt.Sprintf("D%d", i+2), row.FinancialYear)
+		f.SetCellValue("Sheet1", fmt.Sprintf("E%d", i+2), row.ActivityType)
+		f.SetCellValue("Sheet1", fmt.Sprintf("F%d", i+2), row.EstimatedAmt)
+		TotalPayment := 0
+		TotalTax := 0
+		for _, payment := range row.Payments {
+			TotalPayment += payment.Payment_amt
+			TotalTax += payment.Tax
+		}
+		f.SetCellValue("Sheet1", fmt.Sprintf("G%d", i+2), TotalPayment)
+		f.SetCellValue("Sheet1", fmt.Sprintf("H%d", i+2), TotalTax)
+		f.SetCellValue("Sheet1", fmt.Sprintf("I%d", i+2), TotalPayment+TotalTax)
+		f.SetCellValue("Sheet1", fmt.Sprintf("I%d", i+2), row.CompanyName)
+		f.SetCellValue("Sheet1", fmt.Sprintf("J%d", i+2), row.CompanyAddress)
+		f.SetCellValue("Sheet1", fmt.Sprintf("K%d", i+2), row.BillingAddress)
+		f.SetCellValue("Sheet1", fmt.Sprintf("L%d", i+2), row.ContactPersonName)
+		f.SetCellValue("Sheet1", fmt.Sprintf("M%d", i+2), row.ContactPersonDesignation)
+		f.SetCellValue("Sheet1", fmt.Sprintf("N%d", i+2), row.ContactPersonEmail)
+		f.SetCellValue("Sheet1", fmt.Sprintf("O%d", i+2), row.ContactPersonMobile)
+		f.SetCellValue("Sheet1", fmt.Sprintf("P%d", i+2), row.Status)
+
+		members := ""
+		for _, member := range row.Members {
+			members += ", " + member
+		}
+		f.SetCellValue("Sheet1", fmt.Sprintf("Q%d", i+2), members)
+
+		memberStudents := ""
+		for _, memberStudent := range row.MemberStudents {
+			memberStudents += ", " + memberStudent
+		}
+		f.SetCellValue("Sheet1", fmt.Sprintf("R%d", i+2), memberStudents)
+
+		f.SetCellValue("Sheet1", fmt.Sprintf("S%d", i+2), row.StartDate)
+		f.SetCellValue("Sheet1", fmt.Sprintf("T%d", i+2), row.EndDate)
+		f.SetCellValue("Sheet1", fmt.Sprintf("U%d", i+2), row.Comments)
+		f.SetCellValue("Sheet1", fmt.Sprintf("V%d", i+2), row.CompletionDate)
+		f.SetCellValue("Sheet1", fmt.Sprintf("W%d", i+2), row.ResourceUsed)
+	}
+
+	f.SetActiveSheet(index)
+
+	return f, nil
 }

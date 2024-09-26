@@ -174,7 +174,7 @@ type newApplicationForm struct {
 	ConatactPersonMobile     string   `form:"contact_person_mobile"`
 	ContactPersonDesignation string   `form:"contact_person_designation"`
 	Members                  []string `form:"members"`
-	MemberStudents            []string `form:"member_students"`
+	MemberStudents           []string `form:"member_students"`
 	validator.Validator      `form:"-"`
 }
 
@@ -635,7 +635,6 @@ func (app *App) admin_view_application(w http.ResponseWriter, r *http.Request) {
 	data.User = user
 
 	app.render(w, http.StatusOK, "admin_view_application.tmpl", data)
-
 }
 
 func (app *App) download(w http.ResponseWriter, r *http.Request) {
@@ -643,8 +642,6 @@ func (app *App) download(w http.ResponseWriter, r *http.Request) {
 	folder := params.ByName("folder")
 	doc_id := params.ByName("doc_id")
 	doc_type := params.ByName("doc_type")
-
-	fmt.Println(folder, doc_id, doc_type)
 
 	if folder == "" || doc_id == "" || doc_type == "" {
 		http.Error(w, "File not specified.", http.StatusBadRequest)
@@ -657,7 +654,6 @@ func (app *App) download(w http.ResponseWriter, r *http.Request) {
 
 	filePath := filepath.Join(prefixPath, filepath.Clean(filename))
 
-	//w.Header().Set("Content-Disposition", fmt.Sprintf("inline; filename=%s", filename))
 	w.Header().Set("Content-Type", "application/pdf")
 
 	http.ServeFile(w, r, filePath)
@@ -689,4 +685,35 @@ func (app *App) accounts_home(w http.ResponseWriter, r *http.Request) {
 	data.User = user
 	data.Payments = payments
 	app.render(w, http.StatusOK, "accounts_home.tmpl", data)
+}
+
+func (app *App) excel(w http.ResponseWriter, r *http.Request) {
+	user := app.contextGetUser(r)
+	if user.IsAnonymous() {
+		http.Redirect(w, r, "/login", http.StatusSeeOther)
+		return
+	}
+	if user.Role != models.FacultyUser {
+		http.Redirect(w, r, "/home", http.StatusSeeOther)
+		return
+	}
+
+	applications, err := app.applications.FetchAll()
+	if err != nil {
+		app.serverError(w, err)
+	}
+
+	file, err := app.GenerateExcel(applications)
+	if err != nil {
+		app.serverError(w, err)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+	w.Header().Set("Content-Disposition", "attachment; filename=sporic-applications.xlsx")
+
+	if err := file.Write(w); err != nil {
+		app.serverError(w, err)
+		return
+	}
 }

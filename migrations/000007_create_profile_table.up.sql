@@ -2,6 +2,7 @@ create table profile (
     profile_id integer primary key auto_increment,
     user_id integer not null,
     username varchar(255) not null,
+    -- faculty id that 4 .5 ,6 digit number
     full_name varchar(255) not null,
     designation varchar(255) not null,
     mobile_number varchar(255) not null,

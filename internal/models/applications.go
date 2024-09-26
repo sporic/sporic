@@ -378,9 +378,23 @@ func (m *ApplicationModel) Insert(form Application) (string, error) {
 }
 
 func (m *ApplicationModel) SetStatus(refno string, status ProjectStatus) error {
+
 	_, err := m.Db.Exec("update applications set project_status = ? where sporic_ref_no = ?", status, refno)
 	if err != nil {
 		return err
+	}
+
+	if status == ProjectApproved{
+		_, err = m.Db.Exec("update applications set project_start_date = ? where sporic_ref_no = ?", time.Now(), refno)
+		if err != nil {
+			return err
+		}
+	}
+	if status == ProjectCompleted{
+		_, err = m.Db.Exec("update applications set completion_date = ? where sporic_ref_no = ?", time.Now(), refno)
+		if err != nil {
+			return err
+		}
 	}
 	return nil
 }

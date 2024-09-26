@@ -68,7 +68,7 @@ func (m *UserModel) Get(id int) (*User, error) {
 		return nil, err
 	}
 
-	err = m.Db.QueryRow("select full_name, designation, mobile_number, school from profile where user_id = ?", id).Scan(&u.FullName, &u.Designation, &u.MobileNumber, &u.School)
+	err = m.Db.QueryRow("select full_name, designation, mobile_number, school from profile where username = ?", u.Username).Scan(&u.FullName, &u.Designation, &u.MobileNumber, &u.School)
 	if err == sql.ErrNoRows {
 		return u, nil
 	} else if err != nil {
