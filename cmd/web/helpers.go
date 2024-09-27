@@ -116,6 +116,7 @@ func (app *App) GenerateExcel(applications []models.Application) (*excelize.File
 		"Total Payment",
 		"Total Tax",
 		"Total Amount Paid",
+		"Total Expenditure",
 		"Company Name",
 		"Company Address",
 		"Billing Address",
@@ -148,38 +149,47 @@ func (app *App) GenerateExcel(applications []models.Application) (*excelize.File
 		TotalPayment := 0
 		TotalTax := 0
 		for _, payment := range row.Payments {
+			if payment.Payment_status == models.PaymentApproved {
 			TotalPayment += payment.Payment_amt
 			TotalTax += payment.Tax
+			}
 		}
 		f.SetCellValue("Sheet1", fmt.Sprintf("G%d", i+2), TotalPayment)
 		f.SetCellValue("Sheet1", fmt.Sprintf("H%d", i+2), TotalTax)
 		f.SetCellValue("Sheet1", fmt.Sprintf("I%d", i+2), TotalPayment+TotalTax)
-		f.SetCellValue("Sheet1", fmt.Sprintf("I%d", i+2), row.CompanyName)
-		f.SetCellValue("Sheet1", fmt.Sprintf("J%d", i+2), row.CompanyAddress)
-		f.SetCellValue("Sheet1", fmt.Sprintf("K%d", i+2), row.BillingAddress)
-		f.SetCellValue("Sheet1", fmt.Sprintf("L%d", i+2), row.ContactPersonName)
-		f.SetCellValue("Sheet1", fmt.Sprintf("M%d", i+2), row.ContactPersonDesignation)
-		f.SetCellValue("Sheet1", fmt.Sprintf("N%d", i+2), row.ContactPersonEmail)
-		f.SetCellValue("Sheet1", fmt.Sprintf("O%d", i+2), row.ContactPersonMobile)
-		f.SetCellValue("Sheet1", fmt.Sprintf("P%d", i+2), row.Status)
+		TotalExpenditure := 0
+		for _, expenditure := range row.Expenditures {
+			if expenditure.Expenditure_status == models.ExpenditureApproved {
+				TotalExpenditure += expenditure.Expenditure_amt
+			}
+		}
+		f.SetCellValue("Sheet1", fmt.Sprintf("J%d", i+2), TotalExpenditure)
+		f.SetCellValue("Sheet1", fmt.Sprintf("K%d", i+2), row.CompanyName)
+		f.SetCellValue("Sheet1", fmt.Sprintf("L%d", i+2), row.CompanyAddress)
+		f.SetCellValue("Sheet1", fmt.Sprintf("M%d", i+2), row.BillingAddress)
+		f.SetCellValue("Sheet1", fmt.Sprintf("N%d", i+2), row.ContactPersonName)
+		f.SetCellValue("Sheet1", fmt.Sprintf("O%d", i+2), row.ContactPersonDesignation)
+		f.SetCellValue("Sheet1", fmt.Sprintf("P%d", i+2), row.ContactPersonEmail)
+		f.SetCellValue("Sheet1", fmt.Sprintf("Q%d", i+2), row.ContactPersonMobile)
+		f.SetCellValue("Sheet1", fmt.Sprintf("R%d", i+2), row.Status)
 
 		members := ""
 		for _, member := range row.Members {
 			members += ", " + member
 		}
-		f.SetCellValue("Sheet1", fmt.Sprintf("Q%d", i+2), members)
+		f.SetCellValue("Sheet1", fmt.Sprintf("S%d", i+2), members)
 
 		memberStudents := ""
 		for _, memberStudent := range row.MemberStudents {
 			memberStudents += ", " + memberStudent
 		}
-		f.SetCellValue("Sheet1", fmt.Sprintf("R%d", i+2), memberStudents)
+		f.SetCellValue("Sheet1", fmt.Sprintf("T%d", i+2), memberStudents)
 
-		f.SetCellValue("Sheet1", fmt.Sprintf("S%d", i+2), row.StartDate)
-		f.SetCellValue("Sheet1", fmt.Sprintf("T%d", i+2), row.EndDate)
-		f.SetCellValue("Sheet1", fmt.Sprintf("U%d", i+2), row.Comments)
-		f.SetCellValue("Sheet1", fmt.Sprintf("V%d", i+2), row.CompletionDate)
-		f.SetCellValue("Sheet1", fmt.Sprintf("W%d", i+2), row.ResourceUsed)
+		f.SetCellValue("Sheet1", fmt.Sprintf("U%d", i+2), row.StartDate)
+		f.SetCellValue("Sheet1", fmt.Sprintf("V%d", i+2), row.EndDate)
+		f.SetCellValue("Sheet1", fmt.Sprintf("W%d", i+2), row.Comments)
+		f.SetCellValue("Sheet1", fmt.Sprintf("X%d", i+2), row.CompletionDate)
+		f.SetCellValue("Sheet1", fmt.Sprintf("Y%d", i+2), row.ResourceUsed)
 	}
 
 	f.SetActiveSheet(index)

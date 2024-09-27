@@ -70,6 +70,14 @@ const (
 	ExpenditureRejected
 )
 
+type Notification struct {
+	Content string
+	To      []string
+}
+type Notifications struct {
+	
+}
+
 type ApplicationModel struct {
 	Db *sql.DB
 }
@@ -384,13 +392,13 @@ func (m *ApplicationModel) SetStatus(refno string, status ProjectStatus) error {
 		return err
 	}
 
-	if status == ProjectApproved{
+	if status == ProjectApproved {
 		_, err = m.Db.Exec("update applications set project_start_date = ? where sporic_ref_no = ?", time.Now(), refno)
 		if err != nil {
 			return err
 		}
 	}
-	if status == ProjectCompleted{
+	if status == ProjectCompleted {
 		_, err = m.Db.Exec("update applications set completion_date = ? where sporic_ref_no = ?", time.Now(), refno)
 		if err != nil {
 			return err
