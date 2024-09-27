@@ -456,6 +456,33 @@
             <label for="projectClosureReport" class="form-label">Project Closure Report</label>
             <input type="file" class="form-control" id="projectClosureReport" name="project_closure_report" required />
           </div>
+          <h4>Share Percent for Faculty Team Members</h4>
+          <table class="table table-bordered">
+            <thead>
+              <tr>
+                <th>Faculty Name</th>
+                <th>Share (%)</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>{{.Application.Leader}}</td>
+                <td>
+                  <input type="number" class="form-control" id="leaderShare" name="leader_share" value="100" readonly />
+                </td>
+              </tr>
+
+              {{range .Application.Members}}
+              <tr>
+                <td>{{.}}</td>
+                <td>
+                  <input type="number" class="form-control share-input" name="share_percent[{{.}}]" min="0" max="100"
+                    step="1" required oninput="updateLeaderShare()" />
+                </td>
+              </tr>
+              {{end}}
+            </tbody>
+          </table>
           <button type="submit" class="btn btn-primary">Complete Project</button>
       </form>
       {{end}}
@@ -473,6 +500,37 @@
       } else {
         proofLabel.textContent = 'Invoice Document';
       }
+    }
+  </script>
+
+  <!-- Script for share calculation -->
+  <script>
+    function updateLeaderShare() {
+      const shareInputs = document.querySelectorAll('.share-input');
+      let totalShare = 0;
+
+      shareInputs.forEach(input => {
+        const value = parseInt(input.value) || 0;
+        totalShare += value;
+      });
+
+      const leaderShare = 100 - totalShare;
+      const leaderShareInput = document.getElementById('leaderShare');
+
+      if (leaderShare >= 0) {
+        leaderShareInput.value = leaderShare;
+      } else {
+        leaderShareInput.value = 0;
+      }
+    }
+
+    function validateForm() {
+      const leaderShare = parseInt(document.getElementById('leaderShare').value) || 0;
+      if (leaderShare < 0) {
+        alert('Total share cannot exceed 100%. Please adjust the shares.');
+        return false;
+      }
+      return true;
     }
   </script>
 
