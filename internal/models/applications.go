@@ -70,12 +70,14 @@ const (
 	ExpenditureRejected
 )
 
+type NotificationType = int
+
+
 type Notification struct {
 	Content string
 	To      []string
 }
 type Notifications struct {
-	
 }
 
 type ApplicationModel struct {
@@ -529,7 +531,7 @@ func (m *ApplicationModel) Complete_Project(completion Completion) error {
 }
 
 func (m *ApplicationModel) UpdatePayment(payment Payment) error {
-	_, err := m.Db.Exec("update payment set transaction_id = ? where payment_id = ?", payment.Transaction_id, payment.Payment_id)
+	_, err := m.Db.Exec("update payment set transaction_id = ?, payment_date=? where payment_id = ?", payment.Transaction_id, time.Now(), payment.Payment_id)
 
 	if err != nil {
 		return err
