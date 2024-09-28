@@ -338,10 +338,12 @@
                     <div style="display: flex; gap: 10px;">
                         <form action="/admin/view_application/{{.SporicRefNo}}" method="post" style="display: inline;">
                             <input type="hidden" name="action" value="approve_expenditure" />
+                            <input type="hidden" name="expenditure_id" value="{{.Expenditure_id}}" />
                             <button class="btn btn-success">Approve</button>
                         </form>
                         <form action="/admin/view_application/{{.SporicRefNo}}" method="post" style="display: inline;">
                             <input type="hidden" name="action" value="reject_expenditure" />
+                            <input type="hidden" name="expenditure_id" value="{{.Expenditure_id}}" />
                             <button class="btn btn-danger">Reject</button>
                         </form>
                     </div>

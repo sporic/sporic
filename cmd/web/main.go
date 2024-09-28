@@ -17,6 +17,7 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/julienschmidt/httprouter"
 	"github.com/justinas/alice"
+	"github.com/robfig/cron/v3"
 )
 
 type App struct {
@@ -27,6 +28,7 @@ type App struct {
 	sessionManager *scs.SessionManager
 	users          *models.UserModel
 	applications   *models.ApplicationModel
+	notifications  *models.NotificationModel
 	payments       *models.PaymentModel
 }
 
@@ -63,9 +65,19 @@ func main() {
 		users:          &models.UserModel{Db: db},
 		applications:   &models.ApplicationModel{Db: db},
 		payments:       &models.PaymentModel{Db: db},
+		notifications:  &models.NotificationModel{Db: db},
 		sessionManager: sessionManager,
 		formDecoder:    formDecoder,
 	}
+
+	c := cron.New()
+
+	_, err = c.AddFunc("@daily", app.checkForDelayes)
+	if err != nil {
+		log.Fatalf("Error adding cron job: %v", err)
+	}
+
+	c.Start()
 
 	mux := app.routes()
 
@@ -78,6 +90,7 @@ func main() {
 	infoLog.Printf("Starting server on %s", addr)
 	err = srv.ListenAndServe()
 	errorLog.Fatal(err)
+	
 }
 
 func loadDatabase(dsn string) *sql.DB {
@@ -115,6 +128,7 @@ func (app App) routes() http.Handler {
 	router.Handler(http.MethodPost, "/admin/view_application/:refno", dynamic.ThenFunc(app.admin_view_application))
 	router.Handler(http.MethodGet, "/download/:folder/:doc_id/:doc_type", dynamic.ThenFunc(app.download))
 	router.Handler(http.MethodGet, "/accounts_home", dynamic.ThenFunc(app.accounts_home))
+	router.Handler(http.MethodPost, "/accounts_home", dynamic.ThenFunc(app.accounts_home))
 	router.Handler(http.MethodGet, "/excel", dynamic.ThenFunc(app.excel))
 	return router
 }

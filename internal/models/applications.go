@@ -68,17 +68,10 @@ const (
 	ExpenditurePendingApproval ExpenditureStatus = iota
 	ExpenditureApproved
 	ExpenditureRejected
+	ExpenditureCompleted
 )
 
-type NotificationType = int
 
-
-type Notification struct {
-	Content string
-	To      []string
-}
-type Notifications struct {
-}
 
 type ApplicationModel struct {
 	Db *sql.DB
@@ -384,6 +377,8 @@ func (m *ApplicationModel) Insert(form Application) (string, error) {
 		}
 	}
 
+
+
 	return sporic_ref_no, err
 }
 
@@ -409,20 +404,19 @@ func (m *ApplicationModel) SetStatus(refno string, status ProjectStatus) error {
 	return nil
 }
 
-func (m *ApplicationModel) SetExpenditureStatus(refno string, status ExpenditureStatus) error {
-	_, err := m.Db.Exec("update expenditure set expenditure_status = ? where sporic_ref_no = ?", status, refno)
+func (m *ApplicationModel) SetExpenditureStatus(exp_id string, status ExpenditureStatus) error {
+	_, err := m.Db.Exec("update expenditure set expenditure_status = ? where expenditure_id = ?", status, exp_id)
 	if err != nil {
 		return err
 	}
 	return nil
 }
 
-func (m *ApplicationModel) SetPaymentStatus(refno string, status PaymentStatus) error {
-	_, err := m.Db.Exec("update payment set payment_status = ? where sporic_ref_no = ?", status, refno)
+func (m *ApplicationModel) SetPaymentStatus(payment_id string, status PaymentStatus) error {
+	_, err := m.Db.Exec("update payment set payment_status = ? where payment_id = ?", status, payment_id)
 	if err != nil {
 		return err
 	}
-
 	return nil
 }
 
@@ -479,7 +473,7 @@ type Expenditure struct {
 	Expenditure_name   string
 	Expenditure_amt    int
 	Expenditure_date   time.Time
-	Expenditure_status int
+	Expenditure_status ExpenditureStatus
 }
 
 func (m *ApplicationModel) Insert_expenditure(expenditure Expenditure) (int, error) {

@@ -29,262 +29,571 @@
     </div>
 </nav>
 
-<div class="container mt-4">
+<div class="container m t-4">
     <h2 class="mb-4">Welcome, {{.User.Username}}</h2>
 
-    <!-- Ivoice Generation -->
-    <div class="row mt-4">
-        <div class="col-md-12">
-            <h4>Invoice Generation</h4>
-            <div class="accordion" id="paymentInvoiceGeneration">
-                {{range $application := .Applications}}
-                {{range $payment := $application.Payments}}
-                {{if eq $payment.Payment_status 4}}
-                <div class="accordion-item">
-                    <!-- Heading -->
-                    <h2 class="accordion-header" id="heading-invoice-gen-{{.Payment_id}}">
-                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
-                            data-bs-target="#collapse-invoice-gen-{{.Payment_id}}" aria-expanded="false"
-                            aria-controls="collapse-invoice-gen-{{.Payment_id}}">
-                            Payment Record #{{.Payment_id}} - Sporic Ref No: {{.Sporic_ref_no}}
-                        </button>
-                    </h2>
-                    <!-- Body -->
-                    <div id="collapse-invoice-gen-{{.Payment_id}}" class="accordion-collapse collapse"
-                        aria-labelledby="heading-invoice-gen-{{.Payment_id}}"
-                        data-bs-parent="#paymentInvoiceGeneration">
-                        <div class="accordion-body">
-                            <form action="/admin_home" method="post">
-                                <input type="hidden" name="action" value="generate_invoice" />
-                                <input type="hidden" name="payment_id" value="{{.Payment_id}}" />
-                                <ul class="list-group">
-                                    <li class="list-group-item">
-                                        <span class="fw-bold">Sproic Ref No.</span> {{$application.SporicRefNo}}
-                                    </li>
-                                    <li class="list-group-item">
-                                        <span class="fw-bold">Project Title</span> {{$application.ProjectTitle}}
-                                    </li>
-                                    <li class="list-group-item">
-                                        <span class="fw-bold">Company Name</span> {{$application.CompanyName}}
-                                    </li>
-                                    <li class="list-group-item">
-                                        <span class="fw-bold">Billing Address</span> {{$application.BillingAddress}}
-                                    </li>
-                                    <li class="list-group-item">
-                                        <span class="fw-bold">Currency</span> {{$payment.Currency}}
-                                    </li>
-                                    <li class="list-group-item">
-                                        <span class="fw-bold">Amount</span> {{$payment.Payment_amt}}
-                                    </li>
-                                    <li class="list-group-item">
-                                        <span class="fw-bold">Tax</span> {{$payment.Tax}}
-                                    </li>
-                                    <li class="list-group-item">
-                                        <span class="fw-bold">GST No.</span> {{$payment.Gst_number}}
-                                    </li>
-                                    <li class="list-group-item">
-                                        <span class="fw-bold">PAN No.</span> {{$payment.Pan_number}}
-                                    </li>
-                                    <li class="list-group-item">
-                                        <span class="fw-bold">GST Certificate</span>
-                                        <a href="/download/{{.Sporic_ref_no}}/{{.Payment_id}}/tax_cirtificate"
-                                            target="_blank">View</a>
-                                    </li>
-                                    <li class="list-group-item">
-                                        <span class="fw-bold">Invoice</span>
-                                        <input type="file" class="form-control" placeholder="Invoice" name="invoice"
-                                            accept=".pdf" required />
-                                    </li>
-                                    <li class="list-group-item">
-                                        <button type="submit" class="btn btn-primary">Submit</button>
-                                    </li>
-                                </ul>
-                            </form>
+    <!-- Tab to switch between view payements and view expenditures -->
+    <ul class="nav nav-tabs" id="myTab" role="tablist">
+        <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="view-payments-tab" data-bs-toggle="tab" data-bs-target="#view-payments"
+                type="button" role="tab" aria-controls="view-payments" aria-selected="true">View Payments</button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="view-expenditures-tab" data-bs-toggle="tab" data-bs-target="#view-expenditures"
+                type="button" role="tab" aria-controls="view-expenditures" aria-selected="false">View
+                Expenditures</button>
+        </li>
+    </ul>
+
+
+    <div class="tab-content" id="paymentsTabContent">
+        <div class="tab-pane fade show active" id="view-payments" role="tabpanel" aria-labelledby="view-payments-tab">
+            <!-- Invoice Generation -->
+            <div class="row mt-4">
+                <div class="col-md-12">
+                    <h4>Invoice Generation</h4>
+
+                    <div class="accordion" id="paymentInvoiceGeneration">
+                        {{range $application := .Applications}}
+                        {{range $payment := $application.Payments}}
+                        {{if eq $payment.Payment_status 4}}
+                        <div class="accordion-item">
+                            <!-- Heading -->
+                            <h2 class="accordion-header" id="heading-invoice-gen-{{.Payment_id}}">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                    data-bs-target="#collapse-invoice-gen-{{.Payment_id}}" aria-expanded="false"
+                                    aria-controls="collapse-invoice-gen-{{.Payment_id}}">
+                                    Payment Record #{{.Payment_id}} - Sporic Ref No: {{.Sporic_ref_no}}
+                                </button>
+                            </h2>
+                            <!-- Body -->
+                            <div id="collapse-invoice-gen-{{.Payment_id}}" class="accordion-collapse collapse"
+                                aria-labelledby="heading-invoice-gen-{{.Payment_id}}"
+                                data-bs-parent="#paymentInvoiceGeneration">
+                                <div class="accordion-body">
+                                    <form action="/accounts_home" method="post" enctype="multipart/form-data">
+                                        <input type="hidden" name="action" value="generate_invoice" />
+                                        <input type="hidden" name="payment_id" value="{{.Payment_id}}" />
+                                        <input type="hidden" name="sporic_ref_no"
+                                            value="{{$application.SporicRefNo}}" />
+                                        <table class="table table-bordered">
+                                            <tbody>
+                                                <tr>
+                                                    <th>Sporic_ref_no</th>
+                                                    <td>{{$application.SporicRefNo}}</td>
+                                                </tr>
+                                                <tr>
+                                                    <th>Project Title</th>
+                                                    <td>{{$application.ProjectTitle}}</td>
+                                                </tr>
+                                                <tr>
+                                                    <th>Company Name</th>
+                                                    <td>{{$application.CompanyName}}</td>
+                                                </tr>
+                                                <tr>
+                                                    <th>Billing Address</th>
+                                                    <td>{{$application.BillingAddress}}</td>
+                                                </tr>
+                                                <tr>
+                                                    <th>Currency</th>
+                                                    <td>{{$payment.Currency}}</td>
+                                                </tr>
+                                                <tr>
+                                                    <th>Amount</th>
+                                                    <td>{{$payment.Payment_amt}}</td>
+                                                </tr>
+                                                <tr>
+                                                    <th>Tax</th>
+                                                    <td>{{$payment.Tax}}</td>
+                                                </tr>
+                                                <tr>
+                                                    <th>GST No.</th>
+                                                    <td>{{$payment.Gst_number}}</td>
+                                                </tr>
+                                                <tr>
+                                                    <th>PAN No.</th>
+                                                    <td>{{$payment.Pan_number}}</td>
+                                                </tr>
+                                                <tr>
+                                                    <th>GST Certificate</th>
+                                                    <td><a href="/download/{{.Sporic_ref_no}}/{{.Payment_id}}/tax_cirtificate"
+                                                            target="_blank">View</a></td>
+                                                </tr>
+                                                <tr>
+                                                    <th>Invoice</th>
+                                                    <td><input type="file" class="form-control" placeholder="Invoice"
+                                                            name="invoice" accept=".pdf" required /></td>
+                                                </tr>
+                                                <tr>
+                                                    <td colspan="2">
+                                                        <button type="submit" class="btn btn-primary">Submit</button>
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </form>
+                                </div>
+                            </div>
                         </div>
+                        {{end}}
+                        {{end}}
+                        {{end}}
                     </div>
                 </div>
-                {{end}}
-                {{end}}
-                {{end}}
+            </div>
+            <!-- Payment Verification -->
+            <div class="row mt-4">
+                <div class="col-md-12">
+                    <h4>Payment Verification</h4>
+                    <div class="accordion" id="paymentVerification">
+                        {{range $application := .Applications}}
+                        {{range $payment := $application.Payments}}
+                        {{if eq $payment.Payment_status 1}}
+                        <div class="accordion-item">
+                            <!-- Heading -->
+                            <h2 class="accordion-header" id="heading-payment-verification-{{.Payment_id}}">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                    data-bs-target="#collapse-payment-verification-{{.Payment_id}}"
+                                    aria-expanded="false" aria-controls="collapse-payment-verification-{{.Payment_id}}">
+                                    Payment Record #{{.Payment_id}} - Sporic Ref No: {{.Sporic_ref_no}}
+                                </button>
+                            </h2>
+                            <!-- Body -->
+                            <div id="collapse-payment-verification-{{.Payment_id}}" class="accordion-collapse collapse"
+                                aria-labelledby="heading-payment-verification-{{.Payment_id}}"
+                                data-bs-parent="#paymentVerification">
+                                <div class="accordion-body">
+                                    <table class="table table-bordered">
+                                        <tbody>
+                                            <tr>
+                                                <th>Sporic Ref No.</th>
+                                                <td>{{$application.SporicRefNo}}</td>
+                                            </tr>
+                                            <tr>
+                                                <th>Project Title</th>
+                                                <td>{{$application.ProjectTitle}}</td>
+                                            </tr>
+                                            <tr>
+                                                <th>Company Name</th>
+                                                <td>{{$application.CompanyName}}</td>
+                                            </tr>
+                                            <tr>
+                                                <th>Billing Address</th>
+                                                <td>{{$application.BillingAddress}}</td>
+                                            </tr>
+                                            <tr>
+                                                <th>Currency</th>
+                                                <td>{{$payment.Currency}}</td>
+                                            </tr>
+                                            <tr>
+                                                <th>Amount</th>
+                                                <td>{{$payment.Payment_amt}}</td>
+                                            </tr>
+                                            <tr>
+                                                <th>Tax</th>
+                                                <td>{{$payment.Tax}}</td>
+                                            </tr>
+                                            <tr>
+                                                <th>GST No.</th>
+                                                <td>{{$payment.Gst_number}}</td>
+                                            </tr>
+                                            <tr>
+                                                <th>PAN No.</th>
+                                                <td>{{$payment.Pan_number}}</td>
+                                            </tr>
+                                            <tr>
+                                                <th>GST Certificate</th>
+                                                <td><a href="/download/{{.Sporic_ref_no}}/{{.Payment_id}}/tax_cirtificate"
+                                                        target="_blank">View</a></td>
+                                            </tr>
+                                            <tr>
+                                                <th>Invoice</th>
+                                                <td><a href="/download/{{.Sporic_ref_no}}/{{.Payment_id}}/invoice"
+                                                        target="_blank">View</a></td>
+                                            </tr>
+                                            <tr>
+                                                <th>Transaction ID</th>
+                                                <td>{{$payment.Transaction_id}}</td>
+                                            </tr>
+                                            <tr>
+                                                <th>Payment Proof</th>
+                                                <td><a href="/download/{{.Sporic_ref_no}}/{{.Payment_id}}/payment"
+                                                        target="_blank">View</a></td>
+                                            </tr>
+                                            <tr>
+                                                <th>Status</th>
+                                                <td>
+                                                    <div style="display: flex; gap: 10px;">
+                                                        <form action="accounts_home" method="post"
+                                                            style="display: inline;" enctype="multipart/form-data">
+                                                            <input type="hidden" name="action"
+                                                                value="approve_payment" />
+                                                            <input type="hidden" name="payment_id"
+                                                                value="{{.Payment_id}}" />
+                                                            <input type="hidden" name="sporic_ref_no"
+                                                                value="{{$application.SporicRefNo}}" />
+                                                            <button class="btn btn-success">Approve</button>
+                                                        </form>
+                                                        <form action="accounts_home" method="post"
+                                                            style="display: inline;" enctype="multipart/form-data">
+                                                            <input type="hidden" name="action" value="reject_payment" />
+                                                            <input type="hidden" name="sporic_ref_no"
+                                                                value="{{$application.SporicRefNo}}" />
+                                                            <input type="hidden" name="payment_id"
+                                                                value="{{.Payment_id}}" />
+                                                            <button class="btn btn-danger">Reject</button>
+                                                        </form>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                        {{end}}
+                        {{end}}
+                        {{end}}
+                    </div>
+                </div>
+            </div>
+            <!-- Everything Else -->
+            <div class="row mt-4">
+                <div class="col-md-12">
+                    <h4>Other Payments</h4>
+                    <div class="accordion" id="everythingElse">
+                        {{range $application := .Applications}}
+                        {{range $payment := $application.Payments}}
+                        {{if ne $payment.Payment_status 1}}
+                        {{if ne $payment.Payment_status 4}}
+                        <div class="accordion-item">
+                            <!-- Heading -->
+                            <h2 class="accordion-header" id="heading-everything-else-{{.Payment_id}}">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                    data-bs-target="#collapse-everything-else-{{.Payment_id}}" aria-expanded="false"
+                                    aria-controls="collapse-everything-else-{{.Payment_id}}">
+                                    Payment Record #{{.Payment_id}} - Sporic Ref No: {{.Sporic_ref_no}}
+                                </button>
+                            </h2>
+                            <!-- Body -->
+                            <div id="collapse-everything-else-{{.Payment_id}}" class="accordion-collapse collapse"
+                                aria-labelledby="heading-everything-else-{{.Payment_id}}"
+                                data-bs-parent="#everythingElse">
+                                <div class="accordion-body">
+                                    <table class="table table-bordered">
+                                        <tbody>
+                                            <tr>
+                                                <th>Sporic Ref No.</th>
+                                                <td>{{$application.SporicRefNo}}</td>
+                                            </tr>
+                                            <tr>
+                                                <th>Project Title</th>
+                                                <td>{{$application.ProjectTitle}}</td>
+                                            </tr>
+                                            <tr>
+                                                <th>Company Name</th>
+                                                <td>{{$application.CompanyName}}</td>
+                                            </tr>
+                                            <tr>
+                                                <th>Billing Address</th>
+                                                <td>{{$application.BillingAddress}}</td>
+                                            </tr>
+                                            <tr>
+                                                <th>Currency</th>
+                                                <td>{{$payment.Currency}}</td>
+                                            </tr>
+                                            <tr>
+                                                <th>Amount</th>
+                                                <td>{{$payment.Payment_amt}}</td>
+                                            </tr>
+                                            <tr>
+                                                <th>Tax</th>
+                                                <td>{{$payment.Tax}}</td>
+                                            </tr>
+                                            <tr>
+                                                <th>GST No.</th>
+                                                <td>{{$payment.Gst_number}}</td>
+                                            </tr>
+                                            <tr>
+                                                <th>PAN No.</th>
+                                                <td>{{$payment.Pan_number}}</td>
+                                            </tr>
+                                            <tr>
+                                                <th>GST Certificate</th>
+                                                <td><a href="/download/{{.Sporic_ref_no}}/{{.Payment_id}}/tax_cirtificate"
+                                                        target="_blank">View</a></td>
+                                            </tr>
+                                            <tr>
+                                                <th>Invoice</th>
+                                                <td><a href="/download/{{.Sporic_ref_no}}/{{.Payment_id}}/invoice"
+                                                        target="_blank">View</a></td>
+                                            </tr>
+                                            <tr>
+                                                <th>Transaction ID</th>
+                                                <td>{{$payment.Transaction_id}}</td>
+                                            </tr>
+                                            <tr>
+                                                <th>Payment Proof</th>
+                                                <td><a href="/download/{{.Sporic_ref_no}}/{{.Payment_id}}/payment"
+                                                        target="_blank">View</a></td>
+                                            </tr>
+                                            <tr>
+                                                <th>Status</th>
+                                                <td>
+                                                    {{ if eq $payment.Payment_status 3}}
+                                                    <span class="badge bg-danger">Rejected</span>
+                                                    {{ else }}
+                                                    <span class="badge bg-success">Approved</span>
+                                                    {{ end }}
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                        {{end}}
+                        {{end}}
+                        {{end}}
+                        {{end}}
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 
-    <!-- Payment Verification -->
-    <div class="row mt-4">
-        <div class="col-md-12">
-            <h4>Payment Verification</h4>
-            <div class="accordion" id="paymentVerification">
-                {{range $application := .Applications}}
-                {{range $payment := $application.Payments}}
-                {{if eq $payment.Payment_status 1}}
-                <!-- Heading -->
-                <div class="accordion-item">
-                    <h2 class="accordion-header" id="heading-payment-verification-{{.Payment_id}}">
-                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
-                            data-bs-target="#collapse-payment-verification-{{.Payment_id}}" aria-expanded="false"
-                            aria-controls="collapse-payment-verification-{{.Payment_id}}">
-                            Payment Record #{{.Payment_id}} - Sporic Ref No: {{.Sporic_ref_no}}
-                        </button>
-                    </h2>
-                    <!-- Body -->
-                    <div id="collapse-payment-verification-{{.Payment_id}}" class="accordion-collapse collapse"
-                        aria-labelledby="heading-payment-verification-{{.Payment_id}}"
-                        data-bs-parent="#paymentVerification">
-                        <div class="accordion-body">
-                            <ul class="list-group">
-                                <li class="list-group-item">
-                                    <span class="fw-bold">Sproic Ref No.</span> {{$application.SporicRefNo}}
-                                </li>
-                                <li class="list-group-item">
-                                    <span class="fw-bold">Project Title</span> {{$application.ProjectTitle}}
-                                </li>
-                                <li class="list-group-item">
-                                    <span class="fw-bold">Company Name</span> {{$application.CompanyName}}
-                                </li>
-                                <li class="list-group-item">
-                                    <span class="fw-bold">Billing Address</span> {{$application.BillingAddress}}
-                                </li>
-                                <li class="list-group-item">
-                                    <span class="fw-bold">Currency</span> {{$payment.Currency}}
-                                </li>
-                                <li class="list-group-item">
-                                    <span class="fw-bold">Amount</span> {{$payment.Payment_amt}}
-                                </li>
-                                <li class="list-group-item">
-                                    <span class="fw-bold">Tax</span> {{$payment.Tax}}
-                                </li>
-                                <li class="list-group-item">
-                                    <span class="fw-bold">GST No.</span> {{$payment.Gst_number}}
-                                </li>
-                                <li class="list-group-item">
-                                    <span class="fw-bold">PAN No.</span> {{$payment.Pan_number}}
-                                </li>
-                                <li class="list-group-item">
-                                    <span class="fw-bold">GST Certificate</span>
-                                    <a href="/download/{{.Sporic_ref_no}}/{{.Payment_id}}/tax_cirtificate"
-                                        target="_blank">View</a>
-                                </li>
-                                <li class="list-group-item">
-                                    <span class="fw-bold">Invoice</span>
-                                    <a href="/download/{{.Sporic_ref_no}}/{{.Payment_id}}/invoice"
-                                        target="_blank">View</a>
-                                </li>
-                                <li class="list-group-item">
-                                    <span class="fw-bold">Transaction ID</span> {{$payment.Transaction_id}}
-                                </li>
-                                <li class="list-group-item">
-                                    <span class="fw-bold">Payment Proof</span>
-                                    <a href="/download/{{.Sporic_ref_no}}/{{.Payment_id}}/payment"
-                                        target="_blank">View</a>
-                                </li>
-                                <li class="list-group-item">
-                                    <div style="display: flex; gap: 10px;">
-                                        <form action="/admin/view_application/{{.Sporic_ref_no}}" method="post"
-                                            style="display: inline;">
-                                            <input type="hidden" name="action" value="approve_expenditure" />
-                                            <button class="btn btn-success">Approve</button>
-                                        </form>
-                                        <form action="/admin/view_application/{{.Sporic_ref_no}}" method="post"
-                                            style="display: inline;">
-                                            <input type="hidden" name="action" value="reject_expenditure" />
-                                            <button class="btn btn-danger">Reject</button>
-                                        </form>
-                                    </div>
-
-                                </li>
-                            </ul>
+    <div class="tab-content" id="expendituresTabContent">
+        <div class="tab-pane fade" id="view-expenditures" role="tabpanel" aria-labelledby="view-expenditures-tab">
+            <!-- Expenditure Claims -->
+            <div class="row mt-4">
+                <div class="col-md-12">
+                    <h4>Expenditures for reimbursement</h4>
+                    <div class="accordion" id="expenditureClaims">
+                        {{range $application := .Applications}}
+                        {{range $expenditure := $application.Expenditures}}
+                        {{if eq $expenditure.Expenditure_status 1}}
+                        {{if eq $expenditure.Expenditure_type 0}}
+                        <div class="accordion-item">
+                            <!-- Heading -->
+                            <h2 class="accordion-header" id="heading-expenditure-claim-{{.Expenditure_id}}">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                    data-bs-target="#collapse-expenditure-claim-{{$expenditure.Expenditure_id}}"
+                                    aria-expanded="false"
+                                    aria-controls="collapse-expenditure-claim-{{$expenditure.Expenditure_id}}">
+                                    Expenditure Record #{{$expenditure.Expenditure_id}} - Sporic Ref No:
+                                    {{$application.SporicRefNo}}
+                                </button>
+                            </h2>
+                            <!-- Body -->
+                            <div id="collapse-expenditure-claim-{{$expenditure.Expenditure_id}}"
+                                class="accordion-collapse collapse"
+                                aria-labelledby="heading-expenditure-claim-{{$expenditure.Expenditure_id}}"
+                                data-bs-parent="#expenditureClaims">
+                                <div class="accordion-body">
+                                    <table class="table table-bordered">
+                                        <tbody>
+                                            <tr>
+                                                <th>Sporic Ref No.</th>
+                                                <td>{{$application.SporicRefNo}}</td>
+                                            </tr>
+                                            <tr>
+                                                <th>Project Title</th>
+                                                <td>{{$application.ProjectTitle}}</td>
+                                            </tr>
+                                            <tr>
+                                                <th>Company Name</th>
+                                                <td>{{$application.CompanyName}}</td>
+                                            </tr>
+                                            <tr>
+                                                <th>Billing Address</th>
+                                                <td>{{$application.BillingAddress}}</td>
+                                            </tr>
+                                            <tr>
+                                                <th>Purpose</th>
+                                                <td>{{$expenditure.Expenditure_name}}</td>
+                                            </tr>
+                                            <tr>
+                                                <th>Amount</th>
+                                                <td>{{$expenditure.Expenditure_amt}}</td>
+                                            </tr>
+                                            <tr>
+                                                <th>Payment Proof</th>
+                                                <td><a href="#" target="_blank">View</a></td>
+                                            </tr>
+                                            <tr>
+                                                <td colspan="2">
+                                                    <form method="post" enctype="multipart/form-data">
+                                                        <input type="hidden" name="action"
+                                                            value="complete_expenditure" />
+                                                        <input type="hidden" name="expenditure_id"
+                                                            value="{{$expenditure.Expenditure_id}}" />
+                                                        <button type="submit" class="btn btn-primary">Complete</button>
+                                                    </form>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
                         </div>
+                        {{end}}
+                        {{end}}
+                        {{end}}
+                        {{end}}
                     </div>
                 </div>
-                {{end}}
-                {{end}}
-                {{end}}
             </div>
-        </div>
-    </div>
-
-    <!-- Everything Else -->
-    <div class="row mt-4">
-        <div class="col-md-12">
-            <h4>Other Payments</h4>
-            <div class="accordion" id="everythingElse">
-                {{range $application := .Applications}}
-                {{range $payment := $application.Payments}}
-                {{if ne $payment.Payment_status 1}}
-                {{if ne $payment.Payment_status 4}}
-                <div class="accordion-item">
-                    <!-- Heading -->
-                    <h2 class="accordion-header" id="heading-everything-else-{{.Payment_id}}">
-                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
-                            data-bs-target="#collapse-everything-else-{{.Payment_id}}" aria-expanded="false"
-                            aria-controls="collapse-everything-else-{{.Payment_id}}">
-                            Payment Record #{{.Payment_id}} - Sporic Ref No: {{.Sporic_ref_no}} <span
-                                class="badge bg-success">Approved Payment</span>
-                        </button>
-                    </h2>
-                    <!-- Body -->
-                    <div id="collapse-everything-else-{{.Payment_id}}" class="accordion-collapse collapse"
-                        aria-labelledby="heading-everything-else-{{.Payment_id}}" data-bs-parent="#everythingElse">
-                        <div class="accordion-body">
-                            <ul class="list-group">
-                                <li class="list-group-item">
-                                    <span class="fw-bold">Sproic Ref No.</span> {{$application.SporicRefNo}}
-                                </li>
-                                <li class="list-group-item">
-                                    <span class="fw-bold">Project Title</span> {{$application.ProjectTitle}}
-                                </li>
-                                <li class="list-group-item">
-                                    <span class="fw-bold">Company Name</span> {{$application.CompanyName}}
-                                </li>
-                                <li class="list-group-item">
-                                    <span class="fw-bold">Billing Address</span> {{$application.BillingAddress}}
-                                </li>
-                                <li class="list-group-item">
-                                    <span class="fw-bold">Currency</span> {{$payment.Currency}}
-                                </li>
-                                <li class="list-group-item">
-                                    <span class="fw-bold">Amount</span> {{$payment.Payment_amt}}
-                                </li>
-                                <li class="list-group-item">
-                                    <span class="fw-bold">Tax</span> {{$payment.Tax}}
-                                </li>
-                                <li class="list-group-item">
-                                    <span class="fw-bold">GST No.</span> {{$payment.Gst_number}}
-                                </li>
-                                <li class="list-group-item">
-                                    <span class="fw-bold">PAN No.</span> {{$payment.Pan_number}}
-                                </li>
-                                <li class="list-group-item">
-                                    <span class="fw-bold">GST Certificate</span>
-                                    <a href="/download/{{.Sporic_ref_no}}/{{.Payment_id}}/tax_cirtificate"
-                                        target="_blank">View</a>
-                                </li>
-                                <li class="list-group-item">
-                                    <span class="fw-bold">Invoice</span>
-                                    <a href="/download/{{.Sporic_ref_no}}/{{.Payment_id}}/invoice"
-                                        target="_blank">View</a>
-                                </li>
-                                <li class="list-group-item">
-                                    <span class="fw-bold">Transaction ID</span> {{$payment.Transaction_id}}
-                                </li>
-                                <li class="list-group-item">
-                                    <span class="fw-bold">Payment Proof</span>
-                                    <a href="/download/{{.Sporic_ref_no}}/{{.Payment_id}}/payment"
-                                        target="_blank">View</a>
-                                </li>
-                                <li class="list-group-item">
-                                    <span class="fw-bold">Status</span>
-                                    <span class="badge bg-success">Approved</span>
-                                </li>
-                            </ul>
+            <!-- Expenditures for direct payment -->
+            <div class="row mt-4">
+                <div class="col-md-12">
+                    <h4>Expenditures for direct payment</h4>
+                    <div class="accordion" id="expenditureDirectPayment">
+                        {{range $application := .Applications}}
+                        {{range $expenditure := $application.Expenditures}}
+                        {{if eq $expenditure.Expenditure_status 1}}
+                        {{if eq $expenditure.Expenditure_type 1}}
+                        <div class="accordion-item">
+                            <!-- Heading -->
+                            <h2 class="accordion-header"
+                                id="heading-expenditure-direct-payment-{{$expenditure.Expenditure_id}}">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                    data-bs-target="#collapse-expenditure-direct-payment-{{$expenditure.Expenditure_id}}"
+                                    aria-expanded="false"
+                                    aria-controls="collapse-expenditure-direct-payment-{{$expenditure.Expenditure_id}}">
+                                    Expenditure Record #{{$expenditure.Expenditure_id}} - Sporic Ref No:
+                                    {{$application.SporicRefNo}}
+                                </button>
+                            </h2>
+                            <!-- Body -->
+                            <div id="collapse-expenditure-direct-payment-{{$expenditure.Expenditure_id}}"
+                                class="accordion-collapse collapse"
+                                aria-labelledby="heading-expenditure-direct-payment-{{$expenditure.Expenditure_id}}"
+                                data-bs-parent="#expenditureDirectPayment">
+                                <div class="accordion-body">
+                                    <table class="table table-bordered">
+                                        <tbody>
+                                            <tr>
+                                                <th>Sporic Ref No.</th>
+                                                <td>{{$application.SporicRefNo}}</td>
+                                            </tr>
+                                            <tr>
+                                                <th>Project Title</th>
+                                                <td>{{$application.ProjectTitle}}</td>
+                                            </tr>
+                                            <tr>
+                                                <th>Company Name</th>
+                                                <td>{{$application.CompanyName}}</td>
+                                            </tr>
+                                            <tr>
+                                                <th>Billing Address</th>
+                                                <td>{{$application.BillingAddress}}</td>
+                                            </tr>
+                                            <tr>
+                                                <th>Purpose</th>
+                                                <td>{{$expenditure.Expenditure_name}}</td>
+                                            </tr>
+                                            <tr>
+                                                <th>Amount</th>
+                                                <td>{{$expenditure.Expenditure_amt}}</td>
+                                            </tr>
+                                            <tr>
+                                                <th>Invoice</th>
+                                                <td><a href="#" target="_blank">View</a></td>
+                                            </tr>
+                                            <!-- Complete button -->
+                                            <tr>
+                                                <td colspan="2">
+                                                    <form action="#" method="post" enctype="multipart/form-data">
+                                                        <input type="hidden" name="action"
+                                                            value="complete_expenditure" />
+                                                        <input type="hidden" name="expenditure_id"
+                                                            value="{{.Expenditure_id}}" />
+                                                        <button type="submit" class="btn btn-primary">Complete</button>
+                                                    </form>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
                         </div>
+                        {{end}}
+                        {{end}}
+                        {{end}}
+                        {{end}}
                     </div>
                 </div>
-                {{end}}
-                {{end}}
-                {{end}}
-                {{end}}
+            </div>
+            <!-- Completed -->
+            <div class="row mt-4">
+                <div class="col-md-12">
+                    <h4>Completed Expenditures</h4>
+                    <div class="accordion" id="completedExpenditures">
+                        {{range $application := .Applications}}
+                        {{range $expenditure := $application.Expenditures}}
+                        {{if eq $expenditure.Expenditure_status 3}}
+                        <div class="accordion-item">
+                            <!-- Heading -->
+                            <h2 class="accordion-header"
+                                id="heading-completed-expenditure-{{$expenditure.Expenditure_id}}">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                    data-bs-target="#collapse-completed-expenditure-{{$expenditure.Expenditure_id}}"
+                                    aria-expanded="false"
+                                    aria-controls="collapse-completed-expenditure-{{$expenditure.Expenditure_id}}">
+                                    Expenditure Record #{{$expenditure.Expenditure_id}} - Sporic Ref No:
+                                    {{$application.SporicRefNo}}
+                                </button>
+                            </h2>
+                            <!-- Body -->
+                            <div id="collapse-completed-expenditure-{{$expenditure.Expenditure_id}}"
+                                class="accordion-collapse collapse"
+                                aria-labelledby="heading-completed-expenditure-{{$expenditure.Expenditure_id}}"
+                                data-bs-parent="#completedExpenditures">
+                                <div class="accordion-body">
+                                    <table class="table table-bordered">
+                                        <tbody>
+                                            <tr>
+                                                <th>Sporic Ref No.</th>
+                                                <td>{{$application.SporicRefNo}}</td>
+                                            </tr>
+                                            <tr>
+                                                <th>Project Title</th>
+                                                <td>{{$application.ProjectTitle}}</td>
+                                            </tr>
+                                            <tr>
+                                                <th>Company Name</th>
+                                                <td>{{$application.CompanyName}}</td>
+                                            </tr>
+                                            <tr>
+                                                <th>Billing Address</th>
+                                                <td>{{$application.BillingAddress}}</td>
+                                            </tr>
+                                            <tr>
+                                                <th>Purpose</th>
+                                                <td>{{$expenditure.Expenditure_name}}</td>
+                                            </tr>
+                                            <tr>
+                                                <th>Amount</th>
+                                                <td>{{$expenditure.Expenditure_amt}}</td>
+                                            </tr>
+                                            <tr>
+                                                <th>Invoice</th>
+                                                <td><a href="#" target="_blank">View</a></td>
+                                            </tr>
+                                            <tr>
+                                                <th>Payment Proof</th>
+                                                <td><a href="#" target="_blank">View</a></td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                        {{end}}
+                        {{end}}
+                        {{end}}
+                    </div>
+                </div>
             </div>
         </div>
     </div>

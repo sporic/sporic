@@ -110,3 +110,43 @@ func (m *UserModel) ResetPassword(userId int, newPassword string) error {
 
 	return nil
 }
+
+func (m *UserModel) GetAdmins() ([]string, error) {
+
+	var admins []string
+
+	rows, err := m.Db.Query("select username from user where user_role = 0")
+	if err != nil {
+		return nil, err
+	}
+	for rows.Next() {
+		var admin string
+		err := rows.Scan(&admin)
+		if err != nil {
+			return nil, err
+		}
+		admins = append(admins, admin)
+	}
+
+	return admins, nil
+}
+
+func (m *UserModel) GetAccounts() ([]string, error) {
+
+	var accounts []string
+
+	rows, err := m.Db.Query("select username from user where user_role = 2")
+	if err != nil {
+		return nil, err
+	}
+	for rows.Next() {
+		var account string
+		err := rows.Scan(&account)
+		if err != nil {
+			return nil, err
+		}
+		accounts = append(accounts, account)
+	}
+
+	return accounts, nil
+}
