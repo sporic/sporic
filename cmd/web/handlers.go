@@ -25,6 +25,7 @@ const (
 	CompletionDoc
 	ExpenditureProof
 	ExpenditureInvoice
+	FeedbackForm
 )
 
 type loginForm struct {
@@ -38,7 +39,6 @@ func (app *App) login(w http.ResponseWriter, r *http.Request) {
 	data.Form = loginForm{}
 	app.render(w, http.StatusOK, "login.tmpl", data)
 }
-
 func (app *App) loginPost(w http.ResponseWriter, r *http.Request) {
 	var form loginForm
 
@@ -84,7 +84,6 @@ func (app *App) loginPost(w http.ResponseWriter, r *http.Request) {
 	app.sessionManager.Put(r.Context(), "authenticatedUserID", id)
 	http.Redirect(w, r, "/home", http.StatusSeeOther)
 }
-
 func (app *App) logout(w http.ResponseWriter, r *http.Request) {
 
 	err := app.sessionManager.RenewToken(r.Context())
@@ -275,20 +274,17 @@ func (app *App) new_application_post(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	fmt.Println("1")
 	var notification models.Notification
 
 	notification.CreatedAt = time.Now()
 	notification.NotiType = models.NewProjectApproval
 	notification.Description = fmt.Sprintf(models.NotificationTypeMap[models.NewProjectApproval], sporic_ref_no)
-	fmt.Println("2")
 	admins, err := app.users.GetAdmins()
 	if err != nil {
 		app.serverError(w, err)
 		return
 	}
 	notification.To = admins
-	fmt.Println("3")
 	err = app.notifications.SendNotification(notification)
 	if err != nil {
 		app.serverError(w, err)
@@ -389,7 +385,49 @@ func (app *App) faculty_view_application(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
+	var payments []models.Payment
+	payments, err = app.payments.GetPaymentByRefNo(application.SporicRefNo)
+	if err != nil {
+		app.serverError(w, err)
+	}
+	var TotalAmt int = 0
+	var TotalTax int = 0
+	for _, payment := range payments {
+		TotalAmt += payment.Payment_amt
+		TotalTax += payment.Tax
+	}
+	application.TotalAmount = TotalAmt
+	application.Taxes = TotalTax
+
+	var expenditures []models.Expenditure
+	expenditures, err = app.applications.GetExpenditureByRefNo(application.SporicRefNo)
+	if err != nil {
+		app.serverError(w, err)
+	}
+	var TotalExpenditure int = 0
+	for _, expenditure := range expenditures {
+		TotalExpenditure += expenditure.Expenditure_amt
+	}
+	application.TotalExpenditure = TotalExpenditure
+	application.BalanceAmount = TotalAmt - TotalExpenditure
+
+	var members []models.Member
+	members, err = app.applications.GetTeamByRefNo(application.SporicRefNo)
+	if err != nil {
+		app.serverError(w, err)
+	}
+
+	var total_share int
+
+	for _, member := range members {
+		share := member.Share
+		total_share += share
+	}
+
+	application.LeaderShare = 100 - total_share
+
 	data := app.newTemplateData(r)
+	data.Member = members
 	data.Application = application
 
 	if application.Status == models.ProjectCompleteApprovalPending || application.Status == models.ProjectCompleted {
@@ -397,7 +435,6 @@ func (app *App) faculty_view_application(w http.ResponseWriter, r *http.Request)
 	} else {
 		app.render(w, http.StatusOK, "faculty_view_application.tmpl", data)
 	}
-
 }
 
 type NewInvoice struct {
@@ -517,9 +554,11 @@ func (app *App) add_expenditure(r *http.Request, SporicRefNo string) error {
 }
 
 type CompleteProjectForm struct {
-	ResourceUsed   int       `form:"resource_used"`
-	Comments       string    `form:"comments"`
-	CompletionDate time.Time `form:"completion_date"`
+	ResourceUsed   int               `form:"resource_used"`
+	Comments       string            `form:"comments"`
+	CompletionDate time.Time         `form:"completion_date"`
+	LeaderShare    int               `form:"leader_share"`
+	MemberShare    map[string]string `form:"share_percent"`
 }
 
 func (app *App) complete_project(r *http.Request, SporicRefNo string) error {
@@ -533,6 +572,8 @@ func (app *App) complete_project(r *http.Request, SporicRefNo string) error {
 
 	var completion models.Completion
 	completion.SporicRefNo = SporicRefNo
+	completion.LeaderShare = completion_form.LeaderShare
+	completion.MemberShare = completion_form.MemberShare
 	completion.ResourceUsed = completion_form.ResourceUsed
 	completion.Comments = completion_form.Comments
 	completion_form.CompletionDate = time.Now()
@@ -543,6 +584,12 @@ func (app *App) complete_project(r *http.Request, SporicRefNo string) error {
 	}
 
 	err = app.handleFile(r, SporicRefNo, SporicRefNo, CompletionDoc, "project_closure_report")
+
+	if err != nil {
+		return err
+	}
+
+	err = app.handleFile(r, SporicRefNo, SporicRefNo, FeedbackForm, "feedback_form")
 
 	if err != nil {
 		return err
@@ -603,7 +650,7 @@ func (app *App) update_payment(r *http.Request, SporicRefNo string) error {
 
 	notification.CreatedAt = time.Now()
 	notification.NotiType = models.PaymentApproval
-	notification.Description = fmt.Sprintf(models.NotificationTypeMap[models.PaymentApproval], payment.Payment_id, SporicRefNo)
+	notification.Description = fmt.Sprintf(models.NotificationTypeMap[models.PaymentApproval], strconv.Itoa(payment.Payment_id), SporicRefNo)
 
 	accounts, err := app.users.GetAccounts()
 	if err != nil {
@@ -815,7 +862,49 @@ func (app *App) admin_view_application(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	var payments []models.Payment
+	payments, err = app.payments.GetPaymentByRefNo(application.SporicRefNo)
+	if err != nil {
+		app.serverError(w, err)
+	}
+	var TotalAmt int = 0
+	var TotalTax int = 0
+	for _, payment := range payments {
+		TotalAmt += payment.Payment_amt
+		TotalTax += payment.Tax
+	}
+	application.TotalAmount = TotalAmt
+	application.Taxes = TotalTax
+
+	var expenditures []models.Expenditure
+	expenditures, err = app.applications.GetExpenditureByRefNo(application.SporicRefNo)
+	if err != nil {
+		app.serverError(w, err)
+	}
+	var TotalExpenditure int = 0
+	for _, expenditure := range expenditures {
+		TotalExpenditure += expenditure.Expenditure_amt
+	}
+	application.TotalExpenditure = TotalExpenditure
+	application.BalanceAmount = TotalAmt - TotalExpenditure
+
+	var members []models.Member
+	members, err = app.applications.GetTeamByRefNo(application.SporicRefNo)
+	if err != nil {
+		app.serverError(w, err)
+	}
+
+	var total_share int
+
+	for _, member := range members {
+		share := member.Share
+		total_share += share
+	}
+
+	application.LeaderShare = 100 - total_share
+
 	data := app.newTemplateData(r)
+	data.Member = members
 	data.Application = application
 	data.User = user
 
@@ -1085,4 +1174,55 @@ func (app *App) checkForDelayes() {
 			}
 		}
 	}
+}
+
+func (app *App) GetNotifications(w http.ResponseWriter, r *http.Request) {
+
+	user := app.contextGetUser(r)
+	if user.IsAnonymous() {
+		http.Redirect(w, r, "/login", http.StatusSeeOther)
+		return
+	}
+
+	var notifications []models.Notification
+	var err error
+	if user.Role == models.AdminUser {
+
+		admins, err := app.users.GetAdmins()
+		if err != nil {
+			app.serverError(w, err)
+			return
+		}
+		notifications, err = app.notifications.RecieveNotification(admins)
+		if err != nil {
+			app.serverError(w, err)
+			return
+		}
+	}
+	if user.Role == models.FacultyUser {
+		var receivers []string
+
+		receivers = append(receivers, strconv.Itoa(user.Id))
+		notifications, err = app.notifications.RecieveNotification(receivers)
+		if err != nil {
+			app.serverError(w, err)
+			return
+		}
+	}
+	if user.Role == models.AccountantUser {
+		accounts, err := app.users.GetAccounts()
+		if err != nil {
+			app.serverError(w, err)
+			return
+		}
+		notifications, err = app.notifications.RecieveNotification(accounts)
+		if err != nil {
+			app.serverError(w, err)
+			return
+		}
+	}
+
+	data := app.newTemplateData(r)
+	data.Notifications = notifications
+	app.render(w, http.StatusOK, "notifications.tmpl", data)
 }

@@ -10,11 +10,13 @@ import (
 )
 
 type templateData struct {
-	Applications []models.Application
-	Application  *models.Application
-	Form         any
-	User         *models.User
-	Payments     []models.Payment
+	Applications  []models.Application
+	Notifications []models.Notification
+	Application   *models.Application
+	Member        []models.Member
+	Form          any
+	User          *models.User
+	Payments      []models.Payment
 }
 
 func newTemplateCache() (map[string]*template.Template, error) {

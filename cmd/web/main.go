@@ -144,6 +144,7 @@ func (app App) routes() http.Handler {
 	router.Handler(http.MethodGet, "/download/:folder/:doc_id/:doc_type", dynamic.ThenFunc(app.download))
 	router.Handler(http.MethodGet, "/accounts_home", dynamic.ThenFunc(app.accounts_home))
 	router.Handler(http.MethodPost, "/accounts_home", dynamic.ThenFunc(app.accounts_home))
+	router.Handler(http.MethodGet, "/notifications", dynamic.ThenFunc(app.GetNotifications))
 	router.Handler(http.MethodGet, "/excel", dynamic.ThenFunc(app.excel))
 	return router
 }

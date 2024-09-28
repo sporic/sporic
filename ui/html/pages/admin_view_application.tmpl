@@ -93,8 +93,9 @@
                                 Approved</span>{{end}}
                             {{if eq .Application.Status 0}}<span class="badge bg-warning">Application Approval
                                 Pending</span>{{end}}
-                            {{if eq .Application.Status 4}}<span class="badge bg-danger">Application Rejected</span>{{end}}
-                                
+                            {{if eq .Application.Status 4}}<span class="badge bg-danger">Application
+                                Rejected</span>{{end}}
+
                         </td>
                     </tr>
                 </tbody>
@@ -167,7 +168,7 @@
                 <tbody>
                     {{range .Application.MemberStudents}}
                     <tr>
-                        <td>{{.Name}}</td>
+                        <td>{{.}}</td>
                     </tr>
                     {{end}}
                 </tbody>
@@ -233,7 +234,6 @@
                         class="btn btn-primary"><i class="fas fa-download"></i> View</a>
                 </td>
                 <td>
-                    {{.Transaction_id}}
                 </td>
                 <td>
                 </td>
@@ -370,8 +370,8 @@
             </td>
             <td>
                 <form action="/admin/view_application/{{.Application.SporicRefNo}}" method="post">
-                <input type="hidden" name="action" value="reject_application" />
-                <button class="btn btn-danger">Reject Application</button>
+                    <input type="hidden" name="action" value="reject_application" />
+                    <button class="btn btn-danger">Reject Application</button>
                 </form>
             </td>
         </tr>
@@ -445,9 +445,9 @@
                         <td>{{.Application.Leader}}</td>
                         <td>{{.Application.LeaderShare}}%</td>
                     </tr>
-                    {{range .Members}}
+                    {{range .Member}}
                     <tr>
-                        <td>{{.Name}}</td>
+                        <td>{{.Member}}</td>
                         <td>{{.Share}}%</td>
                     </tr>
                     {{end}}

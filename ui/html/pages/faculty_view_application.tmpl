@@ -99,7 +99,7 @@
                 Approved</span>{{end}}
               {{if eq .Application.Status 0}}<span class="badge bg-warning">Application Approval
                 Pending</span>{{end}}
-                
+
             </td>
           </tr>
         </tbody>
@@ -174,7 +174,7 @@
         <tbody>
           {{range .Application.MemberStudents}}
           <tr>
-            <td>{{.Name}}</td>
+            <td>{{.}}</td>
           </tr>
           {{end}}
         </tbody>
@@ -343,7 +343,7 @@
             target="_blank">View</a>{{else}}<a
             href="/download/{{$.Application.SporicRefNo}}/{{.Expenditure_id}}/expenditure_invoice"
             target="_blank">View</a>{{end}}
-          </td>
+        </td>
         <td>
           {{ if eq .Expenditure_status 0 }}<span class="badge bg-warning">Pending Approval</span>{{ end }}
           {{ if eq .Expenditure_status 1 }}<span class="badge bg-success">Approved</span>{{ end }}
@@ -461,6 +461,8 @@
           <div class="mb-3">
             <label for="projectClosureReport" class="form-label">Project Closure Report</label>
             <input type="file" class="form-control" id="projectClosureReport" name="project_closure_report" required />
+            <label for="projectClosureReport" class="form-label">Feedbak Form</label>
+            <input type="file" class="form-control" id="feedbackForm" name="feedback_form" required />
           </div>
           <h4>Share Percent for Faculty Team Members</h4>
           <table class="table table-bordered">

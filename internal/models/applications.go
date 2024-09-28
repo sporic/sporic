@@ -33,6 +33,11 @@ type Application struct {
 	Comments                 string
 	CompletionDate           time.Time
 	ResourceUsed             int
+	TotalAmount              int
+	Taxes                    int
+	TotalExpenditure         int
+	BalanceAmount            int
+	LeaderShare              int
 }
 
 type ProjectStatus = int
@@ -70,8 +75,6 @@ const (
 	ExpenditureRejected
 	ExpenditureCompleted
 )
-
-
 
 type ApplicationModel struct {
 	Db *sql.DB
@@ -305,6 +308,11 @@ func (m *ApplicationModel) FetchByRefNo(ref_no string) (*Application, error) {
 	return &a, nil
 }
 
+type Member struct {
+	Member string
+	Share  int
+}
+
 func (m *ApplicationModel) Insert(form Application) (string, error) {
 
 	var count int
@@ -330,12 +338,7 @@ func (m *ApplicationModel) Insert(form Application) (string, error) {
 	sporic_ref_no := "CC" + type_code + fin_yr + strconv.Itoa(count+1)
 
 	_, err = m.Db.Exec(`insert into applications 
-		(sporic_ref_no,
-		 project_title,
-		 leader, 
-		 financial_year, 
-		 activity_type, 
-		 estimated_amt, 
+		(sporic_ref_no, project_title,leader, financial_year, activity_type, estimated_amt, 
 		 company_name, 
 		 company_adress,
 		 billing_address, 
@@ -376,8 +379,6 @@ func (m *ApplicationModel) Insert(form Application) (string, error) {
 			return "", err
 		}
 	}
-
-
 
 	return sporic_ref_no, err
 }
@@ -510,17 +511,28 @@ func (m *ApplicationModel) Insert_expenditure(expenditure Expenditure) (int, err
 type Completion struct {
 	SporicRefNo    string
 	Comments       string
+	LeaderShare    int
+	MemberShare    map[string]string
 	CompletionDate time.Time
 	ResourceUsed   int
 }
 
 func (m *ApplicationModel) Complete_Project(completion Completion) error {
 
-	_, err := m.Db.Exec("update applications set project_status = ?,resources_used = ?, comments = ?  where sporic_ref_no = ?", ProjectCompleteApprovalPending, completion.ResourceUsed, completion.Comments, completion.SporicRefNo)
+	_, err := m.Db.Exec("update applications set project_status = ?,completion_date=?,resources_used = ?, comments = ?  where sporic_ref_no = ?", ProjectCompleteApprovalPending, time.Now(), completion.ResourceUsed, completion.Comments, completion.SporicRefNo)
 
 	if err != nil {
 		return err
 	}
+
+	for member, share := range completion.MemberShare {
+		share, _ := strconv.Atoi(share)
+		_, err := m.Db.Exec("update team set share = ? where member_name=? and sporic_ref_no=? ", share, member, completion.SporicRefNo)
+		if err != nil {
+			return err
+		}
+	}
+
 	return nil
 }
 
@@ -531,4 +543,52 @@ func (m *ApplicationModel) UpdatePayment(payment Payment) error {
 		return err
 	}
 	return nil
+}
+
+func (m *ApplicationModel) GetExpenditureByRefNo(sporic_ref_no string) ([]Expenditure, error) {
+
+	rows, err := m.Db.Query("select expenditure_id,expenditure_name, expenditure_amt, expenditure_date, expenditure_status, expenditure_type from expenditure where sporic_ref_no =?", sporic_ref_no)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var expenditure []Expenditure
+	for rows.Next() {
+		var e Expenditure
+		err := rows.Scan(&e.Expenditure_id, &e.Expenditure_name, &e.Expenditure_amt, &e.Expenditure_date, &e.Expenditure_status, &e.Expenditure_type)
+		if err != nil {
+			return nil, err
+		}
+
+		expenditure = append(expenditure, e)
+	}
+
+	if err = rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return expenditure, nil
+}
+
+func (m *ApplicationModel) GetTeamByRefNo(sporic_ref_no string) ([]Member, error) {
+
+	var members []Member
+
+	rows, err := m.Db.Query("select member_name, share from team where sporic_ref_no = ?", sporic_ref_no)
+	if err != nil {
+		return nil, err
+	}
+
+	for rows.Next() {
+		var member Member
+		err := rows.Scan(&member.Member, &member.Share)
+		if err != nil {
+			return nil, err
+		}
+
+		members = append(members, member)
+	}
+
+	return members, nil
 }

@@ -25,7 +25,7 @@ const (
 	ExpenditureApprovedNotification //
 	ExpenditureRejectedNotification //
 	PaymentApprovedNotification     //
-	PaymentRejectedNotification 
+	PaymentRejectedNotification
 	PaymentInvoiceRequest //
 	PaymentApproval       //
 	ExpenditurePaid
@@ -43,10 +43,10 @@ var NotificationTypeMap = map[NotificationType]string{
 	ApplicationCompleted:            "Project %s has been completed",
 	ExpenditureApprovedNotification: "Expenditure for project %s has been approved",
 	ExpenditureRejectedNotification: "Expenditure for project %s has been rejected",
-	PaymentApprovedNotification:     "Payment %s for project %s has been approved",
-	PaymentRejectedNotification:     "Payment %s for project %s has been rejected",
+	PaymentApprovedNotification:     "Payment %s for project %s has been approved by accounts",
+	PaymentRejectedNotification:     "Payment %s for project %s has been rejected by accounts",
 	PaymentInvoiceRequest:           "Invoice Request for project %s has been submitted",
-	PaymentApproval:                 "Payment %s for project %s has been approved by accounts",
+	PaymentApproval:                 "Payment proof %s for project %s has been uploaded",
 	ExpenditurePaid:                 "Expenditure  %s for project %s has been paid",
 }
 
@@ -58,34 +58,33 @@ type Notification struct {
 }
 
 func (n *NotificationModel) SendNotification(notification Notification) error {
-	fmt.Println("4")
 	for _, user := range notification.To {
-		fmt.Println("5")
 		_, err := n.Db.Exec("insert into notifications (craeted_at, notification_type, notification_description, notification_to)values (?,?,?,?)", notification.CreatedAt, notification.NotiType, notification.Description, user)
 
 		if err != nil {
 			return err
 		}
 	}
-	fmt.Println("6")
 	return nil
 }
 
-func (n *NotificationModel) RecieveNotification(username []string) ([]Notification, error) {
+func (n *NotificationModel) RecieveNotification(receivers []string) ([]Notification, error) {
 	var notifications []Notification
 
-	rows, err := n.Db.Query("select craeted_at, notification_type, notification_description where notification_to = ?", username)
-	if err != nil {
-		return nil, err
-	}
-
-	for rows.Next() {
-		var notification Notification
-		err = rows.Scan(&notification.CreatedAt, &notification.NotiType, &notification.Description)
+	for _, username := range receivers {
+		rows, err := n.Db.Query("select craeted_at, notification_type, notification_description from notifications where notification_to = ?", username)
 		if err != nil {
 			return nil, err
 		}
-		notifications = append(notifications, notification)
+
+		for rows.Next() {
+			var notification Notification
+			err = rows.Scan(&notification.CreatedAt, &notification.NotiType, &notification.Description)
+			if err != nil {
+				return nil, err
+			}
+			notifications = append(notifications, notification)
+		}
 	}
 
 	return notifications, nil

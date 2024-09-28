@@ -3,6 +3,7 @@ package models
 import (
 	"database/sql"
 	"errors"
+	"strconv"
 	"time"
 
 	"golang.org/x/crypto/bcrypt"
@@ -115,17 +116,17 @@ func (m *UserModel) GetAdmins() ([]string, error) {
 
 	var admins []string
 
-	rows, err := m.Db.Query("select username from user where user_role = 0")
+	rows, err := m.Db.Query("select user_id from user where user_role = 0")
 	if err != nil {
 		return nil, err
 	}
 	for rows.Next() {
-		var admin string
+		var admin int
 		err := rows.Scan(&admin)
 		if err != nil {
 			return nil, err
 		}
-		admins = append(admins, admin)
+		admins = append(admins, strconv.Itoa(admin))
 	}
 
 	return admins, nil
@@ -135,17 +136,17 @@ func (m *UserModel) GetAccounts() ([]string, error) {
 
 	var accounts []string
 
-	rows, err := m.Db.Query("select username from user where user_role = 2")
+	rows, err := m.Db.Query("select user_id from user where user_role = 2")
 	if err != nil {
 		return nil, err
 	}
 	for rows.Next() {
-		var account string
+		var account int
 		err := rows.Scan(&account)
 		if err != nil {
 			return nil, err
 		}
-		accounts = append(accounts, account)
+		accounts = append(accounts, strconv.Itoa(account))
 	}
 
 	return accounts, nil

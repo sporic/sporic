@@ -168,7 +168,7 @@
                 <tbody>
                     {{range .Application.MemberStudents}}
                     <tr>
-                        <td>{{.Name}}</td>
+                        <td>{{.}}</td>
                     </tr>
                     {{end}}
                 </tbody>
@@ -276,7 +276,7 @@
                     <tr>
                         <th>VIT Resources Used</th>
                         <td class="text-end">
-                            {{if eq .Application.ResourceUsed 1}}
+                            {{if eq .Application.ResourceUsed 0}}
                             Yes
                             {{else}}
                             No
@@ -305,9 +305,9 @@
                         <td>{{.Application.Leader}}</td>
                         <td>{{.Application.LeaderShare}}%</td>
                     </tr>
-                    {{range .Members}}
+                    {{range .Member}}
                     <tr>
-                        <td>{{.Name}}</td>
+                        <td>{{.Member}}</td>
                         <td>{{.Share}}%</td>
                     </tr>
                     {{end}}
