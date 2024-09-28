@@ -93,6 +93,8 @@
                                 Approved</span>{{end}}
                             {{if eq .Application.Status 0}}<span class="badge bg-warning">Application Approval
                                 Pending</span>{{end}}
+                            {{if eq .Application.Status 4}}<span class="badge bg-danger">Application Rejected</span>{{end}}
+                                
                         </td>
                     </tr>
                 </tbody>
@@ -367,7 +369,7 @@
                 </form>
             </td>
             <td>
-                <form action="/admin/view_application/{{.Application.SporicRefNo}}" method="post"></form>
+                <form action="/admin/view_application/{{.Application.SporicRefNo}}" method="post">
                 <input type="hidden" name="action" value="reject_application" />
                 <button class="btn btn-danger">Reject Application</button>
                 </form>

@@ -99,6 +99,7 @@
                 Approved</span>{{end}}
               {{if eq .Application.Status 0}}<span class="badge bg-warning">Application Approval
                 Pending</span>{{end}}
+                
             </td>
           </tr>
         </tbody>
@@ -341,11 +342,13 @@
             href="/download/{{$.Application.SporicRefNo}}/{{.Expenditure_id}}/expenditure_proof"
             target="_blank">View</a>{{else}}<a
             href="/download/{{$.Application.SporicRefNo}}/{{.Expenditure_id}}/expenditure_invoice"
-            target="_blank">View</a>{{end}}</td>
+            target="_blank">View</a>{{end}}
+          </td>
         <td>
           {{ if eq .Expenditure_status 0 }}<span class="badge bg-warning">Pending Approval</span>{{ end }}
           {{ if eq .Expenditure_status 1 }}<span class="badge bg-success">Approved</span>{{ end }}
           {{ if eq .Expenditure_status 2 }}<span class="badge bg-danger">Rejected</span>{{ end }}
+          {{ if eq .Expenditure_status 3 }}<span class="badge bg-danger">Paid</span>{{ end }}
         </td>
       </tr>
       {{ end }}

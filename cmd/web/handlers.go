@@ -441,7 +441,7 @@ func (app *App) request_invoice(r *http.Request, SporicRefNo string) error {
 
 	notification.CreatedAt = time.Now()
 	notification.NotiType = models.NewInvoiceRequestApproval
-	notification.Description = models.NotificationTypeMap[models.NewInvoiceRequestApproval]
+	notification.Description = fmt.Sprintf(models.NotificationTypeMap[models.NewInvoiceRequestApproval], SporicRefNo)
 
 	admins, err := app.users.GetAdmins()
 	if err != nil {
@@ -500,7 +500,7 @@ func (app *App) add_expenditure(r *http.Request, SporicRefNo string) error {
 
 	notification.CreatedAt = time.Now()
 	notification.NotiType = models.NewExpenditureApproval
-	notification.Description = models.NotificationTypeMap[models.NewExpenditureApproval]
+	notification.Description = fmt.Sprintf(models.NotificationTypeMap[models.NewExpenditureApproval], SporicRefNo)
 
 	admins, err := app.users.GetAdmins()
 	if err != nil {
@@ -552,7 +552,7 @@ func (app *App) complete_project(r *http.Request, SporicRefNo string) error {
 
 	notification.CreatedAt = time.Now()
 	notification.NotiType = models.CompletionProjectApproval
-	notification.Description = models.NotificationTypeMap[models.CompletionProjectApproval]
+	notification.Description = fmt.Sprintf(models.NotificationTypeMap[models.CompletionProjectApproval], SporicRefNo)
 
 	admins, err := app.users.GetAdmins()
 	if err != nil {
@@ -560,7 +560,10 @@ func (app *App) complete_project(r *http.Request, SporicRefNo string) error {
 	}
 	notification.To = admins
 
-	app.notifications.SendNotification(notification)
+	err = app.notifications.SendNotification(notification)
+	if err != nil {
+		return err
+	}
 
 	return nil
 }
@@ -600,7 +603,7 @@ func (app *App) update_payment(r *http.Request, SporicRefNo string) error {
 
 	notification.CreatedAt = time.Now()
 	notification.NotiType = models.PaymentApproval
-	notification.Description = models.NotificationTypeMap[models.PaymentApproval]
+	notification.Description = fmt.Sprintf(models.NotificationTypeMap[models.PaymentApproval], payment.Payment_id, SporicRefNo)
 
 	accounts, err := app.users.GetAccounts()
 	if err != nil {
@@ -608,7 +611,10 @@ func (app *App) update_payment(r *http.Request, SporicRefNo string) error {
 	}
 	notification.To = accounts
 
-	app.notifications.SendNotification(notification)
+	err = app.notifications.SendNotification(notification)
+	if err != nil {
+		return err
+	}
 
 	return nil
 }
@@ -651,12 +657,17 @@ func (app *App) admin_view_application(w http.ResponseWriter, r *http.Request) {
 
 		notification.CreatedAt = time.Now()
 		notification.NotiType = models.ApplicationCompleted
-		notification.Description = models.NotificationTypeMap[models.ApplicationCompleted]
+		notification.Description = fmt.Sprintf(models.NotificationTypeMap[models.ApplicationCompleted], refno)
 		var recievers []string
 		recievers = append(recievers, strconv.Itoa(application.Leader))
 		notification.To = recievers
 
-		app.notifications.SendNotification(notification)
+		err = app.notifications.SendNotification(notification)
+		if err != nil {
+			app.serverError(w, err)
+			return
+		}
+
 	}
 	if action == "approve_application" {
 		err = app.applications.SetStatus(refno, models.ProjectApproved)
@@ -669,11 +680,15 @@ func (app *App) admin_view_application(w http.ResponseWriter, r *http.Request) {
 
 		notification.CreatedAt = time.Now()
 		notification.NotiType = models.ApplicationApproved
-		notification.Description = models.NotificationTypeMap[models.ApplicationApproved]
+		notification.Description = fmt.Sprintf(models.NotificationTypeMap[models.ApplicationApproved], refno)
 		var recievers []string
 		recievers = append(recievers, strconv.Itoa(application.Leader))
 		notification.To = recievers
-		app.notifications.SendNotification(notification)
+		err = app.notifications.SendNotification(notification)
+		if err != nil {
+			app.serverError(w, err)
+			return
+		}
 	}
 	if action == "reject_application" {
 		err = app.applications.SetStatus(refno, models.ProjectRejected)
@@ -685,11 +700,15 @@ func (app *App) admin_view_application(w http.ResponseWriter, r *http.Request) {
 		var notification models.Notification
 		notification.CreatedAt = time.Now()
 		notification.NotiType = models.ApplicationRejected
-		notification.Description = models.NotificationTypeMap[models.ApplicationRejected]
+		notification.Description = fmt.Sprintf(models.NotificationTypeMap[models.ApplicationRejected], refno)
 		var recievers []string
 		recievers = append(recievers, strconv.Itoa(application.Leader))
 		notification.To = recievers
-		app.notifications.SendNotification(notification)
+		err = app.notifications.SendNotification(notification)
+		if err != nil {
+			app.serverError(w, err)
+			return
+		}
 	}
 	if action == "approve_expenditure" {
 		expenditure_id := r.PostForm.Get("expenditure_id")
@@ -702,15 +721,19 @@ func (app *App) admin_view_application(w http.ResponseWriter, r *http.Request) {
 		var notification models.Notification
 		notification.CreatedAt = time.Now()
 		notification.NotiType = models.ExpenditureApprovedNotification
-		notification.Description = models.NotificationTypeMap[models.ExpenditureApprovedNotification]
+		notification.Description = fmt.Sprintf(models.NotificationTypeMap[models.ExpenditureApprovedNotification], refno)
 		var recievers []string
 		recievers = append(recievers, strconv.Itoa(application.Leader))
 		notification.To = recievers
-		app.notifications.SendNotification(notification)
+		err = app.notifications.SendNotification(notification)
+		if err != nil {
+			app.serverError(w, err)
+			return
+		}
 
 		notification.CreatedAt = time.Now()
 		notification.NotiType = models.ExpenditureApprovedNotification
-		notification.Description = models.NotificationTypeMap[models.ExpenditureApprovedNotification]
+		notification.Description = fmt.Sprintf(models.NotificationTypeMap[models.ExpenditureApprovedNotification], refno)
 
 		accounts, err := app.users.GetAccounts()
 		if err != nil {
@@ -718,7 +741,11 @@ func (app *App) admin_view_application(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		notification.To = accounts
-		app.notifications.SendNotification(notification)
+		err = app.notifications.SendNotification(notification)
+		if err != nil {
+			app.serverError(w, err)
+			return
+		}
 
 	}
 	if action == "reject_expenditure" {
@@ -732,11 +759,15 @@ func (app *App) admin_view_application(w http.ResponseWriter, r *http.Request) {
 		var notification models.Notification
 		notification.CreatedAt = time.Now()
 		notification.NotiType = models.ExpenditureRejectedNotification
-		notification.Description = models.NotificationTypeMap[models.ExpenditureRejectedNotification]
+		notification.Description = fmt.Sprintf(models.NotificationTypeMap[models.ExpenditureRejectedNotification], refno)
 		var recievers []string
 		recievers = append(recievers, strconv.Itoa(application.Leader))
 		notification.To = recievers
-		app.notifications.SendNotification(notification)
+		err = app.notifications.SendNotification(notification)
+		if err != nil {
+			app.serverError(w, err)
+			return
+		}
 	}
 	if action == "invoice_forwared" {
 		payment_id := r.PostForm.Get("payment_id")
@@ -748,7 +779,7 @@ func (app *App) admin_view_application(w http.ResponseWriter, r *http.Request) {
 		var notification models.Notification
 		notification.CreatedAt = time.Now()
 		notification.NotiType = models.PaymentInvoiceRequest
-		notification.Description = models.NotificationTypeMap[models.PaymentInvoiceRequest]
+		notification.Description = fmt.Sprintf(models.NotificationTypeMap[models.PaymentInvoiceRequest], refno)
 
 		accounts, err := app.users.GetAccounts()
 		if err != nil {
@@ -756,7 +787,11 @@ func (app *App) admin_view_application(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		notification.To = accounts
-		app.notifications.SendNotification(notification)
+		err = app.notifications.SendNotification(notification)
+		if err != nil {
+			app.serverError(w, err)
+			return
+		}
 	}
 
 	application, err = app.applications.FetchByRefNo(refno)
@@ -851,7 +886,7 @@ func (app *App) accounts_home(w http.ResponseWriter, r *http.Request) {
 		var notification models.Notification
 		notification.CreatedAt = time.Now()
 		notification.NotiType = models.PaymentApprovedNotification
-		notification.Description = models.NotificationTypeMap[models.PaymentApprovedNotification]
+		notification.Description = fmt.Sprintf(models.NotificationTypeMap[models.PaymentApprovedNotification], payment_id, sporic_ref_no)
 		application, err := app.applications.FetchByRefNo(sporic_ref_no)
 		if err != nil {
 			app.serverError(w, err)
@@ -860,7 +895,11 @@ func (app *App) accounts_home(w http.ResponseWriter, r *http.Request) {
 		var recievers []string
 		recievers = append(recievers, strconv.Itoa(application.Leader))
 		notification.To = recievers
-		app.notifications.SendNotification(notification)
+		err = app.notifications.SendNotification(notification)
+		if err != nil {
+			app.serverError(w, err)
+			return
+		}
 	}
 
 	if action == "reject_payment" {
@@ -875,7 +914,7 @@ func (app *App) accounts_home(w http.ResponseWriter, r *http.Request) {
 		var notification models.Notification
 		notification.CreatedAt = time.Now()
 		notification.NotiType = models.PaymentRejectedNotification
-		notification.Description = models.NotificationTypeMap[models.PaymentRejectedNotification]
+		notification.Description = fmt.Sprintf(models.NotificationTypeMap[models.PaymentRejectedNotification], payment_id, sporic_ref_no)
 		application, err := app.applications.FetchByRefNo(sporic_ref_no)
 		if err != nil {
 			app.serverError(w, err)
@@ -884,16 +923,44 @@ func (app *App) accounts_home(w http.ResponseWriter, r *http.Request) {
 		var recievers []string
 		recievers = append(recievers, strconv.Itoa(application.Leader))
 		notification.To = recievers
-		app.notifications.SendNotification(notification)
+		err = app.notifications.SendNotification(notification)
+		if err != nil {
+			app.serverError(w, err)
+			return
+		}
 	}
 
 	if action == "complete_expenditure" {
 		expenditure_id := r.PostForm.Get("expenditure_id")
+		sporic_ref_no := r.PostForm.Get("sporic_ref_no")
 		err := app.applications.SetExpenditureStatus(expenditure_id, models.ExpenditureCompleted)
 		if err != nil {
 			app.serverError(w, err)
 			return
 		}
+		var notification models.Notification
+		notification.CreatedAt = time.Now()
+		notification.NotiType = models.ExpenditurePaid
+		notification.Description = fmt.Sprintf(models.NotificationTypeMap[models.ExpenditurePaid], expenditure_id, sporic_ref_no)
+		application, err := app.applications.FetchByRefNo(sporic_ref_no)
+		if err != nil {
+			app.serverError(w, err)
+			return
+		}
+		var recievers []string
+		admins, err := app.users.GetAdmins()
+		if err != nil {
+			return
+		}
+		recievers = admins
+		recievers = append(recievers, strconv.Itoa(application.Leader))
+		notification.To = recievers
+		err = app.notifications.SendNotification(notification)
+		if err != nil {
+			app.serverError(w, err)
+			return
+		}
+
 	}
 
 	payments, err := app.payments.GetAllPayments()
@@ -979,7 +1046,7 @@ func (app *App) checkForDelayes() {
 
 			notification.CreatedAt = time.Now()
 			notification.NotiType = models.ProjectDelayed
-			notification.Description = models.NotificationTypeMap[models.ProjectDelayed]
+			notification.Description = fmt.Sprintf(models.NotificationTypeMap[models.ProjectDelayed], application.SporicRefNo)
 
 			admins, err := app.users.GetAdmins()
 			user := strconv.Itoa(application.Leader)
@@ -989,7 +1056,10 @@ func (app *App) checkForDelayes() {
 			recievers := append(admins, user)
 			notification.To = recievers
 
-			app.notifications.SendNotification(notification)
+			err = app.notifications.SendNotification(notification)
+			if err != nil {
+				return
+			}
 		}
 
 		for _, payment := range application.Payments {
@@ -998,7 +1068,7 @@ func (app *App) checkForDelayes() {
 
 				notification.CreatedAt = time.Now()
 				notification.NotiType = models.PaymentDelayed
-				notification.Description = models.NotificationTypeMap[models.PaymentDelayed]
+				notification.Description = fmt.Sprintf(models.NotificationTypeMap[models.PaymentDelayed], application.SporicRefNo)
 
 				admins, err := app.users.GetAdmins()
 				user := strconv.Itoa(application.Leader)
@@ -1008,7 +1078,10 @@ func (app *App) checkForDelayes() {
 				recievers := append(admins, user)
 				notification.To = recievers
 
-				app.notifications.SendNotification(notification)
+				err = app.notifications.SendNotification(notification)
+				if err != nil {
+					return
+				}
 			}
 		}
 	}

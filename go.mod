@@ -26,7 +26,6 @@ require (
 	golang.org/x/text v0.18.0 // indirect
 	gopkg.in/alexcesaro/quotedprintable.v3 v3.0.0-20150716171945-2caba252f4dc // indirect
 	gopkg.in/go-playground/assert.v1 v1.2.1 // indirect
-	gopkg.in/mail.v2 v2.3.1 // indirect
 )
 
 require (
