@@ -2,6 +2,7 @@ package models
 
 import (
 	"database/sql"
+	"fmt"
 	"time"
 )
 
@@ -42,8 +43,8 @@ var NotificationTypeMap = map[NotificationType]string{
 	ApplicationCompleted:            "Project %s has been completed",
 	ExpenditureApprovedNotification: "Expenditure for project %s has been approved",
 	ExpenditureRejectedNotification: "Expenditure for project %s has been rejected",
-	PaymentApprovedNotification:                "Payment %s for project %s has been approved",
-	PaymentRejectedNotification:                "Payment %s for project %s has been rejected",
+	PaymentApprovedNotification:     "Payment %s for project %s has been approved",
+	PaymentRejectedNotification:     "Payment %s for project %s has been rejected",
 	PaymentInvoiceRequest:           "Invoice Request for project %s has been submitted",
 	PaymentApproval:                 "Payment for project %s has been approved",
 	ExpenditureApproval:             "Expenditure for project %s has been paid",
@@ -57,19 +58,20 @@ type Notification struct {
 }
 
 func (n *NotificationModel) SendNotification(notification Notification) error {
-
+	fmt.Println("4")
 	for _, user := range notification.To {
-
-		_, err := n.Db.Exec("insert into notification (craeted_at, notification_type, notification_description, notification_to)values (?,?,?,?)", notification.CreatedAt, notification.NotiType, notification.To, user)
+		fmt.Println("5")
+		_, err := n.Db.Exec("insert into notifications (craeted_at, notification_type, notification_description, notification_to)values (?,?,?,?)", notification.CreatedAt, notification.NotiType, notification.Description, user)
 
 		if err != nil {
 			return err
 		}
 	}
+	fmt.Println("6")
 	return nil
 }
 
-func (n *NotificationModel) RecieveNotification(username string) ([]Notification, error) {
+func (n *NotificationModel) RecieveNotification(username []string) ([]Notification, error) {
 	var notifications []Notification
 
 	rows, err := n.Db.Query("select craeted_at, notification_type, notification_description where notification_to = ?", username)

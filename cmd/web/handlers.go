@@ -275,21 +275,25 @@ func (app *App) new_application_post(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	fmt.Println("1")
 	var notification models.Notification
 
 	notification.CreatedAt = time.Now()
 	notification.NotiType = models.NewProjectApproval
-	notification.Description = models.NotificationTypeMap[models.NewProjectApproval]
-
+	notification.Description = fmt.Sprintf(models.NotificationTypeMap[models.NewProjectApproval], sporic_ref_no)
+	fmt.Println("2")
 	admins, err := app.users.GetAdmins()
 	if err != nil {
 		app.serverError(w, err)
 		return
 	}
 	notification.To = admins
-
-	app.notifications.SendNotification(notification)
-
+	fmt.Println("3")
+	err = app.notifications.SendNotification(notification)
+	if err != nil {
+		app.serverError(w, err)
+		return
+	}
 	http.Redirect(w, r, "/faculty_home", http.StatusSeeOther)
 }
 
@@ -445,8 +449,10 @@ func (app *App) request_invoice(r *http.Request, SporicRefNo string) error {
 	}
 	notification.To = admins
 
-	app.notifications.SendNotification(notification)
-
+	err = app.notifications.SendNotification(notification)
+	if err != nil {
+		return err
+	}
 	return nil
 }
 
@@ -502,7 +508,10 @@ func (app *App) add_expenditure(r *http.Request, SporicRefNo string) error {
 	}
 	notification.To = admins
 
-	app.notifications.SendNotification(notification)
+	err = app.notifications.SendNotification(notification)
+	if err != nil {
+		return err
+	}
 
 	return nil
 }
