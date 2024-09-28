@@ -6,9 +6,11 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"strconv"
 	"time"
 
 	"github.com/joho/godotenv"
+	"github.com/sporic/sporic/internal/mailer"
 	"github.com/sporic/sporic/internal/models"
 
 	"github.com/alexedwards/scs/mysqlstore"
@@ -30,6 +32,7 @@ type App struct {
 	applications   *models.ApplicationModel
 	notifications  *models.NotificationModel
 	payments       *models.PaymentModel
+	mailer         mailer.Mailer
 }
 
 func main() {
@@ -58,6 +61,17 @@ func main() {
 	sessionManager.Store = mysqlstore.New(db)
 	sessionManager.Lifetime = 12 * time.Hour
 
+	smtp_host := os.Getenv("SMTP_HOST")
+	smtp_port, err := strconv.ParseUint(os.Getenv("SMTP_PORT"), 10, 16)
+	if err != nil {
+		log.Fatalf("Error parsing SMTP_PORT: %v", err)
+	}
+	smpt_username := os.Getenv("SMTP_USERNAME")
+	smpt_password := os.Getenv("SMTP_PASSWORD")
+	smpt_sender := os.Getenv("SMTP_SENDER")
+
+	mailer := mailer.New(smtp_host, int(smtp_port), smpt_username, smpt_password, smpt_sender)
+
 	app := App{
 		infoLog:        infoLog,
 		errorLog:       errorLog,
@@ -68,6 +82,7 @@ func main() {
 		notifications:  &models.NotificationModel{Db: db},
 		sessionManager: sessionManager,
 		formDecoder:    formDecoder,
+		mailer:         mailer,
 	}
 
 	c := cron.New()
@@ -90,7 +105,7 @@ func main() {
 	infoLog.Printf("Starting server on %s", addr)
 	err = srv.ListenAndServe()
 	errorLog.Fatal(err)
-	
+
 }
 
 func loadDatabase(dsn string) *sql.DB {

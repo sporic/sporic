@@ -24,11 +24,14 @@ require (
 	github.com/xuri/nfp v0.0.0-20230919160717-d98342af3f05 // indirect
 	golang.org/x/net v0.21.0 // indirect
 	golang.org/x/text v0.18.0 // indirect
+	gopkg.in/alexcesaro/quotedprintable.v3 v3.0.0-20150716171945-2caba252f4dc // indirect
 	gopkg.in/go-playground/assert.v1 v1.2.1 // indirect
+	gopkg.in/mail.v2 v2.3.1 // indirect
 )
 
 require (
 	filippo.io/edwards25519 v1.1.0 // indirect
+	github.com/go-mail/mail v2.3.1+incompatible
 	github.com/go-sql-driver/mysql v1.8.1
 	github.com/robfig/cron/v3 v3.0.1
 	github.com/xuri/excelize/v2 v2.8.1
