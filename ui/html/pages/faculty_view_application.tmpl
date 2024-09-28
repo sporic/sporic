@@ -11,19 +11,22 @@
     <div class="collapse navbar-collapse" id="navbarNav">
       <ul class="navbar-nav ms-auto">
         <li class="nav-item">
-          <a class="nav-link" href="/faculty_home">Dashboard</a>
+          <a class="nav-link" href="/home">Home</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="#">Projects</a>
+          <a class="nav-link" href="/notifications">Notifications</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="#">Profile</a>
+          <a class="nav-link" href="/profile">Profile</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="admin-login.html">Logout</a>
+          <form action="/logout" method="post">
+            <input class="nav-link" type="submit" value="Logout" />
+          </form>
         </li>
       </ul>
     </div>
+  </div>
 </nav>
 
 <div class="container mt-4">

@@ -1,0 +1,57 @@
+{{define "title"}}Notifications{{end}}
+
+{{define "main"}}
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="#">SpoRIC</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+            aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="/home">Home</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link active" href="/notifications">Notifications</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/profile">Profile</a>
+                </li>
+                <li class="nav-item">
+                    <form action="/logout" method="post">
+                        <input class="nav-link" type="submit" value="Logout" />
+                    </form>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<div class="container mt-4">
+    <h2 class="mb-4">Notifications</h2>
+
+    <div class="card mb-4">
+        <div class="card-body">
+            {{ if eq (len .Notifications) 0 }}
+            <p class="text-muted">You have no notifications at the moment.</p>
+            {{ else }}
+            <ul class="list-group">
+                {{range .Notifications}}
+                <li class="list-group-item">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span>{{.Description}}</span>
+                        <small class="text-muted">{{.CreatedAt.Format "02-Jan-2006 15:04"}}</small>
+                    </div>
+                </li>
+                {{end}}
+            </ul>
+            {{end}}
+        </div>
+    </div>
+
+    <a href="/faculty_home" class="btn btn-primary mt-3">Back to Dashboard</a>
+</div>
+
+{{end}}
