@@ -2,8 +2,10 @@ package models
 
 import (
 	"database/sql"
-	"fmt"
+	"log"
 	"time"
+
+	"github.com/sporic/sporic/internal/mailer"
 )
 
 type NotificationModel struct {
@@ -57,12 +59,25 @@ type Notification struct {
 	To          []string
 }
 
-func (n *NotificationModel) SendNotification(notification Notification) error {
+func (n *NotificationModel) SendNotification(notification Notification, mailer mailer.Mailer) error {
 	for _, user := range notification.To {
 		_, err := n.Db.Exec("insert into notifications (craeted_at, notification_type, notification_description, notification_to)values (?,?,?,?)", notification.CreatedAt, notification.NotiType, notification.Description, user)
 
 		if err != nil {
 			return err
+		}
+	}
+
+	for _, user := range notification.To {
+		row, _ := n.Db.Query("select email from user where user_id = ? ", user)
+		var email string
+		err := row.Scan(&email)
+		if err != nil {
+			return err
+		}
+		err = mailer.Send(email, "example.tmpl", notification)
+		if err != nil {
+			log.Println(err)
 		}
 	}
 	return nil

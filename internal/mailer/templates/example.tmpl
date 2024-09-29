@@ -1,7 +1,7 @@
-{{define "subject"}}Example Subject{{end}}
+{{define "subject"}}SpoRIC Update{{end}}
 
 {{define "plainBody"}}
-Example Body in plain text
+{{.Description}}
 {{end}}
 
 {{define "htmlBody"}}
@@ -14,7 +14,7 @@ Example Body in plain text
 </head>
 
 <body>
-    <h1>Example Body in html</h1>
+    <h1>{{.Description}}</h1>
 </body>
 
 </html>

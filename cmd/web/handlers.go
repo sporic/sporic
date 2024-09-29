@@ -231,11 +231,9 @@ func (app *App) new_application_post(w http.ResponseWriter, r *http.Request) {
 	estimated_amount, err := strconv.Atoi(form.EstimatedAmt)
 	form.CheckField(err == nil, "estimated_amount", "Amount must be a number")
 	form.CheckField(estimated_amount > 0, "estimated_amount", "This field must be greater than 0")
-
 	form.CheckField(validator.NotBlank(form.FinancialYear), "financial_year", "This field cannot be blank")
 	form.CheckField(validator.Matches(form.FinancialYear, regexp.MustCompile(`^\d{4}$`)), "financial_year", "This field must be a 4 digit number")
 	fy_year, _ := strconv.Atoi(form.FinancialYear)
-
 	form.CheckField(validator.NotBlank(form.CompanyName), "company_name", "This field cannot be blank")
 	form.CheckField(validator.NotBlank(form.CompanyAddress), "company_address", "This field cannot be blank")
 	form.CheckField(validator.NotBlank(form.ContactPersonName), "contact_person_name", "This field cannot be blank")
@@ -285,7 +283,7 @@ func (app *App) new_application_post(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	notification.To = admins
-	err = app.notifications.SendNotification(notification)
+	err = app.notifications.SendNotification(notification, app.mailer)
 	if err != nil {
 		app.serverError(w, err)
 		return
@@ -486,7 +484,7 @@ func (app *App) request_invoice(r *http.Request, SporicRefNo string) error {
 	}
 	notification.To = admins
 
-	err = app.notifications.SendNotification(notification)
+	err = app.notifications.SendNotification(notification, app.mailer)
 	if err != nil {
 		return err
 	}
@@ -545,7 +543,7 @@ func (app *App) add_expenditure(r *http.Request, SporicRefNo string) error {
 	}
 	notification.To = admins
 
-	err = app.notifications.SendNotification(notification)
+	err = app.notifications.SendNotification(notification, app.mailer)
 	if err != nil {
 		return err
 	}
@@ -607,7 +605,7 @@ func (app *App) complete_project(r *http.Request, SporicRefNo string) error {
 	}
 	notification.To = admins
 
-	err = app.notifications.SendNotification(notification)
+	err = app.notifications.SendNotification(notification, app.mailer)
 	if err != nil {
 		return err
 	}
@@ -658,7 +656,7 @@ func (app *App) update_payment(r *http.Request, SporicRefNo string) error {
 	}
 	notification.To = accounts
 
-	err = app.notifications.SendNotification(notification)
+	err = app.notifications.SendNotification(notification, app.mailer)
 	if err != nil {
 		return err
 	}
@@ -709,7 +707,7 @@ func (app *App) admin_view_application(w http.ResponseWriter, r *http.Request) {
 		recievers = append(recievers, strconv.Itoa(application.Leader))
 		notification.To = recievers
 
-		err = app.notifications.SendNotification(notification)
+		err = app.notifications.SendNotification(notification, app.mailer)
 		if err != nil {
 			app.serverError(w, err)
 			return
@@ -731,7 +729,7 @@ func (app *App) admin_view_application(w http.ResponseWriter, r *http.Request) {
 		var recievers []string
 		recievers = append(recievers, strconv.Itoa(application.Leader))
 		notification.To = recievers
-		err = app.notifications.SendNotification(notification)
+		err = app.notifications.SendNotification(notification, app.mailer)
 		if err != nil {
 			app.serverError(w, err)
 			return
@@ -751,7 +749,7 @@ func (app *App) admin_view_application(w http.ResponseWriter, r *http.Request) {
 		var recievers []string
 		recievers = append(recievers, strconv.Itoa(application.Leader))
 		notification.To = recievers
-		err = app.notifications.SendNotification(notification)
+		err = app.notifications.SendNotification(notification, app.mailer)
 		if err != nil {
 			app.serverError(w, err)
 			return
@@ -772,7 +770,7 @@ func (app *App) admin_view_application(w http.ResponseWriter, r *http.Request) {
 		var recievers []string
 		recievers = append(recievers, strconv.Itoa(application.Leader))
 		notification.To = recievers
-		err = app.notifications.SendNotification(notification)
+		err = app.notifications.SendNotification(notification, app.mailer)
 		if err != nil {
 			app.serverError(w, err)
 			return
@@ -788,7 +786,7 @@ func (app *App) admin_view_application(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		notification.To = accounts
-		err = app.notifications.SendNotification(notification)
+		err = app.notifications.SendNotification(notification, app.mailer)
 		if err != nil {
 			app.serverError(w, err)
 			return
@@ -810,7 +808,7 @@ func (app *App) admin_view_application(w http.ResponseWriter, r *http.Request) {
 		var recievers []string
 		recievers = append(recievers, strconv.Itoa(application.Leader))
 		notification.To = recievers
-		err = app.notifications.SendNotification(notification)
+		err = app.notifications.SendNotification(notification, app.mailer)
 		if err != nil {
 			app.serverError(w, err)
 			return
@@ -834,7 +832,7 @@ func (app *App) admin_view_application(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		notification.To = accounts
-		err = app.notifications.SendNotification(notification)
+		err = app.notifications.SendNotification(notification, app.mailer)
 		if err != nil {
 			app.serverError(w, err)
 			return
@@ -984,7 +982,7 @@ func (app *App) accounts_home(w http.ResponseWriter, r *http.Request) {
 		var recievers []string
 		recievers = append(recievers, strconv.Itoa(application.Leader))
 		notification.To = recievers
-		err = app.notifications.SendNotification(notification)
+		err = app.notifications.SendNotification(notification, app.mailer)
 		if err != nil {
 			app.serverError(w, err)
 			return
@@ -1012,7 +1010,7 @@ func (app *App) accounts_home(w http.ResponseWriter, r *http.Request) {
 		var recievers []string
 		recievers = append(recievers, strconv.Itoa(application.Leader))
 		notification.To = recievers
-		err = app.notifications.SendNotification(notification)
+		err = app.notifications.SendNotification(notification, app.mailer)
 		if err != nil {
 			app.serverError(w, err)
 			return
@@ -1044,7 +1042,7 @@ func (app *App) accounts_home(w http.ResponseWriter, r *http.Request) {
 		recievers = admins
 		recievers = append(recievers, strconv.Itoa(application.Leader))
 		notification.To = recievers
-		err = app.notifications.SendNotification(notification)
+		err = app.notifications.SendNotification(notification, app.mailer)
 		if err != nil {
 			app.serverError(w, err)
 			return
@@ -1145,7 +1143,7 @@ func (app *App) checkForDelayes() {
 			recievers := append(admins, user)
 			notification.To = recievers
 
-			err = app.notifications.SendNotification(notification)
+			err = app.notifications.SendNotification(notification, app.mailer)
 			if err != nil {
 				return
 			}
@@ -1167,7 +1165,7 @@ func (app *App) checkForDelayes() {
 				recievers := append(admins, user)
 				notification.To = recievers
 
-				err = app.notifications.SendNotification(notification)
+				err = app.notifications.SendNotification(notification, app.mailer)
 				if err != nil {
 					return
 				}

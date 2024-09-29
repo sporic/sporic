@@ -3,6 +3,7 @@ package mailer
 import (
 	"bytes"
 	"embed"
+	"log"
 	"text/template"
 	"time"
 
@@ -18,9 +19,8 @@ type Mailer struct {
 }
 
 func New(host string, port int, username, password, sender string) Mailer {
-	dialer := mail.NewDialer(host, port, username, password)
+	dialer := mail.NewDialer(host, 2525, username, password)
 	dialer.Timeout = 5 * time.Second
-
 	return Mailer{
 		dialer: dialer,
 		sender: sender,
@@ -60,9 +60,11 @@ func (m Mailer) Send(recipient, templateFile string, data interface{}) error {
 	msg.SetBody("text/plain", plainBody.String())
 	msg.AddAlternative("text/html", htmlBody.String())
 
-	err = m.dialer.DialAndSend(msg)
-	if err != nil {
-		return err
-	}
-	return nil
+	go func() {
+		err = m.dialer.DialAndSend(msg)
+		if err != nil {
+			log.Println(err)
+		}
+	}()
+	return err
 }

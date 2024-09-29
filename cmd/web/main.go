@@ -66,8 +66,8 @@ func main() {
 	if err != nil {
 		log.Fatalf("Error parsing SMTP_PORT: %v", err)
 	}
-	smpt_username := os.Getenv("SMTP_USERNAME")
-	smpt_password := os.Getenv("SMTP_PASSWORD")
+	smpt_username := os.Getenv("SMTP_USER")
+	smpt_password := os.Getenv("SMTP_PASS")
 	smpt_sender := os.Getenv("SMTP_SENDER")
 
 	mailer := mailer.New(smtp_host, int(smtp_port), smpt_username, smpt_password, smpt_sender)
