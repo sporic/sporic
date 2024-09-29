@@ -65,6 +65,7 @@ const (
 	PaymentApproved
 	PaymentRejected
 	PaymentInvoiceForwarded
+	PaymentProofUploaded
 )
 
 type ExpenditureStatus = int
@@ -591,4 +592,19 @@ func (m *ApplicationModel) GetTeamByRefNo(sporic_ref_no string) ([]Member, error
 	}
 
 	return members, nil
+}
+
+func (m *ApplicationModel) GetExpenditureById(expenditure_id int) (*Expenditure, error) {
+
+	row := m.Db.QueryRow("select sporic_ref_no,expenditure_name,expenditure_amt,expenditure_date,expenditure_status,expenditure_type from expenditure where expenditure_id =?", expenditure_id)
+
+	var expenditure Expenditure
+
+	err := row.Scan(&expenditure.SporicRefNo, &expenditure.Expenditure_name, &expenditure.Expenditure_amt, &expenditure.Expenditure_date, &expenditure.Expenditure_status, &expenditure.Expenditure_type)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return &expenditure, nil
 }

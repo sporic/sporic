@@ -83,6 +83,11 @@
                         <td><a href="/download/{{.Application.SporicRefNo}}/{{.Application.SporicRefNo}}/completion_form"
                                 target=" _blank">View</a></td>
                     </tr>
+                    <tr></tr>
+                        <th>Feedback Document</th>
+                        <td><a href="/download/{{.Application.SporicRefNo}}/{{.Application.SporicRefNo}}/feedback_form"
+                                target=" _blank">View</a></td>
+                    </tr>
                     <tr>
                         <th>VIT resources used</th>
                         <td>{{if eq .Application.ResourceUsed 1}}No{{else}}Yes{{end}}</td>

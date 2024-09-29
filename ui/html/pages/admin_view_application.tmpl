@@ -74,12 +74,19 @@
                     </tr>
                     <tr>
                         <th>Proposal</th>
-                        <td><a href="#" target=" _blank">View</a></td>
+                        <td><a href="/download/{{.Application.SporicRefNo}}/{{.Application.SporicRefNo}}/proposal"
+                                target=" _blank">View</a></td>
                     </tr>
                     {{ if or (eq .Application.Status 2) (eq .Application.Status 3) }}
                     <tr>
-                        <td>Closure Document</td>
-                        <td><a href="#" target=" _blank">View</a></td>
+                        <th>Closure Document</th>
+                        <td><a href="/download/{{.Application.SporicRefNo}}/{{.Application.SporicRefNo}}/completion_form"
+                                target=" _blank">View</a></td>
+                    </tr>
+                    <tr>
+                        <th>Feedback Document</th>
+                        <td><a href="/download/{{.Application.SporicRefNo}}/{{.Application.SporicRefNo}}/feedback_form"
+                                target=" _blank">View</a></td>
                     </tr>
                     {{ end }}
                     <tr>
@@ -233,9 +240,9 @@
                 <td><a href="/download/{{$.Application.SporicRefNo}}/{{.Payment_id}}/invoice" target="_blank"
                         class="btn btn-primary"><i class="fas fa-download"></i> View</a>
                 </td>
-                <td>
+                <td>{{.Transaction_id}}
                 </td>
-                <td>
+                <td> <a href="/download/{{$.Application.SporicRefNo}}/{{.Payment_id}}/payment" target="_blank">View</a>
                 </td>
                 <td>
                     <span class="badge bg-warning">Payment Pending</span>
@@ -416,7 +423,7 @@
                     <tr>
                         <th>VIT Resources Used</th>
                         <td class="text-end">
-                            {{if eq .Application.ResourceUsed 1}}
+                            {{if eq .Application.ResourceUsed 0}}
                             Yes
                             {{else}}
                             No

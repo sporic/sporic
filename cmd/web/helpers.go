@@ -9,6 +9,7 @@ import (
 	"os"
 	"path/filepath"
 	"runtime/debug"
+	"strconv"
 
 	"github.com/go-playground/form"
 	"github.com/sporic/sporic/internal/models"
@@ -49,6 +50,11 @@ func (app *App) handleFile(r *http.Request, folder_name string, prefix string, f
 	}
 	defer file.Close()
 
+	_, err = app.applications.FetchByRefNo(folder_name)
+	if err != nil {
+		return err
+	}
+
 	uploadDir := "documents/" + folder_name
 	err = os.MkdirAll(uploadDir, os.ModePerm)
 	if err != nil {
@@ -57,30 +63,107 @@ func (app *App) handleFile(r *http.Request, folder_name string, prefix string, f
 
 	filename := ""
 	if file_type == ProposalDoc {
+
+		_, err = app.applications.FetchByRefNo(prefix)
+		if err != nil {
+			return nil
+		}
+
 		filename = folder_name + "_" + prefix + "_proposal" + ".pdf"
 	}
 	if file_type == Invoice {
-		filename = folder_name + "_" + prefix + "_invoice" + ".pdf"
+
+		prefix, _ := strconv.Atoi(prefix)
+		payment, err := app.payments.GetPaymentById(prefix)
+		if err != nil {
+			return nil
+		}
+
+		if payment.Payment_id != prefix {
+			return nil
+		}
+
+		filename = folder_name + "_" + strconv.Itoa(prefix) + "_invoice" + ".pdf"
 	}
 	if file_type == PaymentProof {
-		filename = folder_name + "_" + prefix + "_payment" + ".pdf"
+
+		prefix, _ := strconv.Atoi(prefix)
+		payment, err := app.payments.GetPaymentById(prefix)
+		if err != nil {
+			return nil
+		}
+
+		if payment.Payment_id != prefix {
+			return nil
+		}
+
+		filename = folder_name + "_" + strconv.Itoa(prefix) + "_payment" + ".pdf"
 	}
 	if file_type == GstCirtificate {
-		filename = folder_name + "_" + prefix + "_tax_cirtificate" + ".pdf"
+
+		prefix, _ := strconv.Atoi(prefix)
+		_, err := app.payments.GetPaymentById(prefix)
+		if err != nil {
+			return err
+		}
+		filename = folder_name + "_" + strconv.Itoa(prefix) + "_tax_cirtificate" + ".pdf"
 	}
 	if file_type == PanCard {
-		filename = folder_name + "_" + prefix + "_tax_cirtificate" + ".pdf"
+		prefix, _ := strconv.Atoi(prefix)
+		payment, err := app.payments.GetPaymentById(prefix)
+		if err != nil {
+			return nil
+		}
+
+		if payment.Payment_id != prefix {
+			return nil
+		}
+
+		filename = folder_name + "_" + strconv.Itoa(prefix) + "_tax_cirtificate" + ".pdf"
 	}
 	if file_type == CompletionDoc {
+
+		_, err = app.applications.FetchByRefNo(prefix)
+		if err != nil {
+			return nil
+		}
+
 		filename = folder_name + "_" + prefix + "_completion_form" + ".pdf"
 	}
 	if file_type == ExpenditureProof {
-		filename = folder_name + "_" + prefix + "_expenditure_proof" + ".pdf"
+
+		prefix, _ := strconv.Atoi(prefix)
+		expenditure, err := app.applications.GetExpenditureById(prefix)
+		if err != nil {
+			return err
+		}
+
+		if expenditure.Expenditure_id != prefix {
+			return nil
+		}
+
+		filename = folder_name + "_" + strconv.Itoa(prefix) + "_expenditure_proof" + ".pdf"
 	}
 	if file_type == ExpenditureInvoice {
-		filename = folder_name + "_" + prefix + "_expenditure_invoice" + ".pdf"
+
+		prefix, _ := strconv.Atoi(prefix)
+		expenditure, err := app.applications.GetExpenditureById(prefix)
+		if err != nil {
+			return err
+		}
+
+		if expenditure.Expenditure_id != prefix {
+			return nil
+		}
+		filename = folder_name + "_" + strconv.Itoa(prefix) + "_expenditure_invoice" + ".pdf"
 	}
 	if file_type == FeedbackForm {
+
+		_, err = app.applications.FetchByRefNo(prefix)
+		if err != nil {
+			return nil
+		}
+
 		filename = folder_name + "_" + prefix + "_feedback_form" + ".pdf"
 	}
 
@@ -153,8 +236,8 @@ func (app *App) GenerateExcel(applications []models.Application) (*excelize.File
 		TotalTax := 0
 		for _, payment := range row.Payments {
 			if payment.Payment_status == models.PaymentApproved {
-			TotalPayment += payment.Payment_amt
-			TotalTax += payment.Tax
+				TotalPayment += payment.Payment_amt
+				TotalTax += payment.Tax
 			}
 		}
 		f.SetCellValue("Sheet1", fmt.Sprintf("G%d", i+2), TotalPayment)

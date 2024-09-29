@@ -303,7 +303,14 @@ func (app *App) faculty_view_application(w http.ResponseWriter, r *http.Request)
 	}
 	params := httprouter.ParamsFromContext(r.Context())
 	refno := params.ByName("refno")
+
 	application, err := app.applications.FetchByRefNo(refno)
+
+	if application.Leader != user.Id {
+		app.notFound(w)
+		return
+	}
+
 	if errors.Is(err, models.ErrRecordNotFound) {
 		app.notFound(w)
 		return
@@ -350,17 +357,16 @@ func (app *App) faculty_view_application(w http.ResponseWriter, r *http.Request)
 	if action == "complete_project" {
 		closable := true
 		for _, payment := range application.Payments {
-			if payment.Payment_status != models.PaymentApproved {
+			if payment.Payment_status != models.PaymentApproved && payment.Payment_status != models.PaymentRejected {
 				closable = false
 			}
 		}
 		for _, expenditure := range application.Expenditures {
-			if expenditure.Expenditure_status != models.ExpenditureApproved {
+			if expenditure.Expenditure_status != models.ExpenditureCompleted {
 				closable = false
 			}
 		}
-		// TODO remove
-		closable = true
+
 		if closable {
 			err = app.complete_project(r, application.SporicRefNo)
 			if err != nil {
@@ -910,6 +916,13 @@ func (app *App) admin_view_application(w http.ResponseWriter, r *http.Request) {
 }
 
 func (app *App) download(w http.ResponseWriter, r *http.Request) {
+
+	user := app.contextGetUser(r)
+	if user.IsAnonymous() {
+		http.Redirect(w, r, "/login", http.StatusSeeOther)
+		return
+	}
+
 	params := httprouter.ParamsFromContext(r.Context())
 	folder := params.ByName("folder")
 	doc_id := params.ByName("doc_id")
@@ -919,15 +932,65 @@ func (app *App) download(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "File not specified.", http.StatusBadRequest)
 		return
 	}
+	if user.Role == models.FacultyUser {
+
+		application, err := app.applications.FetchByRefNo(folder)
+		if err != nil {
+			app.serverError(w, err)
+			return
+		}
+		if application.Leader != user.Id {
+			app.notFound(w)
+			return
+		}
+
+		if doc_type == "expenditure_proof" || doc_type == "expenditure_invoice" {
+			id, err := strconv.Atoi(doc_id)
+			if err != nil {
+				app.serverError(w, err)
+				return
+			}
+			expenditure, err := app.applications.GetExpenditureById(id)
+			if err != nil {
+				app.serverError(w, err)
+				return
+			}
+
+			if expenditure.SporicRefNo != application.SporicRefNo {
+				app.notFound(w)
+				return
+			}
+
+		}
+
+		if doc_type == "invoice" || doc_type == "payment" || doc_type == "tax_cirtificate" {
+			id, err := strconv.Atoi(doc_id)
+			if err != nil {
+				app.serverError(w, err)
+				return
+			}
+			payment, err := app.payments.GetPaymentById(id)
+			if err != nil {
+				app.serverError(w, err)
+				return
+			}
+
+			if payment.Sporic_ref_no != application.SporicRefNo {
+				app.notFound(w)
+				return
+			}
+		}
+
+		if application.SporicRefNo != folder {
+			app.notFound(w)
+			return
+		}
+	}
 
 	filename := folder + "_" + doc_id + "_" + doc_type + ".pdf"
-
 	prefixPath := "Documents/" + folder + "/"
-
 	filePath := filepath.Join(prefixPath, filepath.Clean(filename))
-
 	w.Header().Set("Content-Type", "application/pdf")
-
 	http.ServeFile(w, r, filePath)
 }
 
@@ -1223,4 +1286,13 @@ func (app *App) GetNotifications(w http.ResponseWriter, r *http.Request) {
 	data := app.newTemplateData(r)
 	data.Notifications = notifications
 	app.render(w, http.StatusOK, "notifications.tmpl", data)
+}
+
+func (app *App) profile(w http.ResponseWriter, r *http.Request) {
+
+	user := app.contextGetUser(r)
+
+	data := app.newTemplateData(r)
+	data.User = user
+	app.render(w, http.StatusOK, "profile.tmpl", data)
 }

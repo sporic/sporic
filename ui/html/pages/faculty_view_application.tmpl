@@ -221,25 +221,30 @@
       {{ end }}
       {{ if eq .Payment_status 3 }}
       <tr>
-        <input type="hidden" name="payment_id" value="{{.Payment_id}}" />
-        <td>{{.Currency}}</td>
-        <td>{{.Payment_amt}}</td>
-        <td>{{.Tax}}</td>
-        <td>{{.Gst_number}}</td>
-        <td>{{.Pan_number}}</td>
-        <td><a href="/download/{{$.Application.SporicRefNo}}/{{.Payment_id}}/tax_cirtificate" target="_blank">View</a>
-        </td>
-        <td><a href="/download/{{$.Application.SporicRefNo}}/{{.Payment_id}}/invoice" target="_blank">View</a></td>
-        <td>{{.Transaction_id}}</td>
-        <td><a href="/download/{{$.Application.SporicRefNo}}/{{.Payment_id}}/payment" target="_blank">View</a></td>
-        <td>
-          <span class="badge bg-danger">Rejected</span>
-        </td>
+        <form action="/faculty/view_application/{{$.Application.SporicRefNo}}" method="post" enctype="multipart/form-data">
+          <input type="hidden" name="payment_id" value="{{.Payment_id}}" />
+          <input type="hidden" name="action" value="update_payment" />
+          <td>{{.Currency}}</td>
+          <td>{{.Payment_amt}}</td>
+          <td>{{.Tax}}</td>
+          <td>{{.Gst_number}}</td>
+          <td>{{.Pan_number}}</td>
+          <td><a href="/download/{{$.Application.SporicRefNo}}/{{.Payment_id}}/tax_cirtificate" target="_blank">View</a>
+          </td>
+          <td><a href="/download/{{$.Application.SporicRefNo}}/{{.Payment_id}}/invoice" target="_blank">View</a></td>
+          <td><input type="text" class="form-control" name="transaction_id" placeholder="{{.Transaction_id}}" /></td>
+          <td><input type="file" class="form-control" placeholder="Payment Proof" name="payment_proof" accept=".pdf"
+              required /></td>
+          <td>
+            <span class="badge bg-danger">Rejected</span>
+            <button class="btn btn-primary">Confirm</button>
+          </td>
+        </form>
       </tr>
       {{ end }}
       {{ if eq .Payment_status 1 }}
       <tr>
-        <form action="/faculty/view_application/{{$.Application.SporicRefNo}}" method="post" ,
+        <form action="/faculty/view_application/{{$.Application.SporicRefNo}}" method="post" 
           enctype="multipart/form-data">
           <input type="hidden" name="action" value="update_payment" />
           <input type="hidden" name="payment_id" value="{{.Payment_id}}" />

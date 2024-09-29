@@ -69,7 +69,7 @@ func (n *NotificationModel) SendNotification(notification Notification, mailer m
 	}
 
 	for _, user := range notification.To {
-		row, _ := n.Db.Query("select email from user where user_id = ? ", user)
+		row := n.Db.QueryRow("select email from user where user_id = ? ", user)
 		var email string
 		err := row.Scan(&email)
 		if err != nil {

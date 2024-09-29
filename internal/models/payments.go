@@ -57,3 +57,15 @@ func (p *PaymentModel) GetPaymentByRefNo(sporic_ref_no string) ([]Payment, error
 
 	return payments, nil
 }
+
+func (p *PaymentModel) GetPaymentById(payment_id int) (*Payment, error) {
+
+	row := p.Db.QueryRow("select payment_id, sporic_ref_no, payment_amt, gst_number, pan_number, payment_date, payment_status, transaction_id, currency, tax from payment where payment_id = ?", payment_id)
+
+	var payment Payment
+	err := row.Scan(&payment.Payment_id, &payment.Sporic_ref_no, &payment.Payment_amt, &payment.Gst_number, &payment.Pan_number, &payment.Payment_date, &payment.Payment_status, &payment.Transaction_id, &payment.Currency, &payment.Tax)
+	if err != nil {
+		return nil, err
+	}
+	return &payment, nil
+}
