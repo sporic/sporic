@@ -1,4 +1,4 @@
-{{define "title"}}Faculty Home{{ end }}
+{{define "title"}}New Application{{ end }}
 
 {{define "main"}}
 <div class="container mt-4">
@@ -9,67 +9,107 @@
     <!-- Project Title -->
     <div class="mb-3">
       <label for="projectTitle" class="form-label">Project Title</label>
-      <input type="text" class="form-control" id="projectTitle" name="project_title"
-        placeholder="Enter project title" />
+      {{with .Form.FieldErrors.project_title}}
+      <br>
+      <span class="text-danger"> {{.}}</label>
+        {{ end }}
+        <input type="text" class="form-control" id="projectTitle" name="project_title"
+          placeholder="Enter project title" />
     </div>
     <!-- Activity Type Dropdown -->
     <div class="mb-3">
       <label for="activityType" class="form-label">Activity Type</label>
-      <select class="form-select" name="activity_type">
-        <option value="consultancy">Consultancy</option>
-        <option value="training">Industrial Training</option>
-      </select>
+      {{with .Form.FieldErrors.activity_type}}
+      <br>
+      <span class="text-danger"> {{.}}</label>
+        {{ end }}
+        <select class="form-select" name="activity_type">
+          <option value="consultancy">Consultancy</option>
+          <option value="training">Industrial Training</option>
+        </select>
     </div>
     <!-- Financial Year Dropdown -->
     <div class="mb-3">
       <label for="financialYear" class="form-label">Financial Year</label>
-      <select class="form-select" name="financial_year">
-        <option value="2021">2021-22</option>
-        <option value="2022">2022-23</option>
-        <option value="2023">2023-24</option>
-        <option value="2024" selected>2024-25</option>
-      </select>
+      {{with .Form.FieldErrors.financial_year}}
+      <br>
+      <span class="text-danger"> {{.}}</label>
+        {{ end }}
+        <select class="form-select" name="financial_year">
+          <option value="2021">2021-22</option>
+          <option value="2022">2022-23</option>
+          <option value="2023">2023-24</option>
+          <option value="2024" selected>2024-25</option>
+        </select>
     </div>
     <!-- Estimated Amount -->
     <div class="mb-3">
       <label for="estimatedAmount" class="form-label">Estimated Amount</label>
-      <input type="text" class="form-control" id="estimatedAmount" name="estimated_amount"
-        placeholder="Enter estimated amount" />
+      {{with .Form.FieldErrors.estimated_amount}}
+      <br>
+      <span class="text-danger"> {{.}}</label>
+        {{ end }}
+        <input type="text" class="form-control" id="estimatedAmount" name="estimated_amount"
+          placeholder="Enter estimated amount" />
     </div>
 
     <!-- Company Details -->
     <h5>Company Details</h5>
     <div class="mb-3">
       <label for="companyName" class="form-label">Company Name</label>
-      <input type="text" class="form-control" id="companyName" name="company_name" placeholder="Enter company name" />
+      {{with .Form.FieldErrors.company_name}}
+      <br>
+      <span class="text-danger"> {{.}}</label>
+        {{ end }}
+        <input type="text" class="form-control" id="companyName" name="company_name" placeholder="Enter company name" />
     </div>
     <div class="mb-3">
       <label for="companyAddress" class="form-label">Company Address</label>
-      <input type="text" class="form-control" id="companyAddress" name="company_address"
-        placeholder="Enter company address" />
+      {{with .Form.FieldErrors.company_address}}
+      <br>
+      <span class="text-danger"> {{.}}</label>
+        {{ end }}
+        <input type="text" class="form-control" id="companyAddress" name="company_address"
+          placeholder="Enter company address" />
     </div>
     <div class="mb-3">
       <label for="billingAddress" class="form-label">Billing Address</label>
-      <input type="text" class="form-control" id="billingAddress" name="billing_address"
-        placeholder="Enter billing address" />
+      {{with .Form.FieldErrors.billing_address}}
+      <br>
+      <span class="text-danger"> {{.}}</label>
+        {{ end }}
+        <input type="text" class="form-control" id="billingAddress" name="billing_address"
+          placeholder="Enter billing address" />
     </div>
 
     <!-- Contact Person Details -->
     <h5>Contact Person Details</h5>
     <div class="mb-3">
       <label for="contactPersonName" class="form-label">Name</label>
-      <input type="text" class="form-control" id="contactPersonName" name="contact_person_name"
-        placeholder="Enter contact person name" />
+      {{ with .Form.FieldErrors.contact_person_name }}
+      <br>
+      <span class="text-danger"> {{.}}</label>
+        {{ end }}
+        <input type="text" class="form-control" id="contactPersonName" name="contact_person_name"
+          placeholder="Enter contact person name" />
     </div>
     <div class="mb-3">
       <label for="contactPersonEmail" class="form-label">Email</label>
-      <input type="email" class="form-control" id="contactPersonEmail" name="contact_person_email"
-        placeholder="Enter email" />
+      {{with .Form.FieldErrors.contact_person_email}}
+      <br>
+      <span class="text-danger"> {{.}}</label>
+        {{ end }}
+        <input type="email" class="form-control" id="contactPersonEmail" name="contact_person_email"
+          placeholder="Enter email" />
     </div>
     <div class="mb-3">
       <label for="contactPersonMobile" class="form-label">Mobile</label>
-      <input type="text" class="form-control" id="contactPersonMobile" name="contact_person_mobile"
-        placeholder="Enter mobile number" />
+      {{with .Form.FieldErrors.contact_person_mobile}}
+      <br>
+      <span class="text-danger"> {{.}}</label>
+        {{ end }}
+        <input type="text" class="form-control" id="contactPersonMobile" name="contact_person_mobile"
+          placeholder="Enter mobile number" />
     </div>
     <div class="mb-3">
       <label for="ContactPersonDesignation" class="form-label">Designation</label>
@@ -95,7 +135,7 @@
     <h5>Project Proposal</h5>
     <div class="mb-3">
       <label for="projectProposal" class="form-label">Upload Proposal</label>
-      <input type="file" class="form-control" id="projectProposal" name="project_proposal" accept=".pdf" />
+      <input type="file" class="form-control" id="projectProposal" name="project_proposal" accept=".pdf" required/>
     </div>
 
     <!-- Submit Button with Additional Space -->

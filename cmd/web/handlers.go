@@ -7,6 +7,7 @@ import (
 	"path/filepath"
 	"regexp"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/julienschmidt/httprouter"
@@ -234,8 +235,10 @@ func (app *App) new_application_post(w http.ResponseWriter, r *http.Request) {
 	form.CheckField(validator.NotBlank(form.FinancialYear), "financial_year", "This field cannot be blank")
 	form.CheckField(validator.Matches(form.FinancialYear, regexp.MustCompile(`^\d{4}$`)), "financial_year", "This field must be a 4 digit number")
 	fy_year, _ := strconv.Atoi(form.FinancialYear)
+	form.CheckField(validator.NotBlank(form.ProjectTitle), "project_title", "This field cannot be blank")
 	form.CheckField(validator.NotBlank(form.CompanyName), "company_name", "This field cannot be blank")
 	form.CheckField(validator.NotBlank(form.CompanyAddress), "company_address", "This field cannot be blank")
+	form.CheckField(validator.NotBlank(form.BillingAddress), "billing_address", "This field cannot be blank.If billing address is same as company address, please enter the same address")
 	form.CheckField(validator.NotBlank(form.ContactPersonName), "contact_person_name", "This field cannot be blank")
 	form.CheckField(validator.NotBlank(form.ConatactPersonMobile), "contact_person_mobile", "This field cannot be blank")
 	form.CheckField(validator.NotBlank(form.ContactPersonEmail), "contact_person_email", "This field cannot be blank")
@@ -333,7 +336,6 @@ func (app *App) faculty_view_application(w http.ResponseWriter, r *http.Request)
 		err = app.request_invoice(r, application.SporicRefNo)
 		if err != nil {
 			app.serverError(w, err)
-
 			return
 		}
 	}
@@ -442,11 +444,12 @@ func (app *App) faculty_view_application(w http.ResponseWriter, r *http.Request)
 }
 
 type NewInvoice struct {
-	Currency   string `form:"currency"`
-	PaymentAmt int    `form:"payment_amt"`
-	Tax        int    `form:"tax"`
-	GstNumber  string `form:"gst_number"`
-	PanNumber  string `form:"pan_number"`
+	Currency            string `form:"currency"`
+	PaymentAmt          int    `form:"payment_amt"`
+	Tax                 int    `form:"tax"`
+	GstNumber           string `form:"gst_number"`
+	PanNumber           string `form:"pan_number"`
+	validator.Validator `form:"-"`
 }
 
 func (app *App) request_invoice(r *http.Request, SporicRefNo string) error {
@@ -458,14 +461,34 @@ func (app *App) request_invoice(r *http.Request, SporicRefNo string) error {
 		return err
 	}
 
+	if invoice_form.Currency != "INR" && invoice_form.Currency != "USD" {
+		invoice_form.AddFieldError("currency", "Select a valid currency")
+	}
+
+	payment_amt := strconv.Itoa(invoice_form.PaymentAmt)
+	paymentAmt, err := strconv.Atoi(payment_amt)
+	invoice_form.CheckField(err == nil, "payment_amt", "Amount must be a number")
+	invoice_form.CheckField(paymentAmt > 0, "payment_amt", "This field must be greater than 0")
+
+	tax := strconv.Itoa(invoice_form.Tax)
+	Tax, err := strconv.Atoi(tax)
+	invoice_form.CheckField(err == nil, "tax", "Amount must be a number")
+	invoice_form.CheckField(Tax > 0, "tax", "This field must be greater than 0")
+
+	invoice_form.CheckField(regexp.MustCompile("^[a-zA-Z0-9]+$").MatchString(invoice_form.GstNumber), "gst_number", "Enter a valid GST number")
+	invoice_form.CheckField(len(invoice_form.GstNumber) == 15 || len(invoice_form.GstNumber) == 0, "gst_number", "Enter a valid GST number")
+
+	invoice_form.CheckField(regexp.MustCompile("^[a-zA-Z0-9]+$").MatchString(invoice_form.GstNumber), "pan_number", "Enter a valid PAN number")
+	invoice_form.CheckField(len(invoice_form.PanNumber) == 10 || len(invoice_form.PanNumber) == 0, "pan_number", "Enter a valid PAN number")
+
 	var payment models.Payment
 
 	payment.Sporic_ref_no = SporicRefNo
 	payment.Currency = invoice_form.Currency
 	payment.Payment_amt = invoice_form.PaymentAmt
 	payment.Tax = invoice_form.Tax
-	payment.Gst_number = invoice_form.GstNumber
-	payment.Pan_number = invoice_form.PanNumber
+	payment.Gst_number = strings.ToUpper(invoice_form.GstNumber)
+	payment.Pan_number = strings.ToUpper(invoice_form.PanNumber)
 	payment.Payment_status = models.PaymentInvoiceRequested
 
 	id, err := app.applications.Insert_invoice_request(payment)
@@ -498,9 +521,10 @@ func (app *App) request_invoice(r *http.Request, SporicRefNo string) error {
 }
 
 type NewExpenditure struct {
-	ExpenditureType int    `form:"expenditure_type"`
-	ExpenditureName string `form:"expenditure_name"`
-	ExpenditureAmt  int    `form:"expenditure_amt"`
+	ExpenditureType     int    `form:"expenditure_type"`
+	ExpenditureName     string `form:"expenditure_name"`
+	ExpenditureAmt      int    `form:"expenditure_amt"`
+	validator.Validator `form:"-"`
 }
 
 func (app *App) add_expenditure(r *http.Request, SporicRefNo string) error {
@@ -511,6 +535,11 @@ func (app *App) add_expenditure(r *http.Request, SporicRefNo string) error {
 	if err != nil {
 		return err
 	}
+
+	expenditure_amt := strconv.Itoa(expenditure_form.ExpenditureAmt)
+	paymentAmt, err := strconv.Atoi(expenditure_amt)
+	expenditure_form.CheckField(err == nil, "expenditure_amt", "Amount must be a number")
+	expenditure_form.CheckField(paymentAmt > 0, "expenditure_amt", "This field must be greater than 0")
 
 	var expenditure models.Expenditure
 

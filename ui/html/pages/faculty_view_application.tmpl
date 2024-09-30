@@ -1,9 +1,9 @@
-{{define "title"}}Faculty Home{{ end }}
+{{define "title"}}Application{{ end }}
 
 {{define "main"}}
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
   <div class="container-fluid">
-    <a class="navbar-brand" href="#">SpoRIC</a>
+    <a class="navbar-brand" href="/home">SpoRIC</a>
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
       aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
@@ -221,7 +221,8 @@
       {{ end }}
       {{ if eq .Payment_status 3 }}
       <tr>
-        <form action="/faculty/view_application/{{$.Application.SporicRefNo}}" method="post" enctype="multipart/form-data">
+        <form action="/faculty/view_application/{{$.Application.SporicRefNo}}" method="post"
+          enctype="multipart/form-data">
           <input type="hidden" name="payment_id" value="{{.Payment_id}}" />
           <input type="hidden" name="action" value="update_payment" />
           <td>{{.Currency}}</td>
@@ -244,7 +245,7 @@
       {{ end }}
       {{ if eq .Payment_status 1 }}
       <tr>
-        <form action="/faculty/view_application/{{$.Application.SporicRefNo}}" method="post" 
+        <form action="/faculty/view_application/{{$.Application.SporicRefNo}}" method="post"
           enctype="multipart/form-data">
           <input type="hidden" name="action" value="update_payment" />
           <input type="hidden" name="payment_id" value="{{.Payment_id}}" />
@@ -373,30 +374,50 @@
           <div class="col-md-6">
             <div class="mb-3">
               <label for="currency" class="form-label">Currency</label>
-              <select class="form-select" id="currency" name="currency" required>
-                <option value="INR">INR</option>
-                <option value="USD">USD</option>
-              </select>
+              {{with .Form.FieldErrors.currency}}
+              <br>
+              <span class="text-danger"> {{.}}</label>
+                {{ end }}
+                <select class="form-select" id="currency" name="currency" required>
+                  <option value="INR">INR</option>
+                  <option value="USD">USD</option>
+                </select>
             </div>
             <div class="mb-3">
               <label for="amount" class="form-label">Amount Excluding Tax</label>
-              <input type="text" class="form-control" id="amount" name="payment_amt" required />
+              {{with .Form.FieldErrors.payment_amt}}
+              <br>
+              <span class="text-danger"> {{.}}</label>
+                {{ end }}
+                <input type="text" class="form-control" id="amount" name="payment_amt" required />
             </div>
             <div class="mb-3">
               <label for="tax" class="form-label">Tax</label>
-              <input type="text" class="form-control" id="tax" name="tax" required />
+              {{with .Form.FieldErrors.tax}}
+              <br>
+              <span class="text-danger"> {{.}}</label>
+                {{ end }}
+                <input type="text" class="form-control" id="tax" name="tax" required />
             </div>
             <div class="mb-3">
               <label for="gst" class="form-label">GST No.</label>
-              <input type="text" class="form-control" id="gst" name="gst_number" />
+              {{with .Form.FieldErrors.gst_number}}
+              <br>
+              <span class="text-danger"> {{.}}</label>
+                {{ end }}
+                <input type="text" class="form-control" id="gst" name="gst_number" />
             </div>
             <div class="mb-3">
               <label for="pan" class="form-label">PAN No.</label>
-              <input type="text" class="form-control" id="pan" name="pan_number" />
+              {{with .Form.FieldErrors.pan_number}}
+              <br>
+              <span class="text-danger"> {{.}}</label>
+                {{ end }}
+                <input type="text" class="form-control" id="pan" name="pan_number" />
             </div>
             <div class="mb-3">
               <label for="gst_certificate" class="form-label">GST Certificate</label>
-              <input type="file" class="form-control" id="gst_certificate" name="tax_certificate" />
+              <input type="file" class="form-control" id="gst_certificate" name="tax_certificate" required />
             </div>
             <button type="submit" class="btn btn-primary">
               Request Invoice
@@ -432,7 +453,11 @@
         </div>
         <div class="mb-3">
           <label for="expenditureCost" class="form-label">Cost</label>
-          <input type="text" class="form-control" id="expenditureCost" name="expenditure_amt" required />
+          {{with .Form.FieldErrors.expenditure_amt}}
+          <br>
+          <span class="text-danger"> {{.}}</label>
+            {{ end }}
+            <input type="text" class="form-control" id="expenditureCost" name="expenditure_amt" required />
         </div>
         <div class="mb-3">
           <label for="expenditureProof" id="proofLabel" class="form-label">Proof of Expense (e.g., Receipt)</label>
