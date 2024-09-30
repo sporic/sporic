@@ -233,7 +233,7 @@
           <td><a href="/download/{{$.Application.SporicRefNo}}/{{.Payment_id}}/tax_cirtificate" target="_blank">View</a>
           </td>
           <td><a href="/download/{{$.Application.SporicRefNo}}/{{.Payment_id}}/invoice" target="_blank">View</a></td>
-          <td><input type="text" class="form-control" name="transaction_id" placeholder="{{.Transaction_id}}" /></td>
+          <td><input type="text" class="form-control" name="transaction_id" placeholder="{{.Transaction_id}}" required/></td>
           <td><input type="file" class="form-control" placeholder="Payment Proof" name="payment_proof" accept=".pdf"
               required /></td>
           <td>
@@ -259,7 +259,7 @@
           <td><a href="/download/{{$.Application.SporicRefNo}}/{{.Payment_id}}/invoice" target="_blank">View</a></td>
           <td>
             {{if eq .Transaction_id ""}}
-            <input type="text" class="form-control" name="transaction_id" placeholder="Transaction ID" />
+            <input type="text" class="form-control" name="transaction_id" placeholder="Transaction ID" required/>
             {{end}}
             {{if ne .Transaction_id ""}}
             {{.Transaction_id}}

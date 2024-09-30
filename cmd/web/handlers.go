@@ -481,6 +481,14 @@ func (app *App) request_invoice(r *http.Request, SporicRefNo string) error {
 	invoice_form.CheckField(regexp.MustCompile("^[a-zA-Z0-9]+$").MatchString(invoice_form.GstNumber), "pan_number", "Enter a valid PAN number")
 	invoice_form.CheckField(len(invoice_form.PanNumber) == 10 || len(invoice_form.PanNumber) == 0, "pan_number", "Enter a valid PAN number")
 
+
+	if !invoice_form.Valid() {
+		fmt.Println(invoice_form.FieldErrors)
+		data := app.newTemplateData(r)
+		data.Form = invoice_form
+		return err
+	}
+
 	var payment models.Payment
 
 	payment.Sporic_ref_no = SporicRefNo
@@ -541,6 +549,12 @@ func (app *App) add_expenditure(r *http.Request, SporicRefNo string) error {
 	expenditure_form.CheckField(err == nil, "expenditure_amt", "Amount must be a number")
 	expenditure_form.CheckField(paymentAmt > 0, "expenditure_amt", "This field must be greater than 0")
 
+	if !expenditure_form.Valid() {
+		fmt.Println(expenditure_form.FieldErrors)
+		data := app.newTemplateData(r)
+		data.Form = expenditure_form
+		return err
+	}
 	var expenditure models.Expenditure
 
 	expenditure.SporicRefNo = SporicRefNo
