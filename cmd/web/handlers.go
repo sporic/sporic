@@ -241,6 +241,7 @@ func (app *App) new_application_post(w http.ResponseWriter, r *http.Request) {
 	form.CheckField(validator.NotBlank(form.BillingAddress), "billing_address", "This field cannot be blank.If billing address is same as company address, please enter the same address")
 	form.CheckField(validator.NotBlank(form.ContactPersonName), "contact_person_name", "This field cannot be blank")
 	form.CheckField(validator.NotBlank(form.ConatactPersonMobile), "contact_person_mobile", "This field cannot be blank")
+	form.CheckField(len(form.ConatactPersonMobile) == 10, "contact_person_mobile", "Enter valid 10-digit contact number")
 	form.CheckField(validator.NotBlank(form.ContactPersonEmail), "contact_person_email", "This field cannot be blank")
 
 	if !form.Valid() {
@@ -321,6 +322,8 @@ func (app *App) faculty_view_application(w http.ResponseWriter, r *http.Request)
 		app.serverError(w, err)
 		return
 	}
+
+	
 
 	if r.Method == http.MethodPost {
 		err = r.ParseMultipartForm(10 << 20)
@@ -481,12 +484,11 @@ func (app *App) request_invoice(r *http.Request, SporicRefNo string) error {
 	invoice_form.CheckField(regexp.MustCompile("^[a-zA-Z0-9]+$").MatchString(invoice_form.GstNumber), "pan_number", "Enter a valid PAN number")
 	invoice_form.CheckField(len(invoice_form.PanNumber) == 10 || len(invoice_form.PanNumber) == 0, "pan_number", "Enter a valid PAN number")
 
-
 	if !invoice_form.Valid() {
 		fmt.Println(invoice_form.FieldErrors)
 		data := app.newTemplateData(r)
 		data.Form = invoice_form
-		return err
+		return nil
 	}
 
 	var payment models.Payment

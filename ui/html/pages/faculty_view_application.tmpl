@@ -374,10 +374,6 @@
           <div class="col-md-6">
             <div class="mb-3">
               <label for="currency" class="form-label">Currency</label>
-              {{with .Form.FieldErrors.currency}}
-              <br>
-              <span class="text-danger"> {{.}}</label>
-                {{ end }}
                 <select class="form-select" id="currency" name="currency" required>
                   <option value="INR">INR</option>
                   <option value="USD">USD</option>
@@ -385,34 +381,22 @@
             </div>
             <div class="mb-3">
               <label for="amount" class="form-label">Amount Excluding Tax</label>
-              {{with .Form.FieldErrors.payment_amt}}
-              <br>
-              <span class="text-danger"> {{.}}</label>
-                {{ end }}
+              
                 <input type="text" class="form-control" id="amount" name="payment_amt" required />
             </div>
             <div class="mb-3">
               <label for="tax" class="form-label">Tax</label>
-              {{with .Form.FieldErrors.tax}}
-              <br>
-              <span class="text-danger"> {{.}}</label>
-                {{ end }}
+              
                 <input type="text" class="form-control" id="tax" name="tax" required />
             </div>
             <div class="mb-3">
               <label for="gst" class="form-label">GST No.</label>
-              {{with .Form.FieldErrors.gst_number}}
-              <br>
-              <span class="text-danger"> {{.}}</label>
-                {{ end }}
+              
                 <input type="text" class="form-control" id="gst" name="gst_number" />
             </div>
             <div class="mb-3">
               <label for="pan" class="form-label">PAN No.</label>
-              {{with .Form.FieldErrors.pan_number}}
-              <br>
-              <span class="text-danger"> {{.}}</label>
-                {{ end }}
+              
                 <input type="text" class="form-control" id="pan" name="pan_number" />
             </div>
             <div class="mb-3">
