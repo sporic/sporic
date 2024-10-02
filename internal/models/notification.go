@@ -15,22 +15,23 @@ type NotificationModel struct {
 type NotificationType = int
 
 const (
-	NewProjectApproval        NotificationType = iota //
-	NewExpenditureApproval                            //
-	NewInvoiceRequestApproval                         //
-	CompletionProjectApproval                         //
-	ProjectDelayed                                    // to admins and faculty
-	PaymentDelayed                                    // to admins and faculty
-	ApplicationApproved                               //
-	ApplicationRejected                               //
+	NewProjectApproval        NotificationType = iota 
+	NewExpenditureApproval                            
+	NewInvoiceRequestApproval                         
+	CompletionProjectApproval                         
+	ProjectDelayed
+	PaymentDelayed
+	ApplicationApproved                               
+	ApplicationRejected                               
 	ApplicationCompleted
-	ExpenditureApprovedNotification //
-	ExpenditureRejectedNotification //
-	PaymentApprovedNotification     //
+	ExpenditureApprovedNotification
+	ExpenditureRejectedNotification 
+	PaymentApprovedNotification     
 	PaymentRejectedNotification
-	PaymentInvoiceRequest //
-	PaymentApproval       //
+	PaymentInvoiceRequest
+	PaymentApproval
 	ExpenditurePaid
+	InvoiceUploaded																												
 )
 
 var NotificationTypeMap = map[NotificationType]string{
@@ -50,6 +51,7 @@ var NotificationTypeMap = map[NotificationType]string{
 	PaymentInvoiceRequest:           "Invoice Request for project %s has been submitted",
 	PaymentApproval:                 "Payment proof %s for project %s has been uploaded",
 	ExpenditurePaid:                 "Expenditure  %s for project %s has been paid",
+	InvoiceUploaded:                 "Invoice for payment %s of project %s has been uploaded",
 }
 
 type Notification struct {

@@ -62,5 +62,6 @@ func (app *App) render(w http.ResponseWriter, status int, page string, data *tem
 	err := ts.ExecuteTemplate(w, "base", data)
 	if err != nil {
 		app.serverError(w, err)
+		return
 	}
 }

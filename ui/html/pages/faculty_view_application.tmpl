@@ -233,7 +233,8 @@
           <td><a href="/download/{{$.Application.SporicRefNo}}/{{.Payment_id}}/tax_cirtificate" target="_blank">View</a>
           </td>
           <td><a href="/download/{{$.Application.SporicRefNo}}/{{.Payment_id}}/invoice" target="_blank">View</a></td>
-          <td><input type="text" class="form-control" name="transaction_id" placeholder="{{.Transaction_id}}" required/></td>
+          <td><input type="text" class="form-control" name="transaction_id" placeholder="{{.Transaction_id}}"
+              required /></td>
           <td><input type="file" class="form-control" placeholder="Payment Proof" name="payment_proof" accept=".pdf"
               required /></td>
           <td>
@@ -259,7 +260,7 @@
           <td><a href="/download/{{$.Application.SporicRefNo}}/{{.Payment_id}}/invoice" target="_blank">View</a></td>
           <td>
             {{if eq .Transaction_id ""}}
-            <input type="text" class="form-control" name="transaction_id" placeholder="Transaction ID" required/>
+            <input type="text" class="form-control" name="transaction_id" placeholder="Transaction ID" required />
             {{end}}
             {{if ne .Transaction_id ""}}
             {{.Transaction_id}}
@@ -376,44 +377,45 @@
               <label for="currency" class="form-label">Currency</label>
               {{with .Form.FieldErrors.currency}}
               <br>
-              <span class="text-danger"> {{.}}</label>
-                {{ end }}
-                <select class="form-select" id="currency" name="currency" required>
-                  <option value="INR">INR</option>
-                  <option value="USD">USD</option>
-                </select>
+              <span class="text-danger"> {{.}}</span>
+              {{ end }}
+              <select class="form-select" id="currency" name="currency" required>
+                <option value="INR">INR</option>
+                <option value="USD">USD</option>
+              </select>
             </div>
             <div class="mb-3">
               <label for="amount" class="form-label">Amount Excluding Tax</label>
               {{with .Form.FieldErrors.payment_amt}}
               <br>
-              <span class="text-danger"> {{.}}</label>
-                {{ end }}
-                <input type="text" class="form-control" id="amount" name="payment_amt" required />
+              <span class="text-danger"> {{.}}</span>
+              {{ end }}
+              <input type="text" class="form-control" id="amount" name="payment_amt" required />
             </div>
             <div class="mb-3">
               <label for="tax" class="form-label">Tax</label>
               {{with .Form.FieldErrors.tax}}
               <br>
-              <span class="text-danger"> {{.}}</label>
-                {{ end }}
-                <input type="text" class="form-control" id="tax" name="tax" required />
+              <span class="text-danger"> {{.}}</span>
+              {{ end }}
+              <input type="text" class="form-control" id="tax" name="tax"
+                required />
             </div>
             <div class="mb-3">
               <label for="gst" class="form-label">GST No.</label>
               {{with .Form.FieldErrors.gst_number}}
               <br>
-              <span class="text-danger"> {{.}}</label>
-                {{ end }}
-                <input type="text" class="form-control" id="gst" name="gst_number" />
+              <span class="text-danger"> {{.}}</span>
+              {{ end }}
+              <input type="text" class="form-control" id="gst" name="gst_number" />
             </div>
             <div class="mb-3">
               <label for="pan" class="form-label">PAN No.</label>
               {{with .Form.FieldErrors.pan_number}}
               <br>
-              <span class="text-danger"> {{.}}</label>
-                {{ end }}
-                <input type="text" class="form-control" id="pan" name="pan_number" />
+              <span class="text-danger"> {{.}}</span>
+              {{ end }}
+              <input type="text" class="form-control" id="pan" name="pan_number" />
             </div>
             <div class="mb-3">
               <label for="gst_certificate" class="form-label">GST Certificate</label>
@@ -455,9 +457,9 @@
           <label for="expenditureCost" class="form-label">Cost</label>
           {{with .Form.FieldErrors.expenditure_amt}}
           <br>
-          <span class="text-danger"> {{.}}</label>
-            {{ end }}
-            <input type="text" class="form-control" id="expenditureCost" name="expenditure_amt" required />
+          <span class="text-danger"> {{.}}</span>
+          {{ end }}
+          <input type="text" class="form-control" id="expenditureCost" name="expenditure_amt" required />
         </div>
         <div class="mb-3">
           <label for="expenditureProof" id="proofLabel" class="form-label">Proof of Expense (e.g., Receipt)</label>
