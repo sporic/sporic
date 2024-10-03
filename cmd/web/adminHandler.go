@@ -305,8 +305,8 @@ func (app *App) excel(w http.ResponseWriter, r *http.Request) {
 		app.clientError(w, http.StatusBadRequest)
 	}
 
-	from_date := r.PostForm.Get("from_date")
-	to_date := r.PostForm.Get("to_date")
+	from_date := r.Form.Get("from_date")
+	to_date := r.Form.Get("to_date")
 
 	if from_date == "" || to_date == "" {
 		http.Error(w, "Please enter both dates", http.StatusBadRequest)
