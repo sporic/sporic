@@ -39,12 +39,14 @@ validator.Validator `form:"-"`
     <!-- Start Date -->
     <div class="mb-3">
       <label for="startDate" class="form-label">Start Date</label>
-      <input type="date" class="form-control" id="startDate" name="start_date" />
+      <input type="date" class="form-control" id="startDate" name="start_date" value="{{.Form.StartDate.Format "
+        2006-01-02"}}" />
     </div>
     <!-- End Date -->
     <div class="mb-3">
       <label for="endDate" class="form-label">End Date</label>
-      <input type="date" class="form-control" id="endDate" name="end_date" />
+      <input type="date" class="form-control" id="endDate" name="end_date" value="{{.Form.StartDate.Format "
+        2006-01-02"}}" />
     </div>
     <!-- Activity Type Radi -->
     <div class="mb-3">
