@@ -223,7 +223,7 @@
       <tr>
         <form action="/faculty/view_application/{{$.Application.SporicRefNo}}" method="post"
           enctype="multipart/form-data">
-          <input type="hidden" name="payment_id" value="{{.Payment_id}++git}" />
+          <input type="hidden" name="payment_id" value="{{.Payment_id}}" />
           <input type="hidden" name="action" value="update_payment" />
           <td>{{.Currency}}</td>
           <td>{{.Payment_amt}}</td>

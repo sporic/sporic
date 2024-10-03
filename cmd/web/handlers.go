@@ -162,20 +162,20 @@ func (app *App) faculty_home(w http.ResponseWriter, r *http.Request) {
 }
 
 type newApplicationForm struct {
-	ProjectTitle             string    `form:"project_title"`
-	ActivityType             string    `form:"activity_type"`
-	FinancialYear            string    `form:"financial_year"`
-	EstimatedAmt             string    `form:"estimated_amount"`
-	CompanyName              string    `form:"company_name"`
-	CompanyAddress           string    `form:"company_address"`
-	BillingAddress           string    `form:"billing_address"`
-	ContactPersonName        string    `form:"contact_person_name"`
-	ContactPersonEmail       string    `form:"contact_person_email"`
-	ConatactPersonMobile     string    `form:"contact_person_mobile"`
-	ContactPersonDesignation string    `form:"contact_person_designation"`
-	Members                  []string  `form:"members"`
-	MemberStudents           []string  `form:"member_students"`
-	EndDate                  time.Time `form:"end_date"`
+	ProjectTitle             string   `form:"project_title"`
+	ActivityType             string   `form:"activity_type"`
+	FinancialYear            string   `form:"financial_year"`
+	EstimatedAmt             string   `form:"estimated_amount"`
+	CompanyName              string   `form:"company_name"`
+	CompanyAddress           string   `form:"company_address"`
+	BillingAddress           string   `form:"billing_address"`
+	ContactPersonName        string   `form:"contact_person_name"`
+	ContactPersonEmail       string   `form:"contact_person_email"`
+	ConatactPersonMobile     string   `form:"contact_person_mobile"`
+	ContactPersonDesignation string   `form:"contact_person_designation"`
+	Members                  []string `form:"members"`
+	MemberStudents           []string `form:"member_students"`
+	EndDate                  string   `form:"end_date"`
 	validator.Validator      `form:"-"`
 }
 
@@ -245,7 +245,9 @@ func (app *App) new_application_post(w http.ResponseWriter, r *http.Request) {
 	form.CheckField(len(form.ConatactPersonMobile) == 10, "contact_person_mobile", "Enter valid 10-digit contact number")
 	form.CheckField(validator.NotBlank(form.ContactPersonEmail), "contact_person_email", "This field cannot be blank")
 	form.CheckField(validator.Matches(form.ContactPersonEmail, regexp.MustCompile(`^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$`)), "contact_person_email", "Enter a valid email address")
-	form.CheckField(form.EndDate.After(time.Now()), "end_date", "Enter a valid end date")
+	end_date, err := time.Parse("2006-01-02", form.EndDate)
+	form.CheckField(err == nil, "end_date", "Enter a valid end date")
+	form.CheckField(end_date.After(time.Now()), "end_date", "Enter a valid end date")
 
 	if !form.Valid() {
 		fmt.Println(form.FieldErrors)
@@ -267,7 +269,7 @@ func (app *App) new_application_post(w http.ResponseWriter, r *http.Request) {
 	application.ContactPersonDesignation = form.ContactPersonDesignation
 	application.Members = form.Members
 	application.MemberStudents = form.MemberStudents
-	application.EndDate = form.EndDate
+	application.EndDate = end_date
 
 	sporic_ref_no, err := app.applications.Insert(application)
 	if err != nil {

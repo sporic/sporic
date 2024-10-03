@@ -1,22 +1,7 @@
 {{define "title"}}New Application{{ end }}
 
 {{define "main"}}
-{{/* type newApplicationForm struct {
-ProjectTitle string `form:"project_title"`
-ActivityType string `form:"activity_type"`
-FinancialYear string `form:"financial_year"`
-EstimatedAmt string `form:"estimated_amount"`
-CompanyName string `form:"company_name"`
-CompanyAddress string `form:"company_address"`
-BillingAddress string `form:"billing_address"`
-ContactPersonName string `form:"contact_person_name"`
-ContactPersonEmail string `form:"contact_person_email"`
-ConatactPersonMobile string `form:"contact_person_mobile"`
-ContactPersonDesignation string `form:"contact_person_designation"`
-Members []string `form:"members"`
-MemberStudents []string `form:"member_students"`
-validator.Validator `form:"-"`
-} %*/}}
+
 <div class="container mt-4">
   <h2 class="mb-4">Fill Project Details</h2>
 
@@ -36,17 +21,14 @@ validator.Validator `form:"-"`
         <option value="2024" {{if eq .Form.FinancialYear "2024" }}selected{{end}}>2024-25</option>
       </select>
     </div>
-    <!-- Start Date -->
-    <div class="mb-3">
-      <label for="startDate" class="form-label">Start Date</label>
-      <input type="date" class="form-control" id="startDate" name="start_date" value="{{.Form.StartDate.Format "
-        2006-01-02"}}" />
-    </div>
     <!-- End Date -->
     <div class="mb-3">
       <label for="endDate" class="form-label">End Date</label>
-      <input type="date" class="form-control" id="endDate" name="end_date" value="{{.Form.StartDate.Format "
-        2006-01-02"}}" />
+      {{with .Form.FieldErrors.end_date}}
+      <br>
+      <span class="text-danger"> {{.}}</span>
+      {{ end }}
+      <input type="date" class="form-control" id="endDate" name="end_date" value="{{.Form.EndDate.Format "2004-01-10"}}"/>
     </div>
     <!-- Activity Type Radi -->
     <div class="mb-3">
@@ -88,7 +70,7 @@ validator.Validator `form:"-"`
       <span class="text-danger"> {{.}}</span>
       {{ end }}
       <input type="text" class="form-control" id="estimatedAmount" name="estimated_amount"
-        placeholder="Enter estimated amount" value="{{.Form.EstimatedAmount}}" />
+        placeholder="Enter estimated amount" value="{{.Form.EstimatedAmt}}" />
     </div>
 
     <!-- Company Details -->
@@ -154,7 +136,7 @@ validator.Validator `form:"-"`
       <span class="text-danger"> {{.}}</span>
       {{ end }}
       <input type="text" class="form-control" id="contactPersonMobile" name="contact_person_mobile"
-        placeholder="Enter mobile number" value="{{.Form.ContactPersonMobile}}" />
+        placeholder="Enter mobile number" value="{{.Form.ConatactPersonMobile}}" />
     </div>
     <!-- Contact Person Designation -->
     <div class="mb-3">
