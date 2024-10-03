@@ -145,7 +145,9 @@ func (app App) routes() http.Handler {
 	router.Handler(http.MethodGet, "/accounts_home", dynamic.ThenFunc(app.accounts_home))
 	router.Handler(http.MethodPost, "/accounts_home", dynamic.ThenFunc(app.accounts_home))
 	router.Handler(http.MethodGet, "/notifications", dynamic.ThenFunc(app.GetNotifications))
-	router.Handler(http.MethodGet,"/profile", dynamic.ThenFunc(app.profile))
+	router.Handler(http.MethodGet, "/profile", dynamic.ThenFunc(app.profile))
 	router.Handler(http.MethodGet, "/excel", dynamic.ThenFunc(app.excel))
+	router.Handler(http.MethodGet, "/provc_home", dynamic.ThenFunc(app.provc_home))
+	router.Handler(http.MethodGet, "/provc/view_application/:refno", dynamic.ThenFunc(app.provc_view_application))
 	return router
 }

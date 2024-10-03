@@ -17,6 +17,7 @@ const (
 	AdminUser UserRole = iota
 	FacultyUser
 	AccountantUser
+	Provc
 )
 
 type User struct {
@@ -35,7 +36,6 @@ type User struct {
 func (u *User) IsAnonymous() bool {
 	return u == AnonymousUser
 }
-
 type UserModel struct {
 	Db *sql.DB
 }

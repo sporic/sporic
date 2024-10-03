@@ -52,33 +52,12 @@ const (
 )
 
 type ActivityType = int
-
 const (
 	ActivityTypeConsultancy ActivityType = iota
 	ActivityTypeTraining
 )
 
-type PaymentStatus = int
 
-// 0->4->1->5->2/3
-const (
-	PaymentInvoiceRequested PaymentStatus = iota
-	PaymentPending
-	PaymentApproved
-	PaymentRejected
-	PaymentInvoiceForwarded
-	PaymentProofUploaded
-)
-
-type ExpenditureStatus = int
-
-// 0->1/2->3
-const (
-	ExpenditurePendingApproval ExpenditureStatus = iota
-	ExpenditureApproved
-	ExpenditureRejected
-	ExpenditureCompleted
-)
 
 type ApplicationModel struct {
 	Db *sql.DB
@@ -312,10 +291,7 @@ func (m *ApplicationModel) FetchByRefNo(ref_no string) (*Application, error) {
 	return &a, nil
 }
 
-type Member struct {
-	Member string
-	Share  int
-}
+
 
 func (m *ApplicationModel) Insert(form Application) (string, error) {
 
@@ -413,108 +389,7 @@ func (m *ApplicationModel) SetStatus(refno string, status ProjectStatus) error {
 	return nil
 }
 
-func (m *ApplicationModel) SetExpenditureStatus(exp_id string, status ExpenditureStatus) error {
-	_, err := m.Db.Exec("update expenditure set expenditure_status = ? where expenditure_id = ?", status, exp_id)
-	if err != nil {
-		return err
-	}
-	return nil
-}
 
-func (m *ApplicationModel) SetPaymentStatus(payment_id string, status PaymentStatus) error {
-	_, err := m.Db.Exec("update payment set payment_status = ? where payment_id = ?", status, payment_id)
-	if err != nil {
-		return err
-	}
-	return nil
-}
-
-type Payment struct {
-	Payment_id     int
-	Currency       string
-	Transaction_id string
-	Sporic_ref_no  string
-	Payment_amt    int
-	Tax            int
-	Gst_number     string
-	Pan_number     string
-	Payment_date   sql.NullTime
-	Payment_status int
-}
-
-func (m *ApplicationModel) Insert_invoice_request(payment Payment) (int, error) {
-
-	var application Application
-
-	application.Payments = append(application.Payments, payment)
-	res, err := m.Db.Exec(`insert into payment 
-	(sporic_ref_no,
-	currency, 
-	payment_amt,
-	tax, 
-	gst_number, 
-	pan_number, 
-	payment_status) 
-	values (?,?,?,?,?,?,?)`,
-		payment.Sporic_ref_no,
-		payment.Currency,
-		payment.Payment_amt,
-		payment.Tax,
-		payment.Gst_number,
-		payment.Pan_number,
-		payment.Payment_status)
-	if err != nil {
-		return -1, err
-	}
-
-	lastInsertId, err := res.LastInsertId()
-	if err != nil {
-		return -1, err
-	}
-
-	return int(lastInsertId), err
-}
-
-type Expenditure struct {
-	Expenditure_type   int
-	Expenditure_id     int
-	SporicRefNo        string
-	Expenditure_name   string
-	Expenditure_amt    int
-	Expenditure_date   time.Time
-	Expenditure_status ExpenditureStatus
-}
-
-func (m *ApplicationModel) Insert_expenditure(expenditure Expenditure) (int, error) {
-
-	var application Application
-
-	application.Expenditures = append(application.Expenditures, expenditure)
-
-	res, err := m.Db.Exec(`insert into expenditure
-	(sporic_ref_no,
-	expenditure_type,
-	expenditure_name,
-	expenditure_amt, 
-	expenditure_date,
-	expenditure_status)
-	values (?,?,?,?,?,?)`,
-		expenditure.SporicRefNo,
-		expenditure.Expenditure_type,
-		expenditure.Expenditure_name,
-		expenditure.Expenditure_amt,
-		expenditure.Expenditure_date,
-		expenditure.Expenditure_status)
-	if err != nil {
-		return -1, err
-	}
-
-	lastInsertId, err := res.LastInsertId()
-	if err != nil {
-		return -1, err
-	}
-	return int(lastInsertId), nil
-}
 
 type Completion struct {
 	SporicRefNo    string
@@ -544,74 +419,3 @@ func (m *ApplicationModel) Complete_Project(completion Completion) error {
 	return nil
 }
 
-func (m *ApplicationModel) UpdatePayment(payment Payment) error {
-	_, err := m.Db.Exec("update payment set transaction_id = ?, payment_date=?, payment_status=? where payment_id = ?", payment.Transaction_id, time.Now(), PaymentProofUploaded, payment.Payment_id)
-
-	if err != nil {
-		return err
-	}
-	return nil
-}
-
-func (m *ApplicationModel) GetExpenditureByRefNo(sporic_ref_no string) ([]Expenditure, error) {
-
-	rows, err := m.Db.Query("select expenditure_id,expenditure_name, expenditure_amt, expenditure_date, expenditure_status, expenditure_type from expenditure where sporic_ref_no =?", sporic_ref_no)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-
-	var expenditure []Expenditure
-	for rows.Next() {
-		var e Expenditure
-		err := rows.Scan(&e.Expenditure_id, &e.Expenditure_name, &e.Expenditure_amt, &e.Expenditure_date, &e.Expenditure_status, &e.Expenditure_type)
-		if err != nil {
-			return nil, err
-		}
-
-		expenditure = append(expenditure, e)
-	}
-
-	if err = rows.Err(); err != nil {
-		return nil, err
-	}
-
-	return expenditure, nil
-}
-
-func (m *ApplicationModel) GetTeamByRefNo(sporic_ref_no string) ([]Member, error) {
-
-	var members []Member
-
-	rows, err := m.Db.Query("select member_name, share from team where sporic_ref_no = ?", sporic_ref_no)
-	if err != nil {
-		return nil, err
-	}
-
-	for rows.Next() {
-		var member Member
-		err := rows.Scan(&member.Member, &member.Share)
-		if err != nil {
-			return nil, err
-		}
-
-		members = append(members, member)
-	}
-
-	return members, nil
-}
-
-func (m *ApplicationModel) GetExpenditureById(expenditure_id int) (*Expenditure, error) {
-
-	row := m.Db.QueryRow("select sporic_ref_no,expenditure_name,expenditure_amt,expenditure_date,expenditure_status,expenditure_type from expenditure where expenditure_id =?", expenditure_id)
-
-	var expenditure Expenditure
-
-	err := row.Scan(&expenditure.SporicRefNo, &expenditure.Expenditure_name, &expenditure.Expenditure_amt, &expenditure.Expenditure_date, &expenditure.Expenditure_status, &expenditure.Expenditure_type)
-
-	if err != nil {
-		return nil, err
-	}
-
-	return &expenditure, nil
-}

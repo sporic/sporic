@@ -235,7 +235,7 @@ func (app *App) GenerateExcel(applications []models.Application) (*excelize.File
 		TotalPayment := 0
 		TotalTax := 0
 		for _, payment := range row.Payments {
-			if payment.Payment_status == models.PaymentApproved {
+			if payment.Payment_status == models.PaymentCompleted {
 				TotalPayment += payment.Payment_amt
 				TotalTax += payment.Tax
 			}

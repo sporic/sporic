@@ -1,6 +1,21 @@
 package models
 
-import "database/sql"
+import (
+	"database/sql"
+	"time"
+)
+
+type PaymentStatus = int
+
+// 0->4->1->5->2/3
+const (
+	PaymentInvoiceRequested PaymentStatus = iota
+	PaymentPending
+	PaymentCompleted
+	PaymentRejected
+	PaymentInvoiceForwarded
+	PaymentProofUploaded
+)
 
 type PaymentModel struct {
 	Db *sql.DB
@@ -21,7 +36,7 @@ func (p *PaymentModel) GetAllPayments() ([]Payment, error) {
 		if err != nil {
 			return nil, err
 		}
-
+		p.Total_amt = p.Payment_amt + p.Tax*p.Payment_amt/100
 		payments = append(payments, p)
 	}
 
@@ -47,7 +62,7 @@ func (p *PaymentModel) GetPaymentByRefNo(sporic_ref_no string) ([]Payment, error
 		if err != nil {
 			return nil, err
 		}
-
+		p.Total_amt = p.Payment_amt + p.Tax*p.Payment_amt/100
 		payments = append(payments, p)
 	}
 
@@ -67,5 +82,70 @@ func (p *PaymentModel) GetPaymentById(payment_id int) (*Payment, error) {
 	if err != nil {
 		return nil, err
 	}
+	payment.Total_amt = payment.Payment_amt + payment.Tax*payment.Payment_amt/100
 	return &payment, nil
+}
+
+func (m *ApplicationModel) SetPaymentStatus(payment_id string, status PaymentStatus) error {
+	_, err := m.Db.Exec("update payment set payment_status = ? where payment_id = ?", status, payment_id)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+type Payment struct {
+	Payment_id     int
+	Currency       string
+	Transaction_id string
+	Sporic_ref_no  string
+	Payment_amt    int
+	Tax            int
+	Total_amt      int
+	Gst_number     string
+	Pan_number     string
+	Payment_date   sql.NullTime
+	Payment_status int
+}
+
+func (m *ApplicationModel) Insert_invoice_request(payment Payment) (int, error) {
+
+	var application Application
+
+	application.Payments = append(application.Payments, payment)
+	res, err := m.Db.Exec(`insert into payment 
+	(sporic_ref_no,
+	currency, 
+	payment_amt,
+	tax, 
+	gst_number, 
+	pan_number, 
+	payment_status) 
+	values (?,?,?,?,?,?,?)`,
+		payment.Sporic_ref_no,
+		payment.Currency,
+		payment.Payment_amt,
+		payment.Tax,
+		payment.Gst_number,
+		payment.Pan_number,
+		payment.Payment_status)
+	if err != nil {
+		return -1, err
+	}
+
+	lastInsertId, err := res.LastInsertId()
+	if err != nil {
+		return -1, err
+	}
+
+	return int(lastInsertId), err
+}
+
+func (m *ApplicationModel) UpdatePayment(payment Payment) error {
+	_, err := m.Db.Exec("update payment set transaction_id = ?, payment_date=?, payment_status=? where payment_id = ?", payment.Transaction_id, time.Now(), PaymentProofUploaded, payment.Payment_id)
+
+	if err != nil {
+		return err
+	}
+	return nil
 }
