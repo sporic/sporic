@@ -41,6 +41,7 @@ type Application struct {
 }
 
 type ProjectStatus = int
+
 // 0->1/4->3->2
 const (
 	ProjectPendingApproval ProjectStatus = iota
@@ -51,12 +52,14 @@ const (
 )
 
 type ActivityType = int
+
 const (
 	ActivityTypeConsultancy ActivityType = iota
 	ActivityTypeTraining
 )
 
 type PaymentStatus = int
+
 // 0->4->1->5->2/3
 const (
 	PaymentInvoiceRequested PaymentStatus = iota
@@ -68,6 +71,7 @@ const (
 )
 
 type ExpenditureStatus = int
+
 // 0->1/2->3
 const (
 	ExpenditurePendingApproval ExpenditureStatus = iota
@@ -81,7 +85,7 @@ type ApplicationModel struct {
 }
 
 func (m *ApplicationModel) FetchAll() ([]Application, error) {
-	rows, err := m.Db.Query("select sporic_ref_no, project_title, leader, financial_year, activity_type, estimated_amt, company_name, company_adress, billing_address,  contact_person_name, contact_person_email, contact_person_mobile, contact_person_designation, project_status, comments, resources_used, completion_date from applications")
+	rows, err := m.Db.Query("select sporic_ref_no, project_title, leader, financial_year, activity_type, estimated_amt, company_name, company_adress, billing_address,  contact_person_name, contact_person_email, contact_person_mobile, contact_person_designation, project_status, comments, resources_used, completion_date, project_start_date, project_end_date from applications")
 	if err != nil {
 		return nil, err
 	}
@@ -90,7 +94,7 @@ func (m *ApplicationModel) FetchAll() ([]Application, error) {
 	var applications []Application
 	for rows.Next() {
 		var a Application
-		err := rows.Scan(&a.SporicRefNo, &a.ProjectTitle, &a.Leader, &a.FinancialYear, &a.ActivityType, &a.EstimatedAmt, &a.CompanyName, &a.CompanyAddress, &a.BillingAddress, &a.ContactPersonName, &a.ContactPersonEmail, &a.ContactPersonMobile, &a.ContactPersonDesignation, &a.Status, &a.Comments, &a.ResourceUsed, &a.CompletionDate)
+		err := rows.Scan(&a.SporicRefNo, &a.ProjectTitle, &a.Leader, &a.FinancialYear, &a.ActivityType, &a.EstimatedAmt, &a.CompanyName, &a.CompanyAddress, &a.BillingAddress, &a.ContactPersonName, &a.ContactPersonEmail, &a.ContactPersonMobile, &a.ContactPersonDesignation, &a.Status, &a.Comments, &a.ResourceUsed, &a.CompletionDate, &a.StartDate, &a.EndDate)
 		if err != nil {
 			return nil, err
 		}
@@ -164,7 +168,7 @@ func (m *ApplicationModel) FetchAll() ([]Application, error) {
 }
 
 func (m *ApplicationModel) FetchByLeader(leader int) ([]Application, error) {
-	rows, err := m.Db.Query("select sporic_ref_no, project_title, leader, financial_year, activity_type, estimated_amt, company_name, company_adress, billing_address, contact_person_name, contact_person_email, contact_person_mobile, contact_person_designation, project_status, comments, resources_used, completion_date from applications where leader=?", leader)
+	rows, err := m.Db.Query("select sporic_ref_no, project_title, leader, financial_year, activity_type, estimated_amt, company_name, company_adress, billing_address, contact_person_name, contact_person_email, contact_person_mobile, contact_person_designation, project_status, comments, resources_used, completion_date, project_start_date, project_end_date from applications where leader=?", leader)
 	if err != nil {
 		return nil, err
 	}
@@ -174,7 +178,7 @@ func (m *ApplicationModel) FetchByLeader(leader int) ([]Application, error) {
 	for rows.Next() {
 
 		var a Application
-		err := rows.Scan(&a.SporicRefNo, &a.ProjectTitle, &a.Leader, &a.FinancialYear, &a.ActivityType, &a.EstimatedAmt, &a.CompanyName, &a.CompanyAddress, &a.BillingAddress, &a.ContactPersonName, &a.ContactPersonEmail, &a.ContactPersonMobile, &a.ContactPersonDesignation, &a.Status, &a.Comments, &a.ResourceUsed, &a.CompletionDate)
+		err := rows.Scan(&a.SporicRefNo, &a.ProjectTitle, &a.Leader, &a.FinancialYear, &a.ActivityType, &a.EstimatedAmt, &a.CompanyName, &a.CompanyAddress, &a.BillingAddress, &a.ContactPersonName, &a.ContactPersonEmail, &a.ContactPersonMobile, &a.ContactPersonDesignation, &a.Status, &a.Comments, &a.ResourceUsed, &a.CompletionDate, &a.StartDate, &a.EndDate)
 		if err != nil {
 			return nil, err
 		}
@@ -240,9 +244,9 @@ func (m *ApplicationModel) FetchByLeader(leader int) ([]Application, error) {
 }
 
 func (m *ApplicationModel) FetchByRefNo(ref_no string) (*Application, error) {
-	row := m.Db.QueryRow("select sporic_ref_no, project_title, leader, financial_year, activity_type, estimated_amt, company_name, company_adress, billing_address, contact_person_name, contact_person_email, contact_person_mobile, contact_person_designation, project_status,comments, resources_used, completion_date from applications where sporic_ref_no=?", ref_no)
+	row := m.Db.QueryRow("select sporic_ref_no, project_title, leader, financial_year, activity_type, estimated_amt, company_name, company_adress, billing_address, contact_person_name, contact_person_email, contact_person_mobile, contact_person_designation, project_status,comments, resources_used, completion_date, project_start_date, project_end_date from applications where sporic_ref_no=?", ref_no)
 	var a Application
-	err := row.Scan(&a.SporicRefNo, &a.ProjectTitle, &a.Leader, &a.FinancialYear, &a.ActivityType, &a.EstimatedAmt, &a.CompanyName, &a.CompanyAddress, &a.BillingAddress, &a.ContactPersonName, &a.ContactPersonEmail, &a.ContactPersonMobile, &a.ContactPersonDesignation, &a.Status, &a.Comments, &a.ResourceUsed, &a.CompletionDate)
+	err := row.Scan(&a.SporicRefNo, &a.ProjectTitle, &a.Leader, &a.FinancialYear, &a.ActivityType, &a.EstimatedAmt, &a.CompanyName, &a.CompanyAddress, &a.BillingAddress, &a.ContactPersonName, &a.ContactPersonEmail, &a.ContactPersonMobile, &a.ContactPersonDesignation, &a.Status, &a.Comments, &a.ResourceUsed, &a.CompletionDate, &a.StartDate, &a.EndDate)
 	if err != nil {
 		return nil, err
 	}
@@ -346,8 +350,10 @@ func (m *ApplicationModel) Insert(form Application) (string, error) {
 		 contact_person_email, 
 		 contact_person_mobile,
 		 contact_person_designation,
-		 project_status) 
-		 values (?,?,?,?,?,?,?,?,?,?,?,?, ?, ?)`,
+		 project_status,
+		 project_start_date,
+		 project_end_date) 
+		 values (?,?,?,?,?,?,?,?,?,?,?,?,?,?, ?, ?)`,
 		sporic_ref_no,
 		form.ProjectTitle,
 		form.Leader,
@@ -361,7 +367,9 @@ func (m *ApplicationModel) Insert(form Application) (string, error) {
 		form.ContactPersonEmail,
 		form.ContactPersonMobile,
 		form.ContactPersonDesignation,
-		ProjectPendingApproval)
+		ProjectPendingApproval,
+		time.Now(),
+		form.EndDate)
 	if err != nil {
 		return "", err
 	}

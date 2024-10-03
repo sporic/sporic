@@ -162,19 +162,20 @@ func (app *App) faculty_home(w http.ResponseWriter, r *http.Request) {
 }
 
 type newApplicationForm struct {
-	ProjectTitle             string   `form:"project_title"`
-	ActivityType             string   `form:"activity_type"`
-	FinancialYear            string   `form:"financial_year"`
-	EstimatedAmt             string   `form:"estimated_amount"`
-	CompanyName              string   `form:"company_name"`
-	CompanyAddress           string   `form:"company_address"`
-	BillingAddress           string   `form:"billing_address"`
-	ContactPersonName        string   `form:"contact_person_name"`
-	ContactPersonEmail       string   `form:"contact_person_email"`
-	ConatactPersonMobile     string   `form:"contact_person_mobile"`
-	ContactPersonDesignation string   `form:"contact_person_designation"`
-	Members                  []string `form:"members"`
-	MemberStudents           []string `form:"member_students"`
+	ProjectTitle             string    `form:"project_title"`
+	ActivityType             string    `form:"activity_type"`
+	FinancialYear            string    `form:"financial_year"`
+	EstimatedAmt             string    `form:"estimated_amount"`
+	CompanyName              string    `form:"company_name"`
+	CompanyAddress           string    `form:"company_address"`
+	BillingAddress           string    `form:"billing_address"`
+	ContactPersonName        string    `form:"contact_person_name"`
+	ContactPersonEmail       string    `form:"contact_person_email"`
+	ConatactPersonMobile     string    `form:"contact_person_mobile"`
+	ContactPersonDesignation string    `form:"contact_person_designation"`
+	Members                  []string  `form:"members"`
+	MemberStudents           []string  `form:"member_students"`
+	EndDate                  time.Time `form:"end_date"`
 	validator.Validator      `form:"-"`
 }
 
@@ -243,6 +244,8 @@ func (app *App) new_application_post(w http.ResponseWriter, r *http.Request) {
 	form.CheckField(validator.NotBlank(form.ConatactPersonMobile), "contact_person_mobile", "This field cannot be blank")
 	form.CheckField(len(form.ConatactPersonMobile) == 10, "contact_person_mobile", "Enter valid 10-digit contact number")
 	form.CheckField(validator.NotBlank(form.ContactPersonEmail), "contact_person_email", "This field cannot be blank")
+	form.CheckField(validator.Matches(form.ContactPersonEmail, regexp.MustCompile(`^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$`)), "contact_person_email", "Enter a valid email address")
+	form.CheckField(form.EndDate.After(time.Now()), "end_date", "Enter a valid end date")
 
 	if !form.Valid() {
 		fmt.Println(form.FieldErrors)
@@ -264,6 +267,7 @@ func (app *App) new_application_post(w http.ResponseWriter, r *http.Request) {
 	application.ContactPersonDesignation = form.ContactPersonDesignation
 	application.Members = form.Members
 	application.MemberStudents = form.MemberStudents
+	application.EndDate = form.EndDate
 
 	sporic_ref_no, err := app.applications.Insert(application)
 	if err != nil {
@@ -322,8 +326,6 @@ func (app *App) faculty_view_application(w http.ResponseWriter, r *http.Request)
 		app.serverError(w, err)
 		return
 	}
-
-	
 
 	if r.Method == http.MethodPost {
 		err = r.ParseMultipartForm(10 << 20)
@@ -1297,6 +1299,7 @@ func (app *App) UploadInvoice(r *http.Request, payment_id string, sporic_ref_no 
 }
 
 func (app *App) excel(w http.ResponseWriter, r *http.Request) {
+
 	user := app.contextGetUser(r)
 	if user.IsAnonymous() {
 		http.Redirect(w, r, "/login", http.StatusSeeOther)
@@ -1307,13 +1310,46 @@ func (app *App) excel(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	err := r.ParseForm()
+	if err != nil {
+		app.clientError(w, http.StatusBadRequest)
+	}
+
+	from_date := r.PostForm.Get("from_date")
+	to_date := r.PostForm.Get("to_date")
+
+	if from_date == "" || to_date == "" {
+		http.Error(w, "Please enter both dates", http.StatusBadRequest)
+		return
+	}
+
+	fromDate, err := time.Parse("2006-01-02", from_date)
+	if err != nil {
+		app.serverError(w, err)
+		return
+	}
+
+	toDate, err := time.Parse("2006-01-02", to_date)
+	if err != nil {
+		app.serverError(w, err)
+		return
+	}
+
 	applications, err := app.applications.FetchAll()
 	if err != nil {
 		app.serverError(w, err)
 		return
 	}
 
-	file, err := app.GenerateExcel(applications)
+	var filtered_applications []models.Application
+
+	for _, application := range applications {
+		if application.StartDate.After(fromDate) && application.StartDate.Before(toDate) {
+			filtered_applications = append(filtered_applications, application)
+		}
+	}
+
+	file, err := app.GenerateExcel(filtered_applications)
 	if err != nil {
 		app.serverError(w, err)
 		return
