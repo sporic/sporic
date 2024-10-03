@@ -30,7 +30,7 @@ func newTemplateCache() (map[string]*template.Template, error) {
 	for _, page := range pages {
 		name := filepath.Base(page)
 		files := []string{
-			"./ui/html/base.tmpl", page,
+			"./ui/html/base.tmpl", "./ui/html/partials/project_details.tmpl", page,
 		}
 		ts, err := template.ParseFiles(files...)
 		if err != nil {

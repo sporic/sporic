@@ -1,0 +1,160 @@
+{{define "project_details"}}
+
+<div class="row mb-4">
+    <!-- Project Details Section -->
+    <div class="col-md-6">
+        <h4>Project Details</h4>
+        <table class="table table-bordered">
+            <tbody>
+                <tr>
+                    <th>Ref No.</th>
+                    <td>{{.Application.SporicRefNo}}</td>
+                </tr>
+                <tr>
+                    <th>Project Title</th>
+                    <td>{{.Application.ProjectTitle}}</td>
+                </tr>
+                <tr>
+                    <th>Start Date</th>
+                    <td>{{.Application.StartDate.Format "02-Jan-06"}}</td>
+                </tr>
+                <tr>
+                    <th>End Date</th>
+                    <td>{{.Application.EndDate.Format "02-Jan-06"}}</td>
+                </tr>
+                <tr>
+                    <th>Faculty Name</th>
+                    <td>{{.User.Username}}</td>
+                </tr>
+                <tr>
+                    <th>Designation</th>
+                    <td>{{.User.Designation}}</td>
+                </tr>
+                <tr>
+                    <th>Email</th>
+                    <td>{{.User.Email}}</td>
+                </tr>
+                <tr>
+                    <th>Mobile No.</th>
+                    <td>{{.User.MobileNumber}}</td>
+                </tr>
+                <tr>
+                    <th>School</th>
+                    <td>{{.User.School}}</td>
+                </tr>
+                <tr>
+                    <th>Exstimated Cost</th>
+                    <td>
+                        {{.Application.EstimatedAmt}}
+                    </td>
+                </tr>
+                <tr>
+                    <th>Proposal</th>
+                    <td><a href="/download/{{.Application.SporicRefNo}}/{{.Application.SporicRefNo}}/proposal"
+                            target=" _blank">View</a></td>
+                </tr>
+                {{ if or (eq .Application.Status 2) (eq .Application.Status 3) }}
+                <tr>
+                    <th>Closure Document</th>
+                    <td><a href="/download/{{.Application.SporicRefNo}}/{{.Application.SporicRefNo}}/completion_form"
+                            target=" _blank">View</a></td>
+                </tr>
+                <tr>
+                    <th>VIT resources used</th>
+                    <td>{{if eq .Application.ResourceUsed 1}}No{{else}}Yes{{end}}</td>
+                </tr>
+                {{ end }}
+                <tr>
+                    <th>Project Status</th>
+
+                    <td>
+                        {{if eq .Application.Status 3}}<span class="badge bg-warning">Completed Approval
+                            Pending</span>{{end}}
+                        {{if eq .Application.Status 2}}<span class="badge bg-success">Completed</span>{{end}}
+                        {{if eq .Application.Status 1}}<span class="badge bg-success">Application
+                            Approved</span>{{end}}
+                        {{if eq .Application.Status 0}}<span class="badge bg-warning">Application Approval
+                            Pending</span>{{end}}
+
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Company Details Section -->
+    <div class="col-md-6">
+        <h4>Company Details</h4>
+        <table class="table table-bordered">
+            <tbody>
+                <tr>
+                    <th>Company Name</th>
+                    <td>{{.Application.CompanyName}}</td>
+                </tr>
+                <tr>
+                    <th>Address</th>
+                    <td>{{.Application.CompanyAddress}}</td>
+                </tr>
+                <tr>
+                    <th>Billing Address</th>
+                    <td>{{.Application.BillingAddress}}</td>
+                </tr>
+                <tr>
+                    <th>Contact Person</th>
+                    <td>{{.Application.ContactPersonName}}</td>
+                </tr>
+                <tr>
+                    <th>Designation</th>
+                    <td>{{.Application.ContactPersonDesignation}}</td>
+                </tr>
+                <tr>
+                    <th>Email</th>
+                    <td>{{.Application.ContactPersonEmail}}</td>
+                </tr>
+                <tr>
+                    <th>Mobile No.</th>
+                    <td>{{.Application.ContactPersonMobile}}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Team Members -->
+    <div class="col-md-6">
+        <h4>Team Members</h4>
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                </tr>
+            </thead>
+            <tbody>
+                {{range .Application.Members}}
+                <tr>
+                    <td>{{.}}</td>
+                </tr>
+                {{end}}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Student Members -->
+    <div class="col-md-6">
+        <h4>Student Members</h4>
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                </tr>
+            </thead>
+            <tbody>
+                {{range .Application.MemberStudents}}
+                <tr>
+                    <td>{{.}}</td>
+                </tr>
+                {{end}}
+            </tbody>
+        </table>
+    </div>
+</div>
+{{end}}
