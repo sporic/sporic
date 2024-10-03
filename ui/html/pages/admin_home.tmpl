@@ -32,6 +32,17 @@
 <div class="container mt-4">
   <h2 class="mb-4">Welcome, {{.User.Username}}</h2>
 
+  <!-- Actions -->
+  <div class="d-flex justify-content-end mb-4">
+    <form class="d-flex align-items-center" method="POST" action="/generate_excel">
+      <label for="from_date" class="me-2">From:</label>
+      <input type="date" id="from_date" name="from_date" class="form-control me-2">
+      <label for="to_date" class="me-2">To:</label>
+      <input type="date" id="to_date" name="to_date" class="form-control me-2">
+      <button type="submit" class="btn btn-primary ms-2">Generate Excel</button>
+    </form>
+  </div>
+
   <!-- Pending Approval Projects -->
   <div class="row mt-4">
     <div class="col-md-12">
