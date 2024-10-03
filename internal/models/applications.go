@@ -41,7 +41,7 @@ type Application struct {
 }
 
 type ProjectStatus = int
-
+// 0->1/4->3->2
 const (
 	ProjectPendingApproval ProjectStatus = iota
 	ProjectApproved
@@ -51,14 +51,13 @@ const (
 )
 
 type ActivityType = int
-
 const (
 	ActivityTypeConsultancy ActivityType = iota
 	ActivityTypeTraining
 )
 
 type PaymentStatus = int
-
+// 0->4->1->5->2/3
 const (
 	PaymentInvoiceRequested PaymentStatus = iota
 	PaymentPending
@@ -69,7 +68,7 @@ const (
 )
 
 type ExpenditureStatus = int
-
+// 0->1/2->3
 const (
 	ExpenditurePendingApproval ExpenditureStatus = iota
 	ExpenditureApproved
@@ -538,7 +537,7 @@ func (m *ApplicationModel) Complete_Project(completion Completion) error {
 }
 
 func (m *ApplicationModel) UpdatePayment(payment Payment) error {
-	_, err := m.Db.Exec("update payment set transaction_id = ?, payment_date=? where payment_id = ?", payment.Transaction_id, time.Now(), payment.Payment_id)
+	_, err := m.Db.Exec("update payment set transaction_id = ?, payment_date=?, payment_status=? where payment_id = ?", payment.Transaction_id, time.Now(), PaymentProofUploaded, payment.Payment_id)
 
 	if err != nil {
 		return err

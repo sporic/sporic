@@ -30,6 +30,7 @@ func (app *App) authenticateMiddleware(next http.Handler) http.Handler {
 			return
 		} else if err != nil {
 			app.serverError(w, err)
+			return
 		}
 
 		r = app.contextSetUser(r, user)

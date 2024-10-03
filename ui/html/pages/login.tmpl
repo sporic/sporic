@@ -15,30 +15,19 @@
           <label for="username" class="form-label">Username</label>
           {{with .Form.FieldErrors.username}}
           <br>
-          <span class="text-danger"> {{.}}</label>
+          <span class="text-danger"> {{.}}</span>
           {{ end }}
-          <input
-            type="text"
-            class="form-control{{if .Form.FieldErrors.username}} is-invalid{{end}}"
-            id="username"
-            name="username"
-            placeholder="Enter username"
-            value="{{.Form.Username}}"
-          />
+          <input type="text" class="form-control{{if .Form.FieldErrors.username}} is-invalid{{end}}" id="username"
+            name="username" placeholder="Enter username" value="{{.Form.Username}}" />
         </div>
         <div class="mb-3">
           <label for="password" class="form-label">Password</label>
           {{with .Form.FieldErrors.password}}
           <br>
           <span class="text-danger"> {{.}}</label>
-          {{ end }}
-          <input
-            type="password"
-            class="form-control{{if .Form.FieldErrors.password}} is-invalid{{end}}"
-            id="password"
-            name="password"
-            placeholder="Password"
-          />
+            {{ end }}
+            <input type="password" class="form-control{{if .Form.FieldErrors.password}} is-invalid{{end}}" id="password"
+              name="password" placeholder="Password" />
         </div>
         <button class="btn btn-primary w-100">Login</button>
       </form>
