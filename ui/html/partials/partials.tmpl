@@ -1,5 +1,35 @@
-{{define "project_details"}}
+{{define navbar}}
+<nav class="navbar navbar-expand-lg fixed-top navbar-dark bg-dark">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="/home">SpoRIC</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+            aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item">
+                    <a class='nav-link {{if eq . "home" }}active{{end}}' href="/home">Home</a>
+                </li>
+                <li class="nav-item">
+                    <a class='nav-link {{if eq . "notifications" }}active{{end}}'
+                        href="/notifications">Notifications</a>
+                </li>
+                <li class="nav-item">
+                    <a class='nav-link {{if eq . "profile" }}active{{end}}' href="/profile">Profile</a>
+                </li>
+                <li class="nav-item">
+                    <form action="/logout" method="post">
+                        <input class="nav-link" type="submit" value="Logout" />
+                    </form>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+{{end}}
 
+{{define "project_details"}}
 <div class="row mb-4">
     <!-- Project Details Section -->
     <div class="col-md-6">
