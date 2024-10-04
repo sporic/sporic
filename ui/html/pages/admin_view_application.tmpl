@@ -243,73 +243,7 @@
     {{ end }}
 
     {{ if or (eq .Application.Status 3) (eq .Application.Status 2)}}
-    <h4>Summary</h4>
-    <!-- Financial Summary Section -->
-    <div class="card mb-4">
-        <div class="card-header">
-            <h5>Financial Overview</h5>
-        </div>
-        <div class="card-body">
-            <table class="table table-striped">
-                <tbody>
-                    <tr>
-                        <th>Total Amount (incl. taxes)</th>
-                        <td>{{.Application.TotalAmount}}</td>
-                    </tr>
-                    <tr>
-                        <th>Taxes</th>
-                        <td>{{.Application.Taxes}}</td>
-                    </tr>
-                    <tr>
-                        <th>Total Expenditure</th>
-                        <td>{{.Application.TotalExpenditure}}</td>
-                    </tr>
-                    <tr>
-                        <th>Balance Amount</th>
-                        <td>{{.Application.BalanceAmount}}</td>
-                    </tr>
-                    <tr>
-                        <th>VIT Resources Used</th>
-                        <td class="text-end">
-                            {{if eq .Application.ResourceUsed 0}}
-                            Yes
-                            {{else}}
-                            No
-                            {{end}}
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-    </div>
-    <!-- Team Share Section -->
-    <div class="card mb-4">
-        <div class="card-header">
-            <h5>Team Share Breakdown</h5>
-        </div>
-        <div class="card-body">
-            <table class="table table-striped">
-                <thead>
-                    <tr>
-                        <th>Name</th>
-                        <th>Share (%)</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>{{.Application.Leader}}</td>
-                        <td>{{.Application.LeaderShare}}%</td>
-                    </tr>
-                    {{range .Member}}
-                    <tr>
-                        <td>{{.Member}}</td>
-                        <td>{{.Share}}%</td>
-                    </tr>
-                    {{end}}
-                </tbody>
-            </table>
-        </div>
-    </div>
+    {{template "project_summary" .}}
     {{end}}
 
     <div style="height: 100px;"></div>
