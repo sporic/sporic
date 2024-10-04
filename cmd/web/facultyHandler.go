@@ -329,11 +329,11 @@ func (app *App) renderFacultyViewApplication(w http.ResponseWriter, r *http.Requ
 	var TotalTax int = 0
 	for _, payment := range payments {
 		TotalAmt += payment.Payment_amt
-		TotalTax += payment.Tax
+		TotalTax += payment.Tax * payment.Payment_amt / 100
 	}
 	application.TotalAmount = TotalAmt
 	application.Taxes = TotalTax
-
+	application.BalanceAmount = TotalAmt - application.TotalExpenditure
 	var expenditures []models.Expenditure
 	expenditures, err = app.applications.GetExpenditureByRefNo(application.SporicRefNo)
 	if err != nil {
@@ -545,9 +545,9 @@ func (app *App) parseCompleteProjectForm(r *http.Request) (*CompleteProjectForm,
 	leader_share, err := strconv.Atoi(completion_form.LeaderShare)
 	completion_form.CheckField(err == nil, "leader_share", "share needs to be a number")
 	completion_form.CheckField((leader_share >= 0 && leader_share <= 100), "leader_share", "share needs to be within 0 and 100")
-	for _, member_share := range completion_form.MemberShare {
+	for member_share, _ := range completion_form.MemberShare {
 		member_share, err := strconv.Atoi(member_share)
-		completion_form.CheckField(err != nil, "member_share", "share needs to be a number")
+		completion_form.CheckField(err != nil, "share_percent", "share needs to be a number")
 		completion_form.CheckField((member_share >= 0 && member_share <= 100), "share_percent", "share needs to be within 0 and 100")
 	}
 

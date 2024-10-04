@@ -151,6 +151,7 @@
           <td>{{template "payment_status" .}}</td>
         </form>
       </tr>
+      {{ end }}
       {{if eq .Payment_status 5}}
       <tr>
         <input type="hidden" name="payment_id" value="{{.Payment_id}}" />
@@ -171,7 +172,6 @@
         <td></td>
       </tr>
       {{end}}
-      {{ end }}
       {{ end }}
     </tbody>
   </table>

@@ -267,7 +267,7 @@ func (app *App) admin_view_application(w http.ResponseWriter, r *http.Request) {
 	var TotalTax int = 0
 	for _, payment := range payments {
 		TotalAmt += payment.Payment_amt
-		TotalTax += payment.Tax
+		TotalTax += payment.Tax * payment.Payment_amt / 100
 	}
 	application.TotalAmount = TotalAmt
 	application.Taxes = TotalTax
