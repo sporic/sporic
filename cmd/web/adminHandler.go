@@ -61,6 +61,7 @@ func (app *App) admin_view_application(w http.ResponseWriter, r *http.Request) {
 	action := r.PostForm.Get("action")
 
 	if action == "approve_completion" {
+
 		err = app.applications.SetStatus(refno, models.ProjectCompleted)
 		if err != nil {
 			app.serverError(w, err)

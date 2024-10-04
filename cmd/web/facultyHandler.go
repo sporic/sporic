@@ -136,7 +136,11 @@ func (app *App) new_application_post(w http.ResponseWriter, r *http.Request) {
 	application.EstimatedAmt = estimated_amount
 	application.CompanyName = form.CompanyName
 	application.CompanyAddress = form.CompanyAddress
-	application.BillingAddress = form.BillingAddress
+	if len(strings.Trim(form.BillingAddress, " ")) == 0 {
+		application.BillingAddress = form.CompanyAddress
+	} else {
+		application.BillingAddress = form.BillingAddress
+	}
 	application.ContactPersonName = form.ContactPersonName
 	application.ContactPersonEmail = form.ContactPersonEmail
 	application.ContactPersonMobile = form.ConatactPersonMobile
@@ -519,6 +523,7 @@ func (app *App) add_expenditure(r *http.Request, expenditure_form NewExpenditure
 
 	return nil
 }
+
 type CompleteProjectForm struct {
 	ResourceUsed        int               `form:"resource_used"`
 	Comments            string            `form:"comments"`
@@ -563,7 +568,7 @@ func (app *App) complete_project(r *http.Request, completion_form CompleteProjec
 	completion.MemberShare = completion_form.MemberShare
 	completion.ResourceUsed = completion_form.ResourceUsed
 	completion.Comments = completion_form.Comments
-	completion_form.CompletionDate = time.Now()
+	completion.CompletionDate = time.Now()
 
 	err = app.applications.Complete_Project(completion)
 	if err != nil {

@@ -1,0 +1,1 @@
+alter table applications drop column comments_for_provc;
