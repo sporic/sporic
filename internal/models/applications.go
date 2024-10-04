@@ -389,8 +389,6 @@ func (m *ApplicationModel) SetStatus(refno string, status ProjectStatus) error {
 	return nil
 }
 
-
-
 type Completion struct {
 	SporicRefNo    string
 	Comments       string

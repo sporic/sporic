@@ -113,7 +113,6 @@ func (app *App) new_application_post(w http.ResponseWriter, r *http.Request) {
 	form.CheckField(validator.NotBlank(form.ProjectTitle), "project_title", "This field cannot be blank")
 	form.CheckField(validator.NotBlank(form.CompanyName), "company_name", "This field cannot be blank")
 	form.CheckField(validator.NotBlank(form.CompanyAddress), "company_address", "This field cannot be blank")
-	form.CheckField(validator.NotBlank(form.BillingAddress), "billing_address", "This field cannot be blank.If billing address is same as company address, please enter the same address")
 	form.CheckField(validator.NotBlank(form.ContactPersonName), "contact_person_name", "This field cannot be blank")
 	form.CheckField(validator.NotBlank(form.ConatactPersonMobile), "contact_person_mobile", "This field cannot be blank")
 	form.CheckField(len(form.ConatactPersonMobile) == 10, "contact_person_mobile", "Enter valid 10-digit contact number")
