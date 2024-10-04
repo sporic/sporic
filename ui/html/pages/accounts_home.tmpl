@@ -148,7 +148,7 @@
                     <div class="accordion" id="paymentVerification">
                         {{range $application := .Applications}}
                         {{range $payment := $application.Payments}}
-                        {{if eq $payment.Payment_status 1}}
+                        {{if eq $payment.Payment_status 5}}
                         <div class="accordion-item">
                             <!-- Heading -->
                             <h2 class="accordion-header" id="heading-payment-verification-{{.Payment_id}}">
@@ -265,7 +265,7 @@
                         {{range $application := .Applications}}
                         {{range $payment := $application.Payments}}
                         {{if ne $payment.Payment_status 1}}
-                        {{if ne $payment.Payment_status 4}}
+                        {{if ne $payment.Payment_status 5}}
                         <div class="accordion-item">
                             <!-- Heading -->
                             <h2 class="accordion-header" id="heading-everything-else-{{.Payment_id}}">

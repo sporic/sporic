@@ -179,7 +179,52 @@
         </form>
       </tr>
       {{ end }}
+      {{ if eq .Payment_status 5 }} {{/* Proof uploaded waiting for accounts */}}
+      <tr>
+        <form action="/faculty_view_application" method="post">
+          <input type="hidden" name="action" value="confirm_payment" />
+          <input type="hidden" name="payment_id" value="{{.Payment_id}}" />
+          <td>{{.Currency}}</td>
+          <td>{{.Payment_amt}}</td>
+          <td>{{.Tax}}</td>
+          <td>{{.Total_amt}}</td>
+          <td>{{.Gst_number}}</td>
+          <td>{{.Pan_number}}</td>
+          <td><a href="/download/{{$.Application.SporicRefNo}}/{{.Payment_id}}/tax_cirtificate" target="_blank">View</a>
+          </td>
+          <td>Invoice not generated yet</td>
+          <td></td>
+          <td></td>
+          <td><span class="badge bg-info">Awaiting verification</span></td>
+        </form>
+      </tr>
       {{ end }}
+      {{ end }}
+      <!-- Request Invoice -->
+      {{ if eq .Application.Status 1 }}
+      <tr>
+        <form action="/faculty_view_application" method="post" enctype="multipart/form-data">
+          <input type="hidden" name="action" value="request_invoice" />
+          <input type="hidden" name="sporic_ref_no" value="{{.Application.SporicRefNo}}" />
+          <td>
+            <select class="form-select" name="currency" required>
+              <option value="INR">INR</option>
+              <option value="USD">USD</option>
+            </select>
+          </td>
+          <td><input type="number" class="form-control" id="amount" name="payment_amt" required
+              oninput="calculateTotal()" /></td>
+          <td> <input type="number" class="form-control" id="tax" name="tax" required oninput="calculateTotal()" />
+          </td>
+          <td><input type="number" class="form-control" id="total" name="total_amount" readonly /></td>
+          <td><input type="text" class="form-control" name="gst_number" /></td>
+          <td><input type="text" class="form-control" name="pan_number" /></td>
+          <td><input type="file" class="form-control" name="tax_certificate" required /></td>
+          <td></td>
+          <td></td>
+          <td><button class="btn btn-primary">Request Invoice</button></td>
+        </form>
+      </tr>
     </tbody>
   </table>
 
@@ -217,127 +262,27 @@
         </td>
       </tr>
       {{ end }}
+      <!-- Expenditure form -->
+      <tr>
+        <form action="/faculty_view_application" method="post" enctype="multipart/form-data">
+          <input type="hidden" name="action" value="add_expenditure" />
+          <input type="hidden" name="sporic_ref_no" value="{{.Application.SporicRefNo}}" />
+          <td><input type="text" class="form-control" name="expenditure_name" required /></td>
+          <td>
+            <select class="form-select" name="expenditure_type" required>
+              <option value="0" selected>Claim</option>
+              <option value="1">Invoice</option>
+            </select>
+          </td>
+          <td><input type="text" class="form-control" name="expenditure_amt" required /></td>
+          <td></td>
+          <td><input type="file" class="form-control" name="expenditure_proof" accept=".pdf" required /></td>
+          <td><button class="btn btn-primary">Add Expenditure</button></td>
+        </form>
+      </tr>
     </tbody>
   </table>
 
-
-  <div class="row">
-    <!-- Request Invoice Form -->
-    <div class="col-md-6">
-      {{if eq .Application.Status 1}}
-      <h4>Request Invoice</h4>
-      <form method="post" enctype="multipart/form-data">
-        <input type="hidden" name="action" value="request_invoice" />
-        <input type="hidden" name="sporic_ref_no" value="{{.Application.SporicRefNo}}" />
-
-        <div class="mb-3">
-          <label for="currency" class="form-label">Currency</label>
-          {{with .Form.FieldErrors.currency}}
-          <br>
-          <span class="text-danger"> {{.}}</span>
-          {{end}}
-          <select class="form-select" id="currency" name="currency" required>
-            <option value="INR">INR</option>
-            <option value="USD">USD</option>
-          </select>
-        </div>
-
-        <div class="mb-3">
-          <label for="amount" class="form-label">Amount Excluding Tax</label>
-          {{with .Form.FieldErrors.Payment_amt}}
-          <br>
-          <span class="text-danger"> {{.}}</span>
-          {{end}}
-          <input type="number" class="form-control" id="amount" name="payment_amt"
-            required oninput="calculateTotal()" />
-        </div>
-
-        <div class="mb-3">
-          <label for="tax" class="form-label">Tax (%)</label>
-          {{with .Form.FieldErrors.tax}}
-          <br>
-          <span class="text-danger"> {{.}}</span>
-          {{end}}
-          <input type="number" class="form-control" id="tax" name="tax" required
-            oninput="calculateTotal()" />
-        </div>
-
-        <div class="mb-3">
-          <label for="total" class="form-label">Total Amount (Including Tax)</label>
-          <input type="number" class="form-control" id="total" name="total_amount" readonly />
-        </div>
-
-        <div class="mb-3">
-          <label for="gst" class="form-label">GST No.</label>
-          {{with .Form.FieldErrors.gst_number}}
-          <br>
-          <span class="text-danger"> {{.}}</span>
-          {{end}}
-          <input type="text" class="form-control" id="gst" name="gst_number" />
-        </div>
-
-        <div class="mb-3">
-          <label for="pan" class="form-label">PAN No.</label>
-          {{with .Form.FieldErrors.pan_number}}
-          <br>
-          <span class="text-danger"> {{.}}</span>
-          {{end}}
-          <input type="text" class="form-control" id="pan" name="pan_number"/>
-        </div>
-
-        <div class="mb-3">
-          <label for="gst_certificate" class="form-label">GST Certificate</label>
-          <input type="file" class="form-control" id="gst_certificate" name="tax_certificate" required />
-        </div>
-
-        <button type="submit" class="btn btn-primary">
-          Request Invoice
-        </button>
-      </form>
-      {{end}}
-    </div>
-
-    <!-- Expenditure Form -->
-    <div class="col-md-6">
-      {{if eq .Application.Status 1}}
-      <h4>Add Expenditure</h4>
-      <form method="post" enctype="multipart/form-data">
-        <input type="hidden" name="action" value="add_expenditure" />
-        <input type="hidden" name="sporic_ref_no" value="{{.Application.SporicRefNo}}" />
-        <div class="mb-3">
-          <label for="expenditureName" class="form-label">Purpose</label>
-          <input type="text" class="form-control" id="expenditureName" name="expenditure_name" required />
-        </div>
-        <div class="mb-3">
-          <label class="form-label">Expenditure Type</label>
-          <div>
-            <input type="radio" id="claim" name="expenditure_type" value="0" onclick="updateProofLabel()" required
-              checked />
-            <label for="claim">Claim (Request for Reimbursement)</label>
-          </div>
-          <div>
-            <input type="radio" id="invoice" name="expenditure_type" value="1" onclick="updateProofLabel()" required />
-            <label for="invoice">Invoice (To Be Paid by Accounts)</label>
-          </div>
-        </div>
-        <div class="mb-3">
-          <label for="expenditureCost" class="form-label">Cost</label>
-          {{with .Form.FieldErrors.expenditure_amt}}
-          <br>
-          <span class="text-danger"> {{.}}</span>
-          {{ end }}
-          <input type="text" class="form-control" id="expenditureCost" name="expenditure_amt" required />
-        </div>
-        <div class="mb-3">
-          <label for="expenditureProof" id="proofLabel" class="form-label">Proof of Expense (e.g., Receipt)</label>
-          <input type="file" class="form-control" id="expenditureProof" name="expenditure_proof" accept=".pdf"
-            required />
-        </div>
-        <button type="submit" class="btn btn-primary">Add Expenditure</button>
-      </form>
-      {{end}}
-    </div>
-  </div>
 
   <!-- Complete Project form -->
   <div class="row mt-4">

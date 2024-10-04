@@ -28,7 +28,8 @@
       <br>
       <span class="text-danger"> {{.}}</span>
       {{ end }}
-      <input type="date" class="form-control" id="endDate" name="end_date" value="{{.Form.EndDate.Format "2004-01-10"}}"/>
+      <input type="date" class="form-control" id="endDate" name="end_date" value="{{.Form.EndDate.Format "
+        2004-01-10"}}" />
     </div>
     <!-- Activity Type Radi -->
     <div class="mb-3">
@@ -97,13 +98,13 @@
     </div>
     <!-- Billing Address -->
     <div class="mb-3">
-      <label for="billingAddress" class="form-label">Billing Address</label>
+      <label for="billingAddress" class="form-label">Billing Address (leave empty if same as company address)</label>
       {{with .Form.FieldErrors.billing_address}}
       <br>
-      <span class="text-danger"> {{.}}</label>
-        {{ end }}
-        <input type="text" class="form-control" id="billingAddress" name="billing_address"
-          placeholder="Enter billing address" value="{{.Form.BillingAddress}}" />
+      <span class="text-danger"> {{.}}</span>
+      {{ end }}
+      <input type="text" class="form-control" id="billingAddress" name="billing_address"
+        placeholder="Enter billing address" value="{{.Form.BillingAddress}}" />
     </div>
 
     <!-- Contact Person Details -->
