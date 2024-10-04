@@ -49,9 +49,7 @@
                 <td>
                     <a href="/download/{{$.Application.SporicRefNo}}/{{.Payment_id}}/payment" target="_blank">View</a>
                 </td>
-                <td>
-                    <span class="badge bg-success">Approved</span>
-                </td>
+                <td>{{template "payment_status" .}}</td>
                 <td></td>
             </tr>
             {{end}}
@@ -73,9 +71,7 @@
                 </td>
                 <td> <a href="/download/{{$.Application.SporicRefNo}}/{{.Payment_id}}/payment" target="_blank">View</a>
                 </td>
-                <td>
-                    <span class="badge bg-warning">Payment Pending</span>
-                </td>
+                <td>{{template "payment_status" .}}</td>
                 <td></td>
             </tr>
             {{end}}
@@ -94,7 +90,7 @@
                     <td>Invoice not generated yet</td>
                     <td></td>
                     <td></td>
-                    <td><span class="badge bg-info">Invoice Requested</span></td>
+                    <td>{{template "payment_status" .}}</td>
                     <td>
                         <input type="hidden" name="action" value="invoice_forwared" />
                         <button class="btn btn-info">Forward Invoice</button>
@@ -118,7 +114,7 @@
                 <td>{{.Transaction_id}}</td>
                 <td><a href="/download/{{$.Application.SporicRefNo}}/{{.Payment_id}}/payment" target="_blank">View</a>
                 </td>
-                <td><span class="badge bg-danger">Rejected</span></td>
+                <td>{{template "payment_status" .}}</td>
                 <td></td>
             </tr>
             {{end}}
@@ -136,7 +132,7 @@
                 <td>Invoice not generated yet</td>
                 <td></td>
                 <td></td>
-                <td><span class="badge bg-primary">Invoice Request Forwarded</span></td>
+                <td>{{template "payment_status" .}}</td>
                 <td></td>
             </tr>
             {{end}}
@@ -156,7 +152,7 @@
                 <td>{{.Transaction_id}}</td>
                 <td><a href="/download/{{$.Application.SporicRefNo}}/{{.Payment_id}}/payment" target="_blank">View</a>
                 </td>
-                <td><span class="badge bg-warning">Awaiting Verification</span></td>
+                <td>{{template "payment_status" .}}</td>
                 <td></td>
             </tr>
             {{end}}

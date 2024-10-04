@@ -43,9 +43,7 @@
         <td><a href="/download/{{$.Application.SporicRefNo}}/{{.Payment_id}}/invoice" target="_blank">View</a></td>
         <td>{{.Transaction_id}}</td>
         <td><a href="/download/{{$.Application.SporicRefNo}}/{{.Payment_id}}/payment" target="_blank">View</a></td>
-        <td>
-          <span class="badge bg-success">Approved</span>
-        </td>
+        <td>{{template "payment_status" .}}</td>
       </tr>
       {{ end }}
       {{ if eq .Payment_status 3 }}
@@ -68,7 +66,7 @@
           <td><input type="file" class="form-control" placeholder="Payment Proof" name="payment_proof" accept=".pdf"
               required /></td>
           <td>
-            <span class="badge bg-danger">Rejected</span>
+            {{template "payment_status" .}}
             <button class="btn btn-primary">Confirm</button>
           </td>
         </form>
@@ -130,7 +128,7 @@
           <td>Invoice not generated yet</td>
           <td></td>
           <td></td>
-          <td><span class="badge bg-info">Invoice Requested</span></td>
+          <td>{{template "payment_status" .}}</td>
         </form>
       </tr>
       {{ end }}
@@ -150,7 +148,7 @@
           <td>Invoice not generated yet</td>
           <td></td>
           <td></td>
-          <td><span class="badge bg-primary">Request Forwarded</span></td>
+          <td>{{template "payment_status" .}}</td>
         </form>
       </tr>
       {{if eq .Payment_status 5}}
@@ -169,7 +167,7 @@
         <td>{{.Transaction_id}}</td>
         <td><a href="/download/{{$.Application.SporicRefNo}}/{{.Payment_id}}/payment" target="_blank">View</a>
         </td>
-        <td><span class="badge bg-warning">Awaiting Verification</span></td>
+        <td>{{template "payment_status" .}}</td>
         <td></td>
       </tr>
       {{end}}

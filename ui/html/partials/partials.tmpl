@@ -191,5 +191,18 @@
 
 {{define "payment_status"}}
 
-{{}}
+{{if eq .Payment_status 0 }}
+<span class="badge bg-primary">Invoice Requested</span>
+{{else if eq .Payment_status 1 }}
+<span class="badge bg-warning">Payment Pending</span>
+{{else if eq .Payment_status 2 }}
+<span class="badge bg-success">Payment Completed</span>
+{{else if eq .Payment_status 3 }}
+<span class="badge bg-danger">Payment Rejected</span>
+{{else if eq .Payment_status 4 }}
+<span class="badge bg-primary">Invoice Forwarded</span>
+{{else if eq .Payment_status 5 }}
+<span class="badge bg-primary">Proof Uploaded</span>
+{{end}}
+
 {{end}}

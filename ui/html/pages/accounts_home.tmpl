@@ -314,13 +314,7 @@
                                             </tr>
                                             <tr>
                                                 <th>Status</th>
-                                                <td>
-                                                    {{ if eq $payment.Payment_status 3}}
-                                                    <span class="badge bg-danger">Rejected</span>
-                                                    {{ else }}
-                                                    <span class="badge bg-success">Approved</span>
-                                                    {{ end }}
-                                                </td>
+                                                <td>{{template "payment_status" .}}</td>
                                             </tr>
                                         </tbody>
                                     </table>
