@@ -68,6 +68,8 @@ func (app *App) admin_view_application(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
+		//err = app.applications.AdminCompleteApplication(refno)
+
 		var notification models.Notification
 
 		notification.CreatedAt = time.Now()
