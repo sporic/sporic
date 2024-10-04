@@ -153,6 +153,26 @@
           <td><span class="badge bg-primary">Request Forwarded</span></td>
         </form>
       </tr>
+      {{if eq .Payment_status 5}}
+      <tr>
+        <input type="hidden" name="payment_id" value="{{.Payment_id}}" />
+        <td>{{.Currency}}</td>
+        <td>{{.Payment_amt}}</td>
+        <td>{{.Tax}}</td>
+        <td>{{.Total_amt}}</td>
+        <td>{{.Gst_number}}</td>
+        <td>{{.Pan_number}}</td>
+        <td><a href="/download/{{$.Application.SporicRefNo}}/{{.Payment_id}}/tax_cirtificate" target="_blank">View</a>
+        </td>
+        <td><a href="/download/{{$.Application.SporicRefNo}}/{{.Payment_id}}/invoice" target="_blank">View</a>
+        </td>
+        <td>{{.Transaction_id}}</td>
+        <td><a href="/download/{{$.Application.SporicRefNo}}/{{.Payment_id}}/payment" target="_blank">View</a>
+        </td>
+        <td><span class="badge bg-warning">Awaiting Verification</span></td>
+        <td></td>
+      </tr>
+      {{end}}
       {{ end }}
       {{ end }}
     </tbody>
