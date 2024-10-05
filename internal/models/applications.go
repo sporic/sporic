@@ -49,15 +49,15 @@ const (
 	ProjectCompleted
 	ProjectCompleteApprovalPending
 	ProjectRejected
+	ProjectApprovedByProVC
 )
 
 type ActivityType = int
+
 const (
 	ActivityTypeConsultancy ActivityType = iota
 	ActivityTypeTraining
 )
-
-
 
 type ApplicationModel struct {
 	Db *sql.DB
@@ -291,8 +291,6 @@ func (m *ApplicationModel) FetchByRefNo(ref_no string) (*Application, error) {
 	return &a, nil
 }
 
-
-
 func (m *ApplicationModel) Insert(form Application) (string, error) {
 
 	var count int
@@ -416,4 +414,3 @@ func (m *ApplicationModel) Complete_Project(completion Completion) error {
 
 	return nil
 }
-

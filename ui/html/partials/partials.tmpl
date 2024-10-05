@@ -100,12 +100,13 @@
                     <td>
                         {{if eq .Application.Status 3}}<span class="badge bg-warning">Completed Approval
                             Pending</span>{{end}}
-                        {{if eq .Application.Status 2}}<span class="badge bg-success">Completed</span>{{end}}
+                        {{if eq .Application.Status 2}}<span class="badge bg-success">ProVC Approval
+                            Pending</span>{{end}}
                         {{if eq .Application.Status 1}}<span class="badge bg-success">Application
                             Approved</span>{{end}}
                         {{if eq .Application.Status 0}}<span class="badge bg-warning">Application Approval
                             Pending</span>{{end}}
-
+                        {{if eq .Application.Status 4}}<span class="badge bg-danger">Completed</span>{{end}}
                     </td>
                 </tr>
             </tbody>

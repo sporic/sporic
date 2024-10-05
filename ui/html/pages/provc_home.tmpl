@@ -22,7 +22,7 @@
                     </thead>
                     <tbody>
                         {{range .Applications}}
-                        {{if eq .Status 0}}
+                        {{if eq .Status 2}}
                         <!-- Assuming Status 0 is Pending Approval -->
                         <tr>
                             <td>{{.SporicRefNo}}</td>
@@ -30,7 +30,7 @@
                             <td>Pending Approval</td>
                             <td>
                                 <a class="btn btn-sm btn-primary"
-                                    href="/admin/view_application/{{.SporicRefNo}}">View</a>
+                                    href="/provc/view_application/{{.SporicRefNo}}">View</a>
                             </td>
                         </tr>
                         {{
@@ -45,10 +45,10 @@
         </div>
     </div>
 
-    <!-- Active Projects -->
+    <!-- Approved Projects -->
     <div class="row mt-4">
         <div class="col-md-12">
-            <h4>Active Projects</h4>
+            <h4>Approved Projects</h4>
             <div class="table-responsive">
                 <table class="table table-bordered table-striped">
                     <thead>
@@ -63,51 +63,11 @@
                         {{
                         range.Applications
                         }}
-                        {{if eq .Status 1}}
-                        <!-- Assuming Status 1 is Ongoing -->
+                        {{if eq .Status 4}}
                         <tr>
                             <td>{{.SporicRefNo}}</td>
                             <td>{{.CompanyName}}</td>
-                            <td>Ongoing</td>
-                            <td>
-                                <a class="btn btn-sm btn-primary"
-                                    href="/admin/view_application/{{.SporicRefNo}}">View</a>
-                            </td>
-                        </tr>
-                        {{
-                        end
-                        }}
-                        {{
-                        end
-                        }}
-                    </tbody>
-                </table>
-            </div>
-        </div>
-
-        <!-- Completed Projects -->
-        <div class="col-md-12 mt-4">
-            <h4>Completed Projects</h4>
-            <div class="table-responsive">
-                <table class="table table-bordered table-striped">
-                    <thead>
-                        <tr>
-                            <th>SpoRIC ID</th>
-                            <th>Company</th>
-                            <th>Status</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {{
-                        range.Applications
-                        }}
-                        {{if or (eq .Status 2) (eq .Status 3) }}
-                        <!-- Assuming Status 2 is Completed -->
-                        <tr>
-                            <td>{{.SporicRefNo}}</td>
-                            <td>{{.CompanyName}}</td>
-                            <td>Completed</td>
+                            <td>Approved</td>
                             <td>
                                 <a class="btn btn-sm btn-primary"
                                     href="/admin/view_application/{{.SporicRefNo}}">View</a>

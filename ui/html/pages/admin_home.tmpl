@@ -114,7 +114,7 @@
             {{
             range.Applications
             }}
-            {{if or (eq .Status 2) (eq .Status 3) }}
+            {{if or (or (eq .Status 2) (eq .Status 3)) (eq .Status 4) }}
             <!-- Assuming Status 2 is Completed -->
             <tr>
               <td>{{.SporicRefNo}}</td>
