@@ -333,6 +333,9 @@ func (app *App) renderFacultyViewApplication(w http.ResponseWriter, r *http.Requ
 	}
 	application.TotalAmount = TotalAmt
 	application.Taxes = TotalTax
+
+	application.TotalAmountIncludeTax = TotalAmt + TotalTax
+
 	application.BalanceAmount = TotalAmt - application.TotalExpenditure
 	var expenditures []models.Expenditure
 	expenditures, err = app.applications.GetExpenditureByRefNo(application.SporicRefNo)
@@ -375,7 +378,6 @@ func (app *App) renderFacultyViewApplication(w http.ResponseWriter, r *http.Requ
 		app.render(w, http.StatusOK, "faculty_view_application.tmpl", data)
 	}
 }
-
 type NewInvoice struct {
 	Currency            string `form:"currency"`
 	PaymentAmt          int    `form:"payment_amt"`
@@ -605,7 +607,6 @@ func (app *App) complete_project(r *http.Request, completion_form CompleteProjec
 
 	return nil
 }
-
 type UpadatePaymentForm struct {
 	Payment_id          int    `form:"payment_id"`
 	Transaction_id      string `form:"transaction_id"`

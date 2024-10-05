@@ -272,6 +272,8 @@ func (app *App) admin_view_application(w http.ResponseWriter, r *http.Request) {
 	application.TotalAmount = TotalAmt
 	application.Taxes = TotalTax
 
+	application.TotalAmountIncludeTax = TotalAmt + TotalTax
+
 	var expenditures []models.Expenditure
 	expenditures, err = app.applications.GetExpenditureByRefNo(application.SporicRefNo)
 	if err != nil {

@@ -17,6 +17,20 @@ const (
 	PaymentProofUploaded
 )
 
+type Payment struct {
+	Payment_id     int
+	Currency       string
+	Transaction_id string
+	Sporic_ref_no  string
+	Payment_amt    int
+	Tax            int
+	Total_amt      int
+	Gst_number     string
+	Pan_number     string
+	Payment_date   sql.NullTime
+	Payment_status int
+}
+
 type PaymentModel struct {
 	Db *sql.DB
 }
@@ -94,19 +108,6 @@ func (m *ApplicationModel) SetPaymentStatus(payment_id string, status PaymentSta
 	return nil
 }
 
-type Payment struct {
-	Payment_id     int
-	Currency       string
-	Transaction_id string
-	Sporic_ref_no  string
-	Payment_amt    int
-	Tax            int
-	Total_amt      int
-	Gst_number     string
-	Pan_number     string
-	Payment_date   sql.NullTime
-	Payment_status int
-}
 
 func (m *ApplicationModel) Insert_invoice_request(payment Payment) (int, error) {
 
