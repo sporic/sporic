@@ -274,6 +274,7 @@ func (m *ApplicationModel) FetchByRefNo(ref_no string) (*Application, error) {
 		if err != nil {
 			return nil, err
 		}
+		
 		p.Total_amt = p.Payment_amt + p.Tax*p.Payment_amt/100
 		a.Payments = append(a.Payments, p)
 	}

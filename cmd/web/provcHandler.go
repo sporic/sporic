@@ -53,7 +53,42 @@ func (app *App) provc_view_application(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	var TotalAmt int = 0
+	var TotalTax int = 0
+	for _, payment := range application.Payments {
+		TotalAmt += payment.Payment_amt
+		TotalTax += payment.Tax * payment.Payment_amt / 100
+	}
+	application.TotalAmount = TotalAmt
+	application.Taxes = TotalTax
+
+	application.TotalAmountIncludeTax = TotalAmt + TotalTax
+
+	var TotalExpenditure int = 0
+	for _, expenditure := range application.Expenditures {
+		TotalExpenditure += expenditure.Expenditure_amt
+	}
+	application.TotalExpenditure = TotalExpenditure
+	application.BalanceAmount = TotalAmt - TotalExpenditure
+
+	var members []models.Member
+	members, err = app.applications.GetTeamByRefNo(application.SporicRefNo)
+	if err != nil {
+		app.serverError(w, err)
+		return
+	}
+
+	var total_share int
+
+	for _, member := range members {
+		share := member.Share
+		total_share += share
+	}
+
+	application.LeaderShare = 100 - total_share
+
 	data := app.newTemplateData(r)
+	data.Member = members
 	data.Application = application
 	app.render(w, http.StatusOK, "provc_view_application.tmpl", data)
 }
