@@ -85,6 +85,24 @@ func (app *App) admin_view_application(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
+		provc, err := app.users.GetProvc()
+		if err != nil {
+			app.serverError(w, err)
+			return
+		}
+
+		provc_notifications := models.Notification{
+			CreatedAt:   time.Now(),
+			NotiType:    models.ProVCApprovalPending,
+			Description: fmt.Sprintf(models.NotificationTypeMap[models.ProVCApprovalPending], refno),
+			To:          provc,
+		}
+		err = app.notifications.SendNotification(provc_notifications, app.mailer)
+		if err != nil {
+			app.serverError(w, err)
+			return
+		}
+
 	}
 	if action == "approve_application" {
 		err = app.applications.SetStatus(refno, models.ProjectApproved)

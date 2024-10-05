@@ -36,6 +36,7 @@ type User struct {
 func (u *User) IsAnonymous() bool {
 	return u == AnonymousUser
 }
+
 type UserModel struct {
 	Db *sql.DB
 }
@@ -150,4 +151,24 @@ func (m *UserModel) GetAccounts() ([]string, error) {
 	}
 
 	return accounts, nil
+}
+
+func (m *UserModel) GetProvc() ([]string, error) {
+
+	var provcs []string
+
+	rows, err := m.Db.Query("select user_id from user where user_role = 3")
+	if err != nil {
+		return nil, err
+	}
+	for rows.Next() {
+		var provc int
+		err := rows.Scan(&provc)
+		if err != nil {
+			return nil, err
+		}
+		provcs = append(provcs, strconv.Itoa(provc))
+	}
+
+	return provcs, nil
 }
