@@ -210,6 +210,29 @@
 
 {{define "project_summary"}}
 <h4>Summary</h4>
+<div class="card mb-4">
+    <div class="card-header">
+        <h5>Project Overview</h5>
+    </div>
+    <div class="card-body">
+        <table class="table table-striped">
+            <tbody>
+                <tr>
+                    <th>Sporic Reference No.</th>
+                    <td>{{.Application.SporicRefNo}}</td>
+                </tr>
+                <tr>
+                    <th>Project Title</th>
+                    <td>{{.Application.ProjectTitle}}</td>
+                </tr>
+                <tr>
+                    <th>Company Name</th>
+                    <td>{{.Application.CompanyName}}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
 <!-- Financial Summary Section -->
 <div class="card mb-4">
     <div class="card-header">
