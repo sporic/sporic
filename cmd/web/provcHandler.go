@@ -1,11 +1,23 @@
 package main
 
 import (
+	"fmt"
 	"net/http"
+
+	"github.com/julienschmidt/httprouter"
 	"github.com/sporic/sporic/internal/models"
 )
 
 func (app *App) provc_home(w http.ResponseWriter, r *http.Request) {
+	user := app.contextGetUser(r)
+	if user.IsAnonymous() {
+		http.Redirect(w, r, "/login", http.StatusSeeOther)
+		return
+	}
+	if user.Role != models.Provc {
+		app.notFound(w)
+		return
+	}
 
 	var applications []models.Application
 
@@ -22,9 +34,19 @@ func (app *App) provc_home(w http.ResponseWriter, r *http.Request) {
 
 func (app *App) provc_view_application(w http.ResponseWriter, r *http.Request) {
 
-	params := r.URL.Query()
-	refno := params.Get("refno")
+	user := app.contextGetUser(r)
+	if user.IsAnonymous() {
+		http.Redirect(w, r, "/login", http.StatusSeeOther)
+		return
+	}
+	if user.Role != models.Provc {
+		app.notFound(w)
+		return
+	}
 
+	params := httprouter.ParamsFromContext(r.Context())
+	refno := params.ByName("refno")
+	fmt.Printf("refno: %s\n", refno)
 	application, err := app.applications.FetchByRefNo(refno)
 	if err != nil {
 		app.serverError(w, err)

@@ -6,9 +6,6 @@
 
 <div class="container mt-4">
     <h2 class="mb-4">View Record - {{.Application.SporicRefNo}}</h2>
-
-    {{ template "project_details" . }}
-
     {{ template "project_summary" . }}
 
     {{ if eq .Application.Status 2 }}
