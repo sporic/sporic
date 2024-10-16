@@ -132,7 +132,10 @@ func (app *App) handleFile(r *http.Request, folder_name string, prefix string, f
 	}
 	if file_type == ExpenditureProof {
 
-		prefix, _ := strconv.Atoi(prefix)
+		prefix, err := strconv.Atoi(prefix)
+		if err != nil {
+			return err
+		}
 		expenditure, err := app.applications.GetExpenditureById(prefix)
 		if err != nil {
 			return err

@@ -64,13 +64,11 @@
                 <td>{{.Pan_number}}</td>
                 <td><a href="/download/{{$.Application.SporicRefNo}}/{{.Payment_id}}/tax_cirtificate"
                         target="_blank">View</a></td>
-                <td><a href="/download/{{$.Application.SporicRefNo}}/{{.Payment_id}}/invoice" target="_blank"
-                        class="btn btn-primary"><i class="fas fa-download"></i> View</a>
+                <td><a href="/download/{{$.Application.SporicRefNo}}/{{.Payment_id}}/invoice" target="_blank">View</a>
                 </td>
                 <td>{{.Transaction_id}}
                 </td>
-                <td> <a href="/download/{{$.Application.SporicRefNo}}/{{.Payment_id}}/payment" target="_blank">View</a>
-                </td>
+                <td> </td>
                 <td>{{template "payment_status" .}}</td>
                 <td></td>
             </tr>
@@ -188,9 +186,10 @@
                         target="_blank">View</a>{{end}}</td>
                 </td>
                 <td>
-                    {{if eq .Expenditure_status 0}}<span class="badge bg-warning">Pending Approval</span>{{ end }}
-                    {{if eq .Expenditure_status 1}}<span class="badge bg-success">Approved</span>{{ end }}
-                    {{if eq .Expenditure_status 2}}<span class="badge bg-danger">Rejected</span>{{ end }}
+                    {{ if eq .Expenditure_status 0 }}<span class="badge bg-warning">Pending Approval</span>{{ end }}
+                    {{ if eq .Expenditure_status 1 }}<span class="badge bg-success">Approved</span>{{ end }}
+                    {{ if eq .Expenditure_status 2 }}<span class="badge bg-danger">Rejected</span>{{ end }}
+                    {{ if eq .Expenditure_status 3 }}<span class="badge bg-danger">Paid</span>{{ end }}
                 </td>
                 <td>
                     {{ if eq .Expenditure_status 0 }}

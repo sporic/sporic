@@ -124,6 +124,8 @@ func (app *App) admin_view_application(w http.ResponseWriter, r *http.Request) {
 			app.serverError(w, err)
 			return
 		}
+
+		
 	}
 	if action == "reject_application" {
 		err = app.applications.SetStatus(refno, models.ProjectRejected)

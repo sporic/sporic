@@ -157,7 +157,7 @@ func (m *UserModel) GetProvc() ([]string, error) {
 
 	var provcs []string
 
-	rows, err := m.Db.Query("select user_id from user where user_role = 3")
+	rows, err := m.Db.Query("select user_id from user where user_role = ?", Provc)
 	if err != nil {
 		return nil, err
 	}

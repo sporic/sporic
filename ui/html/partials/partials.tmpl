@@ -106,7 +106,8 @@
                             Approved</span>{{end}}
                         {{if eq .Application.Status 0}}<span class="badge bg-warning">Application Approval
                             Pending</span>{{end}}
-                        {{if eq .Application.Status 4}}<span class="badge bg-danger">Completed</span>{{end}}
+                        {{if eq .Application.Status 4}}<span class="badge bg-danger">Rejected</span>{{end}}
+                        {{if eq .Application.Status 5}}<span class="badge bg-success">Approved by ProVC</span>{{end}}
                     </td>
                 </tr>
             </tbody>
@@ -263,7 +264,7 @@
                 </tr>
                 <tr>
                     <th>VIT Resources Used</th>
-                    <td class="text-end">
+                    <td>
                         {{if eq .Application.ResourceUsed 0}}
                         Yes
                         {{else}}

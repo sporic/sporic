@@ -55,6 +55,7 @@ const (
 
 type ActivityType = int
 
+
 const (
 	ActivityTypeConsultancy ActivityType = iota
 	ActivityTypeTraining

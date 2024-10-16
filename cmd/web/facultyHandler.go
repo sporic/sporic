@@ -277,11 +277,13 @@ func (app *App) faculty_view_application(w http.ResponseWriter, r *http.Request)
 				closable = false
 			}
 		}
+		fmt.Println(closable)
 		for _, expenditure := range application.Expenditures {
-			if expenditure.Expenditure_status != models.ExpenditureCompleted {
+			if expenditure.Expenditure_status != models.ExpenditureCompleted && expenditure.Expenditure_status != models.ExpenditureRejected {
 				closable = false
 			}
 		}
+		fmt.Println(closable)
 		if closable {
 			CompleteProjectForm, err := app.parseCompleteProjectForm(r)
 			if err != nil {
@@ -378,6 +380,7 @@ func (app *App) renderFacultyViewApplication(w http.ResponseWriter, r *http.Requ
 		app.render(w, http.StatusOK, "faculty_view_application.tmpl", data)
 	}
 }
+
 type NewInvoice struct {
 	Currency            string `form:"currency"`
 	PaymentAmt          int    `form:"payment_amt"`
@@ -607,6 +610,7 @@ func (app *App) complete_project(r *http.Request, completion_form CompleteProjec
 
 	return nil
 }
+
 type UpadatePaymentForm struct {
 	Payment_id          int    `form:"payment_id"`
 	Transaction_id      string `form:"transaction_id"`

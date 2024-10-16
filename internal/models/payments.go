@@ -108,7 +108,6 @@ func (m *ApplicationModel) SetPaymentStatus(payment_id string, status PaymentSta
 	return nil
 }
 
-
 func (m *ApplicationModel) Insert_invoice_request(payment Payment) (int, error) {
 
 	var application Application

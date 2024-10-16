@@ -321,8 +321,9 @@
                                             </tr>
                                             <tr>
                                                 <th>Payment Proof</th>
-                                                <td><a href="/download/{{.Sporic_ref_no}}/{{.Payment_id}}/payment"
-                                                        target="_blank">View</a></td>
+                                                <td>{{if ne $payment.Payment_status 1}}<a
+                                                        href="/download/{{.Sporic_ref_no}}/{{.Payment_id}}/payment"
+                                                        target="_blank">View</a>{{end}}</td>
                                             </tr>
                                             <tr>
                                                 <th>Status</th>
@@ -399,7 +400,8 @@
                                             </tr>
                                             <tr>
                                                 <th>Payment Proof</th>
-                                                <td><a href="#" target="_blank">View</a></td>
+                                                <td><a href="/download/{{$application.SporicRefNo}}/{{.Expenditure_id}}/expenditure_proof"
+                                                        target="_blank">View</a></td>
                                             </tr>
                                             <tr>
                                                 <td colspan="2">
@@ -481,7 +483,8 @@
                                             </tr>
                                             <tr>
                                                 <th>Invoice</th>
-                                                <td><a href="#" target="_blank">View</a></td>
+                                                <td><a href="/download/{{$application.SporicRefNo}}/{{.Expenditure_id}}/expenditure_invoice"
+                                                        target="_blank">View</a></td>
                                             </tr>
                                             <!-- Complete button -->
                                             <tr>
@@ -567,7 +570,11 @@
                                             </tr>
                                             <tr>
                                                 <th>Payment Proof</th>
-                                                <td><a href="#" target="_blank">View</a></td>
+                                                <td>{{if eq $expenditure.Expenditure_type 0}}<a
+                                                        href="/download/{{$application.SporicRefNo}}/{{$expenditure.Expenditure_id}}/expenditure_proof"
+                                                        target="_blank">View</a>{{else}}<a
+                                                        href="/download/{{$application.SporicRefNo}}/{{$expenditure.Expenditure_id}}/expenditure_invoice"
+                                                        target="_blank">View</a>{{end}}</td>
                                             </tr>
                                         </tbody>
                                     </table>

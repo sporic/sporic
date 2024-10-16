@@ -280,6 +280,19 @@ func (app *App) GetNotifications(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 	}
+	if user.Role == models.Provc {
+
+		provc, err := app.users.GetProvc()
+		if err != nil {
+			app.serverError(w, err)
+			return
+		}
+		notifications, err = app.notifications.RecieveNotification(provc)
+		if err != nil {
+			app.serverError(w, err)
+			return
+		}
+	}
 	if user.Role == models.FacultyUser {
 		var receivers []string
 
