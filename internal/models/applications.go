@@ -39,6 +39,8 @@ type Application struct {
 	TotalExpenditure         int
 	BalanceAmount            int
 	LeaderShare              int
+	LeaderShareAmt           int
+	MembersInfo              []Member
 }
 
 type ProjectStatus = int
@@ -51,10 +53,10 @@ const (
 	ProjectCompleteApprovalPending
 	ProjectRejected
 	ProjectApprovedByProVC
+	ProjectClosed
 )
 
 type ActivityType = int
-
 
 const (
 	ActivityTypeConsultancy ActivityType = iota
@@ -275,7 +277,7 @@ func (m *ApplicationModel) FetchByRefNo(ref_no string) (*Application, error) {
 		if err != nil {
 			return nil, err
 		}
-		
+
 		p.Total_amt = p.Payment_amt + p.Tax*p.Payment_amt/100
 		a.Payments = append(a.Payments, p)
 	}

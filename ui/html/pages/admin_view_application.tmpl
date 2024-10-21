@@ -242,7 +242,7 @@
     {{ end }}
 
     {{ if or (eq .Application.Status 3) (eq .Application.Status 2)}}
-    {{template "project_summary" .}}
+    {{template "project_summary" .ApplicationS}}
     {{end}}
 
     <div style="height: 100px;"></div>

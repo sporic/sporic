@@ -3,6 +3,7 @@ package main
 import (
 	"errors"
 	"fmt"
+	"math"
 	"net/http"
 	"regexp"
 	"strconv"
@@ -360,17 +361,27 @@ func (app *App) renderFacultyViewApplication(w http.ResponseWriter, r *http.Requ
 	}
 
 	var total_share int
+	var total_share_amt float64
 
-	for _, member := range members {
+	if application.ResourceUsed == 1 {
+		total_share_amt = float64(application.BalanceAmount) * 0.6
+	} else {
+		total_share_amt = float64(application.BalanceAmount) * 0.7
+	}
+
+	for i, member := range members {
 		share := member.Share
+		members[i].MemberShareAmt = int(math.Ceil(total_share_amt * float64(share) / 100))
 		total_share += share
 	}
 
 	application.LeaderShare = 100 - total_share
+	application.LeaderShareAmt = int(math.Ceil(total_share_amt * float64(application.LeaderShare) / 100))
+
+	application.MembersInfo = members
 
 	data := app.newTemplateData(r)
 	data.Member = members
-
 	data.Form = form
 	data.Application = application
 
@@ -499,13 +510,16 @@ func (app *App) add_expenditure(r *http.Request, expenditure_form NewExpenditure
 
 	if expenditure_form.ExpenditureType == 0 {
 		err = app.handleFile(r, SporicRefNo, strconv.Itoa(exp_id), ExpenditureProof, "expenditure_proof")
+		if err != nil {
+			return err
+		}
 	}
 	if expenditure_form.ExpenditureType == 1 {
 		err = app.handleFile(r, SporicRefNo, strconv.Itoa(exp_id), ExpenditureInvoice, "expenditure_proof")
-	}
-
-	if err != nil {
-		return err
+		if err != nil {
+			return err
+		}
+		err = app.handleFile(r, SporicRefNo, strconv.Itoa(exp_id), billingInfo, "billing_info")
 	}
 
 	var notification models.Notification

@@ -33,6 +33,8 @@ const (
 	ExpenditurePaid
 	InvoiceUploaded
 	ProVCApprovalPending
+	ProVCApproved
+	ProjectClosedNotification
 )
 
 var NotificationTypeMap = map[NotificationType]string{
@@ -54,6 +56,8 @@ var NotificationTypeMap = map[NotificationType]string{
 	ExpenditurePaid:                 "Expenditure  %s for project %s has been paid",
 	InvoiceUploaded:                 "Invoice for payment %s of project %s has been uploaded",
 	ProVCApprovalPending:            "Project %s has been submitted for approval",
+	ProVCApproved:                   "Project %s has been approved by ProVC",
+	ProjectClosedNotification:       "Project %s has been closed by accounts",
 }
 
 type Notification struct {

@@ -3,6 +3,7 @@ package main
 import (
 	"errors"
 	"fmt"
+	"math"
 	"net/http"
 	"strconv"
 	"time"
@@ -125,7 +126,6 @@ func (app *App) admin_view_application(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		
 	}
 	if action == "reject_application" {
 		err = app.applications.SetStatus(refno, models.ProjectRejected)
@@ -297,13 +297,23 @@ func (app *App) admin_view_application(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var total_share int
+	var total_share_amt float64
 
-	for _, member := range members {
+	if application.ResourceUsed == 1 {
+		total_share_amt = float64(application.BalanceAmount) * 0.6
+	} else {
+		total_share_amt = float64(application.BalanceAmount) * 0.7
+	}
+	for i, member := range members {
 		share := member.Share
+		members[i].MemberShareAmt = int(math.Ceil(total_share_amt * float64(share) / 100))
 		total_share += share
 	}
 
 	application.LeaderShare = 100 - total_share
+	application.LeaderShareAmt = int(math.Ceil(total_share_amt * float64(application.LeaderShare) / 100))
+
+	application.MembersInfo = members
 
 	data := app.newTemplateData(r)
 	data.Member = members
@@ -311,70 +321,4 @@ func (app *App) admin_view_application(w http.ResponseWriter, r *http.Request) {
 	data.User = user
 
 	app.render(w, http.StatusOK, "admin_view_application.tmpl", data)
-}
-
-func (app *App) excel(w http.ResponseWriter, r *http.Request) {
-
-	user := app.contextGetUser(r)
-	if user.IsAnonymous() {
-		http.Redirect(w, r, "/login", http.StatusSeeOther)
-		return
-	}
-	if user.Role != models.AdminUser {
-		http.Redirect(w, r, "/home", http.StatusSeeOther)
-		return
-	}
-
-	err := r.ParseForm()
-	if err != nil {
-		app.clientError(w, http.StatusBadRequest)
-	}
-
-	from_date := r.Form.Get("from_date")
-	to_date := r.Form.Get("to_date")
-
-	if from_date == "" || to_date == "" {
-		http.Error(w, "Please enter both dates", http.StatusBadRequest)
-		return
-	}
-
-	fromDate, err := time.Parse("2006-01-02", from_date)
-	if err != nil {
-		app.serverError(w, err)
-		return
-	}
-
-	toDate, err := time.Parse("2006-01-02", to_date)
-	if err != nil {
-		app.serverError(w, err)
-		return
-	}
-
-	applications, err := app.applications.FetchAll()
-	if err != nil {
-		app.serverError(w, err)
-		return
-	}
-
-	var filtered_applications []models.Application
-
-	for _, application := range applications {
-		if application.StartDate.After(fromDate) && application.StartDate.Before(toDate) {
-			filtered_applications = append(filtered_applications, application)
-		}
-	}
-
-	file, err := app.GenerateExcel(filtered_applications)
-	if err != nil {
-		app.serverError(w, err)
-		return
-	}
-
-	w.Header().Set("Content-Type", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
-	w.Header().Set("Content-Disposition", "attachment; filename=sporic-applications.xlsx")
-
-	if err := file.Write(w); err != nil {
-		app.serverError(w, err)
-		return
-	}
 }

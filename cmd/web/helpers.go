@@ -10,6 +10,7 @@ import (
 	"path/filepath"
 	"runtime/debug"
 	"strconv"
+	"time"
 
 	"github.com/go-playground/form"
 	"github.com/sporic/sporic/internal/models"
@@ -169,6 +170,19 @@ func (app *App) handleFile(r *http.Request, folder_name string, prefix string, f
 
 		filename = folder_name + "_" + prefix + "_feedback_form" + ".pdf"
 	}
+	if file_type == billingInfo {
+		prefix, _ := strconv.Atoi(prefix)
+		expenditure, err := app.applications.GetExpenditureById(prefix)
+		if err != nil {
+			return err
+		}
+
+		if expenditure.Expenditure_id != prefix {
+			return nil
+		}
+
+		filename = folder_name + "_" + strconv.Itoa(prefix) + "_billing_info" + ".pdf"
+	}
 
 	filePath := filepath.Join(uploadDir, filename)
 
@@ -284,4 +298,70 @@ func (app *App) GenerateExcel(applications []models.Application) (*excelize.File
 	f.SetActiveSheet(index)
 
 	return f, nil
+}
+
+func (app *App) excel(w http.ResponseWriter, r *http.Request) {
+
+	user := app.contextGetUser(r)
+	if user.IsAnonymous() {
+		http.Redirect(w, r, "/login", http.StatusSeeOther)
+		return
+	}
+	if user.Role != models.AdminUser && user.Role != models.AccountantUser {
+		http.Redirect(w, r, "/home", http.StatusSeeOther)
+		return
+	}
+
+	err := r.ParseForm()
+	if err != nil {
+		app.clientError(w, http.StatusBadRequest)
+	}
+
+	from_date := r.Form.Get("from_date")
+	to_date := r.Form.Get("to_date")
+
+	if from_date == "" || to_date == "" {
+		http.Error(w, "Please enter both dates", http.StatusBadRequest)
+		return
+	}
+
+	fromDate, err := time.Parse("2006-01-02", from_date)
+	if err != nil {
+		app.serverError(w, err)
+		return
+	}
+
+	toDate, err := time.Parse("2006-01-02", to_date)
+	if err != nil {
+		app.serverError(w, err)
+		return
+	}
+
+	applications, err := app.applications.FetchAll()
+	if err != nil {
+		app.serverError(w, err)
+		return
+	}
+
+	var filtered_applications []models.Application
+
+	for _, application := range applications {
+		if application.StartDate.After(fromDate) && application.StartDate.Before(toDate) {
+			filtered_applications = append(filtered_applications, application)
+		}
+	}
+
+	file, err := app.GenerateExcel(filtered_applications)
+	if err != nil {
+		app.serverError(w, err)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+	w.Header().Set("Content-Disposition", "attachment; filename=sporic-applications.xlsx")
+
+	if err := file.Write(w); err != nil {
+		app.serverError(w, err)
+		return
+	}
 }

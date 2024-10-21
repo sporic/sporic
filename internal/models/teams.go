@@ -3,8 +3,9 @@ package models
 // TODO: IST Timezones
 
 type Member struct {
-	Member string
-	Share  int
+	Member         string
+	Share          int
+	MemberShareAmt int
 }
 
 func (m *ApplicationModel) GetTeamByRefNo(sporic_ref_no string) ([]Member, error) {

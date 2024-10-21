@@ -24,6 +24,7 @@ const (
 	ExpenditureProof
 	ExpenditureInvoice
 	FeedbackForm
+	billingInfo
 )
 
 type loginForm struct {

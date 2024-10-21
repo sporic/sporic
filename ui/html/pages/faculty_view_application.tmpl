@@ -311,6 +311,10 @@
             <label for="invoice">Invoice (To Be Paid by Accounts)</label>
           </div>
         </div>
+        <div class="mb-3" id="expenditureBillingInfo">
+          <label for="billingInfo" class="form-label">Billing Info</label>
+          <input type="file" class="form-control" id="billingInfo" name="billing_info" accept=".pdf" required />
+        </div>
         <div class="mb-3">
           <label for="expenditureCost" class="form-label">Cost</label>
           {{with .Form.FieldErrors.expenditure_amt}}
@@ -406,11 +410,15 @@
     function updateProofLabel() {
       const claimRadio = document.getElementById('claim');
       const proofLabel = document.getElementById('proofLabel');
+      const billingInfo = document.getElementById('expenditureBillingInfo');
 
       if (claimRadio.checked) {
         proofLabel.textContent = 'Proof of Expense (e.g., Receipt)';
+        billingInfo.style.display = 'none';
+
       } else {
         proofLabel.textContent = 'Invoice Document';
+        billingInfo.style.display = 'block';
       }
     }
   </script>

@@ -2,7 +2,10 @@ package main
 
 import (
 	"fmt"
+	"math"
 	"net/http"
+	"strconv"
+	"time"
 
 	"github.com/julienschmidt/httprouter"
 	"github.com/sporic/sporic/internal/models"
@@ -43,11 +46,57 @@ func (app *App) provc_view_application(w http.ResponseWriter, r *http.Request) {
 		app.notFound(w)
 		return
 	}
-
 	params := httprouter.ParamsFromContext(r.Context())
+
 	refno := params.ByName("refno")
-	fmt.Printf("refno: %s\n", refno)
+
 	application, err := app.applications.FetchByRefNo(refno)
+
+	if r.Method == http.MethodPost {
+		err := r.ParseForm()
+		if err != nil {
+			app.clientError(w, http.StatusBadRequest)
+			return
+		}
+		action := r.Form.Get("action")
+		if action == "approve" {
+			err = app.applications.SetStatus(refno, models.ProjectApprovedByProVC)
+			if err != nil {
+				app.serverError(w, err)
+				return
+			}
+
+			var notification models.Notification
+
+			notification.CreatedAt = time.Now()
+			notification.NotiType = models.ProVCApproved
+			notification.Description = fmt.Sprintf(models.NotificationTypeMap[models.ProVCApproved], refno)
+			admins, err := app.users.GetAdmins()
+			if err != nil {
+				app.serverError(w, err)
+				return
+			}
+			accounts, err := app.users.GetAccounts()
+			if err != nil {
+				app.serverError(w, err)
+				return
+			}
+			faculty := strconv.Itoa(application.Leader)
+			recievers := append(accounts, admins...)
+			recievers = append(recievers, faculty)
+			notification.To = recievers
+			err = app.notifications.SendNotification(notification, app.mailer)
+			if err != nil {
+				app.serverError(w, err)
+				return
+			}
+
+			http.Redirect(w, r, "/home", http.StatusSeeOther)
+			return
+		}
+	}
+
+	fmt.Printf("refno: %s\n", refno)
 	if err != nil {
 		app.serverError(w, err)
 		return
@@ -79,13 +128,24 @@ func (app *App) provc_view_application(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var total_share int
+	var total_share_amt float64
 
-	for _, member := range members {
+	if application.ResourceUsed == 1 {
+		total_share_amt = float64(application.BalanceAmount) * 0.6
+	} else {
+		total_share_amt = float64(application.BalanceAmount) * 0.7
+	}
+
+	for i, member := range members {
 		share := member.Share
+		members[i].MemberShareAmt = int(math.Ceil(total_share_amt * float64(share) / 100))
 		total_share += share
 	}
 
 	application.LeaderShare = 100 - total_share
+	application.LeaderShareAmt = int(math.Ceil(total_share_amt * float64(application.LeaderShare) / 100))
+
+	application.MembersInfo = members
 
 	data := app.newTemplateData(r)
 	data.Member = members

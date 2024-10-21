@@ -63,14 +63,14 @@
                         {{
                         range.Applications
                         }}
-                        {{if eq .Status 4}}
+                        {{if or (eq .Status 5) (eq .Status 6)}}
                         <tr>
                             <td>{{.SporicRefNo}}</td>
                             <td>{{.CompanyName}}</td>
                             <td>Approved</td>
                             <td>
                                 <a class="btn btn-sm btn-primary"
-                                    href="/admin/view_application/{{.SporicRefNo}}">View</a>
+                                    href="/provc/view_application/{{.SporicRefNo}}">View</a>
                             </td>
                         </tr>
                         {{

@@ -220,15 +220,15 @@
             <tbody>
                 <tr>
                     <th>Sporic Reference No.</th>
-                    <td>{{.Application.SporicRefNo}}</td>
+                    <td>{{.SporicRefNo}}</td>
                 </tr>
                 <tr>
                     <th>Project Title</th>
-                    <td>{{.Application.ProjectTitle}}</td>
+                    <td>{{.ProjectTitle}}</td>
                 </tr>
                 <tr>
                     <th>Company Name</th>
-                    <td>{{.Application.CompanyName}}</td>
+                    <td>{{.CompanyName}}</td>
                 </tr>
             </tbody>
         </table>
@@ -244,28 +244,28 @@
             <tbody>
                 <tr>
                     <th>Base Ammount</th>
-                    <td>{{.Application.TotalAmount}}</td>
+                    <td>{{.TotalAmount}}</td>
                 </tr>
                 <tr>
                     <th>Taxes</th>
-                    <td>{{.Application.Taxes}}</td>
+                    <td>{{.Taxes}}</td>
                 </tr>
                 <tr>
                     <th>Total Amount</th>
-                    <td>{{.Application.TotalAmountIncludeTax}}</td>
+                    <td>{{.TotalAmountIncludeTax}}</td>
                 </tr>
                 <tr>
                     <th>Total Expenditure</th>
-                    <td>{{.Application.TotalExpenditure}}</td>
+                    <td>{{.TotalExpenditure}}</td>
                 </tr>
                 <tr>
                     <th>Balance Amount</th>
-                    <td>{{.Application.BalanceAmount}}</td>
+                    <td>{{.BalanceAmount}}</td>
                 </tr>
                 <tr>
                     <th>VIT Resources Used</th>
                     <td>
-                        {{if eq .Application.ResourceUsed 0}}
+                        {{if eq .ResourceUsed 1}}
                         Yes
                         {{else}}
                         No
@@ -287,17 +287,20 @@
                 <tr>
                     <th>Name</th>
                     <th>Share (%)</th>
+                    <th>Amount</th>
                 </tr>
             </thead>
             <tbody>
                 <tr>
-                    <td>{{.Application.Leader}}</td>
-                    <td>{{.Application.LeaderShare}}%</td>
+                    <td>{{.Leader}}</td>
+                    <td>{{.LeaderShare}}%</td>
+                    <td>{{.LeaderShareAmt}}</td>
                 </tr>
-                {{range .Member}}
+                {{range .MembersInfo}}
                 <tr>
                     <td>{{.Member}}</td>
                     <td>{{.Share}}%</td>
+                    <td>{{.MemberShareAmt}}</td>
                 </tr>
                 {{end}}
             </tbody>

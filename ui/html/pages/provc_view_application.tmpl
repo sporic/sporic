@@ -6,11 +6,11 @@
 
 <div class="container mt-4">
     <h2 class="mb-4">View Record - {{.Application.SporicRefNo}}</h2>
-    {{ template "project_summary" . }}
+    {{ template "project_summary" .Application }}
 
     {{ if eq .Application.Status 2 }}
-    <form action="/admin/view_application/{{.Application.SporicRefNo}}" method="post">
-        <input type="hidden" name="action" value="approve_completion" />
+    <form action="/provc/view_application/{{.Application.SporicRefNo}}" method="post">
+        <input type="hidden" name="action" value="approve" />
         <button class="btn btn-success">Approve Completion</button>
     </form>
     {{ end }}
